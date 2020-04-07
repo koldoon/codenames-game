@@ -1,0 +1,11 @@
+{
+  "/api/*": {
+    "target": "http://localhost:8091/",
+    "secure": false
+  },
+  "ws(s)?://localhost:4200/api/*": {
+    "target": "ws://localhost:8091/",
+    "secure": false,
+    "ws": true
+  }
+}

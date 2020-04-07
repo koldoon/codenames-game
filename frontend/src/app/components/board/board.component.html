@@ -1,0 +1,7 @@
+<div class="uk-grid uk-grid-small uk-child-width-1-5 uk-text-center uk-margin-top">
+
+    <div *ngFor="let agent of board; let i = index; trackBy: agentId">
+        <app-card [agent]="agent" (click)="uncoverAgent(i)"></app-card>
+    </div>
+
+</div>

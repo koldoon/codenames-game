@@ -29,6 +29,7 @@
     "@nestjs/swagger": "^4.5.1",
     "@types/shuffle-array": "0.0.28",
     "@types/uuid": "^7.0.2",
+    "helmet": "^3.22.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.5.4",

@@ -1,0 +1,22 @@
+<div class="uk-flex uk-flex-center uk-flex-middle uk-padding-large uk-drop-top">
+
+    <div class="uk-card uk-card-body uk-card-default  uk-width-medium">
+        <h3 class="uk-card-title uk-text-uppercase">Codenames</h3>
+        <div class="uk-flex uk-flex uk-flex-column">
+            <button class="uk-button uk-button-primary uk-display-block uk-margin-bottom" (click)="onCreateGameClick()">
+                Создать новую игру
+            </button>
+        </div>
+        <p>
+            Другие участники смогут присоединиться к игре после ее создания.
+        </p>
+        <div class="uk-flex uk-flex-center" *ngIf="inProgress">
+            <div uk-spinner></div>
+        </div>
+
+        <div class="uk-flex" *ngIf="error">
+            <div class="uk-text-danger">Error:<br/> {{error}}</div>
+        </div>
+    </div>
+
+</div>

@@ -19,8 +19,10 @@
     "@angular/platform-browser": "~9.1.0",
     "@angular/platform-browser-dynamic": "~9.1.0",
     "@angular/router": "~9.1.0",
+    "gsap": "^3.2.6",
     "rxjs": "~6.5.5",
     "tslib": "^1.10.0",
+    "uikit": "^3.3.7",
     "zone.js": "~0.10.2"
   },
   "devDependencies": {

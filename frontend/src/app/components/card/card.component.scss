@@ -1,0 +1,56 @@
+.agent-blue {
+    background-color: #a8d1fa;
+}
+
+.agent-red {
+    background-color: #faa2a7;
+}
+
+.agent-neutral {
+    background-color: #ffe5c7;
+}
+
+.agent-black {
+    background-color: #4b4546;
+
+    > h3 {
+        color: white;
+    }
+}
+
+.agent-unknown {
+    border: #e6e6e6;
+    background-color: #f8f8f8;
+}
+
+.card {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
+    cursor: pointer;
+}
+
+.card-hover {
+    &:hover {
+        box-shadow: 0 14px 28px rgba(0, 0, 0, 0.1), 0 10px 10px rgba(0, 0, 0, 0.15);
+    }
+}
+
+.muted {
+    opacity: 0.2;
+}
+
+
+.strike {
+    position: relative;
+    display: inline-block;
+
+    &:before {
+        content: '';
+        border-bottom: 2px solid #1b1b1b;
+        width: 108%;
+        position: absolute;
+        right: -0.5rem;
+        left: -4%;
+        top: 44%;
+    }
+}

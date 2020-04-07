@@ -1,8 +1,9 @@
 import { AgentModel, AgentSide } from './agent_model';
+import { GameBoard } from './game_board_type';
 import shuffle = require('shuffle-array');
 
 export class GameModel {
-    readonly board: AgentModel[];
+    readonly board: GameBoard;
     readonly firstTurn: AgentSide;
 
     constructor(names: string[]) {

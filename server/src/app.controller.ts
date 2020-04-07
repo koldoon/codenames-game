@@ -1,4 +1,7 @@
 import { Controller, Get, Param } from '@nestjs/common';
+import { GameBoardResponse } from './api/game_board_response';
+import { NewGameResponse } from './api/new_game_response';
+import { UncoverAgentResponse } from './api/uncover_agent_response';
 import { GameService } from './game.service';
 
 @Controller('api/games')
@@ -7,21 +10,29 @@ export class AppController {
 
     @Get('create')
     async createGame() {
-        return this.gameService.createGame();
+        return <NewGameResponse> {
+            gameId: await this.gameService.createGame()
+        };
     }
 
     @Get(':gameId/public-board')
     async getPublicBoard(@Param('gameId') gameId: string) {
-        return this.gameService.getPublicBoard(gameId);
+        return <GameBoardResponse> {
+            board: await this.gameService.getPublicBoard(gameId)
+        };
     }
 
     @Get(':gameId/private-board')
     async getPrivateBoard(@Param('gameId') gameId: string) {
-        return this.gameService.getPrivateBoard(gameId);
+        return <GameBoardResponse> {
+            board: await this.gameService.getPrivateBoard(gameId)
+        };
     }
 
     @Get(':gameId/agents/:agentId/uncover')
     async uncoverAgent(@Param('gameId') gameId: string, @Param('agentId') agentId: string) {
-        return this.gameService.uncoverAgent(gameId, Number(agentId));
+        return <UncoverAgentResponse> {
+            agent: await this.gameService.uncoverAgent(gameId, Number(agentId))
+        };
     }
 }
