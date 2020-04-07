@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BoardType } from '../../types/board_type';
+import { copyToClipboard } from '../../utils/copy_to_clipboard';
 
 @Component({
     selector: 'app-join',
@@ -26,7 +27,7 @@ export class JoinComponent implements OnInit {
 
     onCopyLinkClick(event: MouseEvent) {
         event.preventDefault();
-        this.copyToClipboard(this.joinLink);
+        copyToClipboard(this.joinLink);
         this.joinLinkCopied = true;
     }
 
@@ -40,24 +41,5 @@ export class JoinComponent implements OnInit {
 
     async onBackClick() {
         await this.router.navigate(['codenames', 'lobby']);
-    }
-
-    copyToClipboard(str: string) {
-        const el = document.createElement('textarea');
-        el.value = str;
-        el.setAttribute('readonly', '');
-        el.style.position = 'absolute';
-        el.style.left = '-9999px';
-        document.body.appendChild(el);
-        const selected = document.getSelection().rangeCount > 0
-            ? document.getSelection().getRangeAt(0)
-            : false;
-        el.select();
-        document.execCommand('copy');
-        document.body.removeChild(el);
-        if (selected) {
-            document.getSelection().removeAllRanges();
-            document.getSelection().addRange(selected);
-        }
     }
 }

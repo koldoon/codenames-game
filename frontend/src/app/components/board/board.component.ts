@@ -1,12 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { delay } from 'rxjs/operators';
 import { GameBoardResponse } from '../../../../../server/src/api/game_board_response';
 import { UncoverAgentResponse } from '../../../../../server/src/api/uncover_agent_response';
 import { AgentModel, AgentSide } from '../../../../../server/src/model/agent_model';
 import { GameBoard } from '../../../../../server/src/model/game_board_type';
 import { BoardType } from '../../types/board_type';
+import { copyToClipboard } from '../../utils/copy_to_clipboard';
 
 @Component({
     selector: 'app-board',
@@ -23,10 +23,13 @@ export class BoardComponent implements OnInit, OnDestroy {
 
     error = '';
     boardType: BoardType = BoardType.TEAMS;
+    bluesLeft = 0;
+    redsLeft = 0;
     gameId = '';
     board: GameBoard = [];
     polingTimer = 0;
     updateInProgress = false;
+
 
     ngOnInit(): void {
         for (let i = 0; i < 25; i++)
@@ -60,7 +63,18 @@ export class BoardComponent implements OnInit, OnDestroy {
         this.httpClient
             .get<GameBoardResponse>(url)
             .subscribe(
-                value => this.board = value.board,
+                value => {
+                    this.board = value.board;
+                    this.redsLeft = 0;
+                    this.bluesLeft = 0;
+                    for (const agent of this.board) {
+                        if (!agent.uncovered && agent.side === AgentSide.BLUE)
+                            this.bluesLeft += 1;
+
+                        if (!agent.uncovered && agent.side === AgentSide.RED)
+                            this.redsLeft += 1;
+                    }
+                },
                 error => this.error = error,
                 () => {
                     this.updateInProgress = false;
@@ -80,5 +94,10 @@ export class BoardComponent implements OnInit, OnDestroy {
                 error => this.error = error,
                 () => this.changeDetector.markForCheck()
             );
+    }
+
+    onCopyGameLinkClick(event: MouseEvent) {
+        event.preventDefault();
+        copyToClipboard(`${window.location.origin}/codenames/game/${this.gameId}/join`);
     }
 }

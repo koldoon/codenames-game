@@ -1,7 +1,18 @@
 <div class="uk-grid uk-grid-small uk-child-width-1-5 uk-text-center uk-margin-top">
-
     <div *ngFor="let agent of board; let i = index; trackBy: agentId">
         <app-card [agent]="agent" (click)="uncoverAgent(i)"></app-card>
     </div>
+</div>
 
+<div class="uk-flex uk-flex-between uk-flex-middle">
+    <div>
+        <a class="uk-button uk-button-text uk-button-small" href="" (click)="onCopyGameLinkClick($event)">
+            Скопировать ссылку на игру
+        </a>
+    </div>
+    <div class="uk-width-small uk-text-center" *ngIf="bluesLeft || redsLeft">
+        <span class="uk-h1 reds-left">{{redsLeft}}</span>
+        <span class="uk-h1 uk-divider-vertical uk-margin-left uk-margin-right"></span>
+        <span class="uk-h1 blues-left">{{bluesLeft}}</span>
+    </div>
 </div>
