@@ -1,7 +1,91 @@
-.reds-left {
-    color: #ff2e31;
+@import '~@angular/material/theming';
+
+.container {
+    min-height: 100vh;
+    background-color: #ebebeb;
+    overflow: scroll;
 }
 
-.blues-left {
-    color: #4852ff;
+.cards-grid {
+    margin: 1.5rem 1rem;
+}
+
+mat-grid-tile {
+    overflow: visible;
+}
+
+.agent-card {
+    border-radius: 3px;
+    position: absolute;
+
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+
+    transition: all 0.3s cubic-bezier(.25, .8, .25, 1);;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+}
+
+.agent-name {
+    width: 100%;
+    font-size: 2vw;
+    text-align: center;
+    text-transform: uppercase;
+    overflow-x: hidden;
+}
+
+button {
+    text-transform: uppercase;
+}
+
+mat-toolbar {
+    display: flex;
+}
+
+.spacer {
+    flex-grow: 1;
+}
+
+.agent-blue {
+    background-color: #a8d1fa;
+}
+
+.agent-red {
+    background-color: #faa2a7;
+}
+
+.agent-neutral {
+    background-color: #ffe5c7;
+}
+
+.agent-black {
+    background-color: #4b4546;
+
+    > div {
+        color: #ffffff;
+    }
+}
+
+.agent-unknown {
+    border: #e6e6e6;
+    background-color: #f8f8f8;
+
+    &:hover {
+        @include mat-elevation(4);
+        bottom: 0.2rem;
+        top: -0.2rem;
+    }
+
+    > div {
+        opacity: 0.8;
+    }
+}
+
+.muted {
+    opacity: 0.2;
 }

@@ -1,18 +1,53 @@
-<div class="uk-grid uk-grid-small uk-child-width-1-5 uk-text-center uk-margin-top">
-    <div *ngFor="let agent of board; let i = index; trackBy: agentId">
-        <app-card [agent]="agent" (click)="uncoverAgent(i)"></app-card>
-    </div>
-</div>
+<div class="container">
+    <mat-toolbar class="toolbar">
+        <div style="overflow: hidden">
+            <button mat-button color="primary" (click)="onCopyGameLinkClick($event)">
+                Скопировать ссылку на игру
+            </button>
+        </div>
 
-<div class="uk-flex uk-flex-between uk-flex-middle">
-    <div>
-        <a class="uk-button uk-button-text uk-button-small" href="" (click)="onCopyGameLinkClick($event)">
-            Скопировать ссылку на игру
-        </a>
-    </div>
-    <div class="uk-width-small uk-text-center" *ngIf="bluesLeft || redsLeft">
-        <span class="uk-h1 reds-left">{{redsLeft}}</span>
-        <span class="uk-h1 uk-divider-vertical uk-margin-left uk-margin-right"></span>
-        <span class="uk-h1 blues-left">{{bluesLeft}}</span>
-    </div>
+        <div style="flex-grow: 1; text-align: center; overflow: hidden">
+            <button mat-button color="accent">
+                <div style="color: #b91f7f">Codenames</div>
+            </button>
+        </div>
+        <!--        <button mat-button color="warn">-->
+        <!--            Новая игра-->
+        <!--        </button>-->
+        <!--            <mat-checkbox>-->
+        <!--                <span class="mat-h3">Подтверждать выбор</span>-->
+        <!--            </mat-checkbox>-->
+        <!--        <div class="spacer"></div>-->
+        <button mat-button color="primary">
+            <span class="mat-h1"><strong>{{bluesLeft}}</strong></span>
+        </button>
+
+        <div>&nbsp;</div>
+
+        <button mat-button color="accent">
+            <span class="mat-h1"><strong>{{redsLeft}}</strong></span>
+        </button>
+    </mat-toolbar>
+
+    <mat-grid-list cols="5" rowHeight="2:0.9" gutterSize="0.5rem" class="cards-grid">
+        <mat-grid-tile *ngFor="let agent of board; let i = index; trackBy: agentId">
+
+            <mat-card class="agent-card mat-elevation-z1"
+                (click)="uncoverAgent(i)"
+                [ngClass]="{
+                    'muted': agent.uncovered,
+                    'agent-unknown': agent.side == UNKNOWN,
+                    'card-hover': agent.side == UNKNOWN,
+                    'agent-blue': agent.side == BLUE,
+                    'agent-red': agent.side == RED,
+                    'agent-black': agent.side == BLACK,
+                    'agent-neutral':agent.side == NEUTRAL
+                }">
+                <div class="agent-name">
+                    {{agent.name}}
+                </div>
+            </mat-card>
+
+        </mat-grid-tile>
+    </mat-grid-list>
 </div>

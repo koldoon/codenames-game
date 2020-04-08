@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GameBoardResponse } from '../../../../../server/src/api/game_board_response';
 import { UncoverAgentResponse } from '../../../../../server/src/api/uncover_agent_response';
@@ -19,7 +20,14 @@ export class BoardComponent implements OnInit, OnDestroy {
         private httpClient: HttpClient,
         private router: Router,
         private activatedRoute: ActivatedRoute,
-        private changeDetector: ChangeDetectorRef) { }
+        private changeDetector: ChangeDetectorRef,
+        private snackBar: MatSnackBar) { }
+
+    BLUE = AgentSide.BLUE;
+    RED = AgentSide.RED;
+    NEUTRAL = AgentSide.NEUTRAL;
+    BLACK = AgentSide.BLACK;
+    UNKNOWN = AgentSide.UNKNOWN;
 
     error = '';
     boardType: BoardType = BoardType.TEAMS;
@@ -99,5 +107,9 @@ export class BoardComponent implements OnInit, OnDestroy {
     onCopyGameLinkClick(event: MouseEvent) {
         event.preventDefault();
         copyToClipboard(`${window.location.origin}/codenames/game/${this.gameId}/join`);
+        this.snackBar.open('Ссылка скопирована в буфер обмена', null, {
+            horizontalPosition: 'center',
+            duration: 2000
+        });
     }
 }

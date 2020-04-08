@@ -1,41 +1,29 @@
-<div class="uk-flex uk-flex-center uk-flex-middle uk-padding-large uk-drop-top">
+<div class="container">
+    <mat-card class="card mat-elevation-z4">
+        <mat-card-title class="title">Codenames</mat-card-title>
+        <mat-card-subtitle>Игра создана</mat-card-subtitle>
 
-    <div class="uk-card uk-card-body uk-card-default uk-width-medium">
-        <h3 class="uk-card-title uk-text-uppercase">Codenames</h3>
-        <div class="uk-margin">
-            Присоединиться к игре:
-        </div>
-        <div class="uk-flex uk-flex uk-flex-column">
-            <button class="uk-button uk-button-danger uk-display-block uk-margin-bottom"
-                (click)="onJoinAsCaptainClick()">
-                Как капитан
-            </button>
-            <button class="uk-button uk-button-primary uk-display-block"
-                (click)="onJoinAsTeammateClick()">
-                Как игрок
-            </button>
-        </div>
+        <mat-card-content>
+            Присоединиться как:
 
-        <div class="uk-padding-small"></div>
+            <mat-card-actions align="center" class="actions ">
+                <button color="accent" mat-raised-button (click)="onJoinAsCaptainClick()">
+                    Капитан
+                </button>
+                <button color="primary" mat-raised-button (click)="onJoinAsTeammateClick()">
+                    Игрок
+                </button>
+            </mat-card-actions>
+        </mat-card-content>
 
-        <div class="uk-flex uk-flex uk-flex-column uk-margin">
-            <a class="uk-button uk-button-default" href="" (click)="onCopyLinkClick($event)">
-                Ссылка для игроков
-            </a>
-            <div class="uk-text-center" *ngIf="joinLinkCopied">
-                <small>Скопирована!</small>
-            </div>
-        </div>
-
-        <div class="uk-flex uk-flex uk-flex-center uk-margin">
-            <a class="uk-button uk-button-text uk-button-small" href="" (click)="onBackClick()">
+        <mat-card-actions align="right">
+            <button mat-button color="warn" (click)="onBackClick()">
                 Назад
-            </a>
-        </div>
+            </button>
+            <button mat-button (click)="onCopyLinkClick($event)">
+                Ссылка на игру
+            </button>
 
-        <div class="uk-flex" *ngIf="error">
-            <div class="uk-text-danger">Error:<br/> {{error}}</div>
-        </div>
-    </div>
-
+        </mat-card-actions>
+    </mat-card>
 </div>

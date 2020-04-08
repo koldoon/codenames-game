@@ -22,7 +22,7 @@ export class LobbyComponent {
             .get<NewGameResponse>(`/api/games/create`)
             .subscribe(
                 value => this.router.navigate(['codenames', 'game', value.gameId, 'join']),
-                error => this.error = error
+                error => this.error = JSON.stringify(error)
             );
     }
 }

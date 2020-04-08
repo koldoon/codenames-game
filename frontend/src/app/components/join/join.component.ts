@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BoardType } from '../../types/board_type';
 import { copyToClipboard } from '../../utils/copy_to_clipboard';
@@ -11,12 +12,11 @@ import { copyToClipboard } from '../../utils/copy_to_clipboard';
 export class JoinComponent implements OnInit {
     constructor(
         private router: Router,
-        private activatedRoute: ActivatedRoute) { }
+        private activatedRoute: ActivatedRoute,
+        private snackBar: MatSnackBar) { }
 
-    error = '';
     gameId = '';
     joinLink = '';
-    joinLinkCopied = false;
 
     ngOnInit(): void {
         this.joinLink = window.location.href;
@@ -28,7 +28,10 @@ export class JoinComponent implements OnInit {
     onCopyLinkClick(event: MouseEvent) {
         event.preventDefault();
         copyToClipboard(this.joinLink);
-        this.joinLinkCopied = true;
+        this.snackBar.open('Ссылка скопирована в буфер обмена', null, {
+            horizontalPosition: 'center',
+            duration: 2000
+        });
     }
 
     async onJoinAsCaptainClick() {

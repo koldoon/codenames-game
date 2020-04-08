@@ -25,16 +25,12 @@
             "aot": true,
             "assets": [
               "src/favicon.ico",
-              "src/assets",
-              "src/assets/fonts"
+              "src/assets"
             ],
             "styles": [
-              "src/styles.scss",
-              "src/assets/fonts/ubuntu-condensed.css"
+              "src/styles.scss"
             ],
             "scripts": [
-              "node_modules/uikit/dist/js/uikit.js",
-              "node_modules/uikit/dist/js/uikit-icons.js"
             ]
           },
           "configurations": {

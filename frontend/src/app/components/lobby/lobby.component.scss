@@ -1,0 +1,24 @@
+.container {
+    height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    background-color: #0d5aa7;
+    overflow: scroll;
+    padding: 2rem 1rem;
+}
+
+.card {
+    display: block;
+    max-width: 18rem;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 1.5rem;
+}
+
+.title {
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+}
+
+button {
+    text-transform: uppercase;
+}
