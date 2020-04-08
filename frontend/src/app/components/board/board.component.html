@@ -1,23 +1,24 @@
 <div class="container">
     <mat-toolbar class="toolbar">
+        <div class="codenames-title">
+            <button mat-button color="accent">
+                <div style="color: #b91f7f">Codenames</div>
+            </button>
+        </div>
+
         <div style="overflow: hidden">
             <button mat-button color="primary" (click)="onCopyGameLinkClick($event)">
                 Скопировать ссылку на игру
             </button>
         </div>
 
-        <div style="flex-grow: 1; text-align: center; overflow: hidden">
-            <button mat-button color="accent">
-                <div style="color: #b91f7f">Codenames</div>
-            </button>
-        </div>
         <!--        <button mat-button color="warn">-->
         <!--            Новая игра-->
         <!--        </button>-->
         <!--            <mat-checkbox>-->
         <!--                <span class="mat-h3">Подтверждать выбор</span>-->
         <!--            </mat-checkbox>-->
-        <!--        <div class="spacer"></div>-->
+        <div class="spacer"></div>
         <button mat-button color="primary">
             <span class="mat-h1"><strong>{{bluesLeft}}</strong></span>
         </button>
@@ -46,6 +47,9 @@
                 <div class="agent-name">
                     {{agent.name}}
                 </div>
+                <mat-progress-bar *ngIf="uncoveringInProgress.has(i)"
+                    mode="indeterminate" color="warn">
+                </mat-progress-bar>
             </mat-card>
 
         </mat-grid-tile>

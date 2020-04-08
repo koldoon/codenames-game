@@ -37,7 +37,7 @@ export class BoardComponent implements OnInit, OnDestroy {
     board: GameBoard = [];
     polingTimer = 0;
     updateInProgress = false;
-
+    uncoveringInProgress = new Set<number>();
 
     ngOnInit(): void {
         for (let i = 0; i < 25; i++)
@@ -95,12 +95,16 @@ export class BoardComponent implements OnInit, OnDestroy {
         if (this.board[index].side !== AgentSide.UNKNOWN)
             return;
 
+        this.uncoveringInProgress.add(index);
         this.httpClient
             .get<UncoverAgentResponse>(`/api/games/${this.gameId}/agents/${index}/uncover`)
             .subscribe(
                 value => this.board[index] = { ...value.agent, uncovered: false },
                 error => this.error = error,
-                () => this.changeDetector.markForCheck()
+                () => {
+                    this.uncoveringInProgress.delete(index);
+                    this.changeDetector.markForCheck();
+                }
             );
     }
 

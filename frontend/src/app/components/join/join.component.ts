@@ -35,14 +35,14 @@ export class JoinComponent implements OnInit {
     }
 
     async onJoinAsCaptainClick() {
-        await this.router.navigate(['codenames', 'game', this.gameId, 'board', BoardType.CAPTAINS]);
+        await this.router.navigate(['game', this.gameId, 'board', BoardType.CAPTAINS]);
     }
 
     async onJoinAsTeammateClick() {
-        await this.router.navigate(['codenames', 'game', this.gameId, 'board', BoardType.TEAMS]);
+        await this.router.navigate(['game', this.gameId, 'board', BoardType.TEAMS]);
     }
 
     async onBackClick() {
-        await this.router.navigate(['codenames', 'lobby']);
+        await this.router.navigate(['lobby']);
     }
 }

@@ -9,16 +9,25 @@
 
 .card {
     display: block;
-    max-width: 18rem;
+    width: 100%;
+    max-width: 25rem;
     margin: 0 auto;
-    padding: 2rem 1.5rem 1.5rem;
+    padding: 2rem 1.5rem 1rem;
 }
 
 .title {
     text-transform: uppercase;
-    margin-bottom: 1rem;
+    margin-bottom: 1.2rem;
 }
 
 button {
     text-transform: uppercase;
+}
+
+.mat-card-content {
+    margin-bottom: 2rem;
+}
+
+.b {
+    font-weight: 500;
 }

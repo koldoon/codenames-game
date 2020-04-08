@@ -21,7 +21,7 @@ export class LobbyComponent {
         this.httpClient
             .get<NewGameResponse>(`/api/games/create`)
             .subscribe(
-                value => this.router.navigate(['codenames', 'game', value.gameId, 'join']),
+                value => this.router.navigate(['game', value.gameId, 'join']),
                 error => this.error = JSON.stringify(error)
             );
     }

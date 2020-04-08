@@ -2,6 +2,7 @@
 
 .container {
     min-height: 100vh;
+    min-width: 550px;
     background-color: #ebebeb;
     overflow: scroll;
 }
@@ -29,14 +30,24 @@ mat-grid-tile {
     display: flex;
     align-items: center;
     padding: 0.5rem;
+    overflow: hidden;
+
+    > mat-progress-bar {
+        position: absolute;
+        border-bottom-left-radius: 2px;
+        border-bottom-right-radius: 2px;
+        height: 3px;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
 }
 
 .agent-name {
     width: 100%;
-    font-size: 2vw;
+    font-size: calc(2.22vw - 0.15rem);
     text-align: center;
     text-transform: uppercase;
-    overflow-x: hidden;
 }
 
 button {
@@ -77,8 +88,7 @@ mat-toolbar {
 
     &:hover {
         @include mat-elevation(4);
-        bottom: 0.2rem;
-        top: -0.2rem;
+        transform: translateY(-0.2rem);
     }
 
     > div {
@@ -88,4 +98,19 @@ mat-toolbar {
 
 .muted {
     opacity: 0.2;
+}
+
+.codenames-title {
+    left: 0;
+    right: 0;
+    display: inline-block;
+    position: absolute;
+    text-align: center;
+    overflow: hidden
+}
+
+@media (max-width: 680px) {
+    .codenames-title {
+        display: none;
+    }
 }

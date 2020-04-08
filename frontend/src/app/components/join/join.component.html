@@ -3,27 +3,37 @@
         <mat-card-title class="title">Codenames</mat-card-title>
         <mat-card-subtitle>Игра создана</mat-card-subtitle>
 
-        <mat-card-content>
-            Присоединиться как:
+        <mat-card-content class="join-actions">
+            <p>
+                Присоединиться как:
+            </p>
 
-            <mat-card-actions align="center" class="actions ">
-                <button color="accent" mat-raised-button (click)="onJoinAsCaptainClick()">
-                    Капитан
-                </button>
-                <button color="primary" mat-raised-button (click)="onJoinAsTeammateClick()">
-                    Игрок
-                </button>
-            </mat-card-actions>
+            <div>
+                <button mat-raised-button color="warn" (click)="onJoinAsCaptainClick()">Капитан</button>
+                <p>
+                    Капитан видит принадлежность всех <span class="b">агентов</span> на доске.
+                    Передает короткие <span class="b">шифровки</span> команде, чтобы
+                    она могла найти <span class="b">своих</span>.
+                </p>
+            </div>
+            <div>
+                <button mat-raised-button color="primary" (click)="onJoinAsTeammateClick()">Игрок</button>
+                <p>
+                    Игрок видит принадлежность только раскрытых агентов. Вместе с остальными игроками
+                    пытается разгадать <span class="b">шифровки</span> и определить
+                    <span class="b ">своих агентов</span>.
+                </p>
+            </div>
         </mat-card-content>
 
         <mat-card-actions align="right">
-            <button mat-button color="warn" (click)="onBackClick()">
-                Назад
-            </button>
-            <button mat-button (click)="onCopyLinkClick($event)">
-                Ссылка на игру
+            <button mat-button
+                (click)="onBackClick()">Назад
             </button>
 
+            <button mat-button
+                (click)="onCopyLinkClick($event)">Ссылка на игру
+            </button>
         </mat-card-actions>
     </mat-card>
 </div>
