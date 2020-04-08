@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import * as path from 'path';
-import { AppController } from './app.controller';
-import { GameService } from './game.service';
+import { GamesController } from './games.controller';
+import { GamesService } from './games.service';
 
 @Module({
     imports: [
         ServeStaticModule.forRoot({
-            // serveRoot: join(__dirname, 'frontend'),
             rootPath: path.join(__dirname, 'frontend'),
             exclude: ['/api/*'],
             serveStaticOptions: {
@@ -16,7 +15,7 @@ import { GameService } from './game.service';
             }
         })
     ],
-    controllers: [AppController],
-    providers: [GameService]
+    controllers: [GamesController],
+    providers: [GamesService]
 })
 export class AppModule {}

@@ -32,6 +32,8 @@ mat-grid-tile {
     padding: 0.5rem;
     overflow: hidden;
 
+    user-select: none;
+
     > mat-progress-bar {
         position: absolute;
         border-bottom-left-radius: 2px;

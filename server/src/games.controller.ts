@@ -2,11 +2,11 @@ import { Controller, Get, Param } from '@nestjs/common';
 import { GameBoardResponse } from './api/game_board_response';
 import { NewGameResponse } from './api/new_game_response';
 import { UncoverAgentResponse } from './api/uncover_agent_response';
-import { GameService } from './game.service';
+import { GamesService } from './games.service';
 
 @Controller('api/games')
-export class AppController {
-    constructor(private readonly gameService: GameService) {}
+export class GamesController {
+    constructor(private readonly gameService: GamesService) {}
 
     @Get('create')
     async createGame() {
