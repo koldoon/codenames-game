@@ -1,4 +1,4 @@
-export enum BoardType {
+export enum BoardVariant {
     CAPTAINS = 'captains',
     TEAMS = 'teams'
 }

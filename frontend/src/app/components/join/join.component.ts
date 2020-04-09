@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BoardType } from '../../types/board_type';
+import { BoardVariant } from '../../types/board_variant';
 import { copyToClipboard } from '../../utils/copy_to_clipboard';
 
 @Component({
@@ -35,11 +35,11 @@ export class JoinComponent implements OnInit {
     }
 
     async onJoinAsCaptainClick() {
-        await this.router.navigate(['game', this.gameId, 'board', BoardType.CAPTAINS]);
+        await this.router.navigate(['game', this.gameId, 'board', BoardVariant.CAPTAINS]);
     }
 
     async onJoinAsTeammateClick() {
-        await this.router.navigate(['game', this.gameId, 'board', BoardType.TEAMS]);
+        await this.router.navigate(['game', this.gameId, 'board', BoardVariant.TEAMS]);
     }
 
     async onBackClick() {

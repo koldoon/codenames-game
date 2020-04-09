@@ -7,7 +7,7 @@ import { GamesService } from './games.service';
 @Module({
     imports: [
         ServeStaticModule.forRoot({
-            rootPath: path.join(__dirname, 'frontend'),
+            rootPath: path.join(__dirname, '../frontend'),
             exclude: ['/api/*'],
             serveStaticOptions: {
                 maxAge: 0,

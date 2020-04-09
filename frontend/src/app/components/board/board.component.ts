@@ -6,7 +6,7 @@ import { GameBoardResponse } from '../../../../../server/src/api/game_board_resp
 import { UncoverAgentResponse } from '../../../../../server/src/api/uncover_agent_response';
 import { AgentModel, AgentSide } from '../../../../../server/src/model/agent_model';
 import { GameBoard } from '../../../../../server/src/model/game_board_type';
-import { BoardType } from '../../types/board_type';
+import { BoardVariant } from '../../types/board_variant';
 import { copyToClipboard } from '../../utils/copy_to_clipboard';
 
 @Component({
@@ -30,7 +30,7 @@ export class BoardComponent implements OnInit, OnDestroy {
     UNKNOWN = AgentSide.UNKNOWN;
 
     error = '';
-    boardType: BoardType = BoardType.TEAMS;
+    boardType: BoardVariant = BoardVariant.TEAMS;
     bluesLeft = 0;
     redsLeft = 0;
     gameId = '';
@@ -45,7 +45,7 @@ export class BoardComponent implements OnInit, OnDestroy {
 
         this.activatedRoute.paramMap.subscribe(value => {
             this.gameId = value.get('gameId');
-            this.boardType = value.get('board') as BoardType;
+            this.boardType = value.get('board') as BoardVariant;
             this.getBoard();
             this.polingTimer = setInterval(() => this.getBoard(), 2000);
         });
@@ -63,7 +63,7 @@ export class BoardComponent implements OnInit, OnDestroy {
         if (this.updateInProgress)
             return;
 
-        const url = this.boardType === BoardType.CAPTAINS
+        const url = this.boardType === BoardVariant.CAPTAINS
             ? `/api/games/${this.gameId}/private-board`
             : `/api/games/${this.gameId}/public-board`;
 

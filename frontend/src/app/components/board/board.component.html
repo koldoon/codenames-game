@@ -41,9 +41,11 @@
                     'agent-black': agent.side == BLACK,
                     'agent-neutral':agent.side == NEUTRAL
                 }">
+
                 <div class="agent-name">
                     {{agent.name}}
                 </div>
+
                 <div class="progress-bar">
                     <mat-progress-bar *ngIf="uncoveringInProgress.has(i)"
                         mode="indeterminate" color="warn">
