@@ -34,14 +34,21 @@ mat-grid-tile {
 
     user-select: none;
 
-    > mat-progress-bar {
+    > .progress-bar {
         position: absolute;
-        border-bottom-left-radius: 2px;
-        border-bottom-right-radius: 2px;
-        height: 3px;
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+        height: 2px;
         bottom: 0;
         left: 0;
         right: 0;
+        overflow: hidden;
+
+        > mat-progress-bar {
+            width: 100%;
+            overflow: hidden;
+            height: 2px;
+        }
     }
 }
 
@@ -65,15 +72,16 @@ mat-toolbar {
 }
 
 .agent-blue {
-    background-color: #a8d1fa;
+    background-color: #64b5f6;
 }
 
 .agent-red {
-    background-color: #faa2a7;
+    background-color: #e57373;
 }
 
 .agent-neutral {
-    background-color: #ffe5c7;
+    background-color: #ffe0b2;
+    color: #8b6b61;
 }
 
 .agent-black {
@@ -85,7 +93,6 @@ mat-toolbar {
 }
 
 .agent-unknown {
-    border: #e6e6e6;
     background-color: #f8f8f8;
 
     &:hover {
@@ -108,7 +115,11 @@ mat-toolbar {
     display: inline-block;
     position: absolute;
     text-align: center;
-    overflow: hidden
+    overflow: hidden;
+
+    > button {
+        color: #b91f7f;
+    }
 }
 
 @media (max-width: 680px) {

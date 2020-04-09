@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRippleModule } from '@angular/material/core';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -14,7 +15,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppComponent } from './app.component';
 import { AppRouting } from './app.routing';
 import { BoardComponent } from './components/board/board.component';
-import { CardComponent } from './components/card/card.component';
 import { JoinComponent } from './components/join/join.component';
 import { LobbyComponent } from './components/lobby/lobby.component';
 
@@ -22,7 +22,6 @@ import { LobbyComponent } from './components/lobby/lobby.component';
     declarations: [
         AppComponent,
         LobbyComponent,
-        CardComponent,
         BoardComponent,
         JoinComponent
     ],
@@ -38,7 +37,8 @@ import { LobbyComponent } from './components/lobby/lobby.component';
         MatToolbarModule,
         MatCheckboxModule,
         MatCardModule,
-        MatProgressBarModule
+        MatProgressBarModule,
+        MatRippleModule
     ],
     providers: [],
     bootstrap: [AppComponent]

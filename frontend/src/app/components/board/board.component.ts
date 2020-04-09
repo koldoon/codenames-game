@@ -108,12 +108,15 @@ export class BoardComponent implements OnInit, OnDestroy {
             );
     }
 
-    onCopyGameLinkClick(event: MouseEvent) {
-        event.preventDefault();
-        copyToClipboard(`${window.location.origin}/codenames/game/${this.gameId}/join`);
-        this.snackBar.open('Ссылка скопирована в буфер обмена', null, {
+    onCopyGameLinkClick() {
+        copyToClipboard(`${window.location.origin}/game/${this.gameId}/join`);
+        this.snackBar.open('Ссылка скопирована в буфер обмена.', 'Огонь!', {
             horizontalPosition: 'center',
-            duration: 2000
+            duration: 3000
         });
+    }
+
+    async onCodenamesClick() {
+        await this.router.navigate(['lobby']);
     }
 }

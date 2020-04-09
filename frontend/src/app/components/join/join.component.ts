@@ -28,9 +28,9 @@ export class JoinComponent implements OnInit {
     onCopyLinkClick(event: MouseEvent) {
         event.preventDefault();
         copyToClipboard(this.joinLink);
-        this.snackBar.open('Ссылка скопирована в буфер обмена', null, {
+        this.snackBar.open('Ссылка скопирована в буфер обмена', 'Огонь!', {
             horizontalPosition: 'center',
-            duration: 2000
+            duration: 3000
         });
     }
 
