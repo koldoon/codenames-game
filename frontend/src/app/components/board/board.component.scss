@@ -16,7 +16,7 @@ mat-grid-tile {
 }
 
 .agent-card {
-    border-radius: 3px;
+    border-radius: 0;
     position: absolute;
 
     left: 0;
@@ -36,8 +36,6 @@ mat-grid-tile {
 
     > .progress-bar {
         position: absolute;
-        border-bottom-left-radius: 5px;
-        border-bottom-right-radius: 5px;
         height: 2px;
         bottom: 0;
         left: 0;
