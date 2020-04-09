@@ -33,6 +33,7 @@
             <mat-card matRipple class="agent-card mat-elevation-z1"
                 (click)="uncoverAgent(i)"
                 [ngClass]="{
+                    'hover-enabled': agent.side == UNKNOWN && !uncoveringInProgress.has(i),
                     'muted': agent.uncovered,
                     'agent-unknown': agent.side == UNKNOWN,
                     'card-hover': agent.side == UNKNOWN,

@@ -20,7 +20,7 @@ export class BoardComponent implements OnInit, OnDestroy {
         private httpClient: HttpClient,
         private router: Router,
         private activatedRoute: ActivatedRoute,
-        private changeDetector: ChangeDetectorRef,
+        private cd: ChangeDetectorRef,
         private snackBar: MatSnackBar) { }
 
     BLUE = AgentSide.BLUE;
@@ -86,7 +86,7 @@ export class BoardComponent implements OnInit, OnDestroy {
                 error => this.error = error,
                 () => {
                     this.updateInProgress = false;
-                    this.changeDetector.markForCheck();
+                    this.cd.markForCheck();
                 }
             );
     }
@@ -96,6 +96,8 @@ export class BoardComponent implements OnInit, OnDestroy {
             return;
 
         this.uncoveringInProgress.add(index);
+        this.cd.markForCheck();
+
         this.httpClient
             .get<UncoverAgentResponse>(`/api/games/${this.gameId}/agents/${index}/uncover`)
             .subscribe(
@@ -103,7 +105,7 @@ export class BoardComponent implements OnInit, OnDestroy {
                 error => this.error = error,
                 () => {
                     this.uncoveringInProgress.delete(index);
-                    this.changeDetector.markForCheck();
+                    this.cd.markForCheck();
                 }
             );
     }

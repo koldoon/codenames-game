@@ -93,13 +93,15 @@ mat-toolbar {
 .agent-unknown {
     background-color: #f8f8f8;
 
+    > div {
+        opacity: 0.8;
+    }
+}
+
+.hover-enabled {
     &:hover {
         @include mat-elevation(4);
         transform: translateY(-0.2rem);
-    }
-
-    > div {
-        opacity: 0.8;
     }
 }
 
