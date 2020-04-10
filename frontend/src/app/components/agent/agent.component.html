@@ -1,13 +1,13 @@
-<mat-card matRipple
+<mat-card matRipple class="agent"
     [ngClass]="{
-        'uncovered': uncovered === true,
-        'hover-enabled': side == UNKNOWN && !uncoveringInProgress,
+        'agent-uncovered': uncovered === true,
+        'hover-effect': side == UNKNOWN && !uncoveringInProgress,
 
-        'unknown': side == UNKNOWN,
-        'blue': side == BLUE,
-        'red': side == RED,
-        'black': side == BLACK,
-        'neutral':side == NEUTRAL
+        'agent-unknown': side == UNKNOWN,
+        'agent-blue': side == BLUE,
+        'agent-red': side == RED,
+        'agent-black': side == BLACK,
+        'agent-neutral':side == NEUTRAL
     }">
 
     <div class="agent-name">

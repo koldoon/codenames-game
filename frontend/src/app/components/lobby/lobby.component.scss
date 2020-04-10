@@ -4,36 +4,34 @@
     align-items: center;
     background-color: #0d5aa7;
     overflow: scroll;
-    padding: 2rem 1rem;
+    padding: 1rem;
+}
 
-    > mat-card {
-        display: block;
-        width: 100%;
-        max-width: 25rem;
-        margin: 0 auto;
-        padding: 2rem 1.5rem 1rem;
+mat-card {
+    width: 100%;
+    max-width: 25rem;
+    margin: 0 auto;
 
-        > mat-card-title {
-            text-transform: uppercase;
-            margin-bottom: 1rem;
-        }
-
-        > button {
-            text-transform: uppercase;
-            margin-top: 1.5rem;
-        }
-
-        > mat-progress-bar {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            border-radius: 4px;
-        }
-
-        > .mat-error {
-            margin-top: 1rem;
-        }
+    > mat-card-title {
+        text-transform: uppercase;
+        margin-bottom: 1rem;
     }
 
+    > button {
+        text-transform: uppercase;
+        margin-top: 1.5rem;
+    }
+
+    > mat-progress-bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        border-radius: 4px;
+    }
+
+    .mat-error {
+        margin-top: 1rem;
+    }
 }
+

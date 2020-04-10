@@ -4,40 +4,38 @@
     align-items: center;
     background-color: #0d5aa7;
     overflow: scroll;
-    padding: 2rem 1rem;
+}
 
-    > mat-card {
-        display: block;
-        width: 100%;
-        max-width: 25rem;
-        margin: 0 auto;
-        padding: 2rem 1.5rem 1.5rem;
+mat-card {
+    width: 100%;
+    max-width: 25rem;
+    margin: 0 auto;
 
-        > mat-card-title {
-            text-transform: uppercase;
-        }
+    > mat-card-title {
+        text-transform: uppercase;
+    }
 
-        > mat-card-content {
-            margin-top: 1rem;
+    > mat-card-content {
+        margin-top: 1rem;
 
-            > div {
-                background-color: #f2f2f2;
-                padding: 1rem 1.5rem;
-                margin: 0.5rem -1.5rem;
+        .team-role {
+            background-color: #f2f2f2;
+            padding: 1rem 1rem;
+            margin: 0.5rem -1rem;
 
-                > button {
-                    width: 8rem;
-                    margin-left: 0;
-                    margin-bottom: 0.8rem;
-                }
+            > button {
+                width: 8rem;
+                margin-left: 0;
+                margin-bottom: 0.8rem;
+            }
 
-                > p {
-                    margin: 0;
-                }
+            > p {
+                margin: 0;
             }
         }
     }
 }
+
 
 button {
     text-transform: uppercase;

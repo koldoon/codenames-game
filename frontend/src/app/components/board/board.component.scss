@@ -3,53 +3,47 @@
     min-width: 550px;
     background-color: #ebebeb;
     overflow: scroll;
+}
 
-    > .toolbar {
-        display: flex;
+.toolbar {
+    display: flex;
 
-        .codenames-title {
-            left: 0;
-            right: 0;
-            display: inline-block;
-            position: absolute;
-            text-align: center;
-            overflow: hidden;
+    .codenames-title {
+        left: 0;
+        right: 0;
+        display: inline-block;
+        position: absolute;
+        text-align: center;
+        overflow: hidden;
 
-            > button {
-                color: #b91f7f;
-            }
-        }
-
-        @media (max-width: 680px) {
-            .codenames-title {
-                display: none;
-            }
+        > button {
+            color: #b91f7f;
         }
     }
 
-    > .agents-board {
-        margin: 1.5rem 1rem;
+    @media (max-width: 680px) {
+        .codenames-title {
+            display: none;
+        }
     }
 }
 
-.agent-tile {
-    overflow: visible;
+.agents-board {
+    margin: 1.5rem 1rem;
 
-    .agent-wrapper {
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 0;
-        bottom: 0;
+    .agent-tile {
+        overflow: visible;
+
+        .agent-wrapper {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+        }
     }
 }
 
 button {
     text-transform: uppercase;
 }
-
-.spacer {
-    flex-grow: 1;
-}
-
-

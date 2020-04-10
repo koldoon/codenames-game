@@ -1,6 +1,6 @@
 @import '~@angular/material/theming';
 
-mat-card {
+mat-card.agent {
     border-radius: 0;
     height: 100%;
     width: 100%;
@@ -25,49 +25,52 @@ mat-card {
         height: 3px;
     }
 
-    > .agent-name {
+    .agent-name {
         width: 100%;
         font-size: calc(2.22vw - 0.15rem);
         text-align: center;
         text-transform: uppercase;
     }
-}
 
-.blue {
-    background-color: #64b5f6;
-}
+    // --- Agent Card Options ---
 
-.red {
-    background-color: #e57373;
-}
-
-.neutral {
-    background-color: #ffe0b2;
-    color: #8b6b61;
-}
-
-.black {
-    background-color: #2d2828;
-    color: #ffffff;
-
-    &.uncovered {
-        color: #6e6e6e;
+    &.agent-blue {
+        background-color: #64b5f6;
     }
-}
 
-.unknown {
-    background-color: #f8f8f8;
-    color: #1b1b1b;
-}
-
-.hover-enabled {
-    &:hover {
-        @include mat-elevation(4);
-        transform: translateY(-0.2rem);
+    &.agent-red {
+        background-color: #e57373;
     }
-}
 
-.uncovered {
-    @include mat-elevation(0);
-    opacity: 0.2;
+    &.agent-neutral {
+        background-color: #ffe0b2;
+        color: #8b6b61;
+    }
+
+    &.agent-black {
+        background-color: #2d2828;
+        color: #ffffff;
+
+        &.uncovered {
+            color: #6e6e6e;
+        }
+    }
+
+    &.agent-unknown {
+        background-color: #f8f8f8;
+        color: #1b1b1b;
+    }
+
+    &.hover-effect {
+        &:hover {
+            @include mat-elevation(4);
+            transform: translateY(-0.2rem);
+        }
+    }
+
+    &.agent-uncovered {
+        @include mat-elevation(0);
+        opacity: 0.2;
+    }
+
 }
