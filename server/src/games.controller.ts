@@ -1,5 +1,6 @@
-import { Controller, Get, Param } from '@nestjs/common';
-import { GameBoardResponse } from './api/game_board_response';
+import { Controller, Get, Param, Query } from '@nestjs/common';
+import { GameStatusResponse } from './api/game_status_response';
+import { PlayerType } from './api/player_type';
 import { NewGameResponse } from './api/new_game_response';
 import { UncoverAgentResponse } from './api/uncover_agent_response';
 import { GamesService } from './games.service';
@@ -11,28 +12,26 @@ export class GamesController {
     @Get('create')
     async createGame() {
         return <NewGameResponse> {
-            gameId: await this.gameService.createGame()
+            gameId: await this.gameService.createNewGame()
         };
     }
 
-    @Get(':gameId/public-board')
-    async getPublicBoard(@Param('gameId') gameId: string) {
-        return <GameBoardResponse> {
-            board: await this.gameService.getPublicBoard(gameId)
-        };
-    }
+    @Get(':gameId/status')
+    async getGameStatus(
+        @Param() p: { gameId: string },
+        @Query() q: { player: PlayerType }) {
 
-    @Get(':gameId/private-board')
-    async getPrivateBoard(@Param('gameId') gameId: string) {
-        return <GameBoardResponse> {
-            board: await this.gameService.getPrivateBoard(gameId)
-        };
+        return <GameStatusResponse> {
+            game: await this.gameService.getGameStatus(p.gameId, q.player)
+        }
     }
 
     @Get(':gameId/agents/:agentId/uncover')
-    async uncoverAgent(@Param('gameId') gameId: string, @Param('agentId') agentId: string) {
+    async uncoverAgent(
+        @Param() params: { gameId: string, agentId: string }) {
+
         return <UncoverAgentResponse> {
-            agent: await this.gameService.uncoverAgent(gameId, Number(agentId))
-        };
+            agent: await this.gameService.uncoverAgent(params.gameId, Number(params.agentId))
+        }
     }
 }

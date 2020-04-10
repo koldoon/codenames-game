@@ -17,18 +17,18 @@
         <div class="flex-grow-1"><!-- spacer --></div>
 
         <button mat-button color="primary">
-            <span class="mat-h1"><strong>{{bluesLeft}}</strong></span>
+            <span class="mat-h1"><strong>{{game?.bluesLeft}}</strong></span>
         </button>
 
         <div>&nbsp;</div>
 
         <button mat-button color="accent">
-            <span class="mat-h1"><strong>{{redsLeft}}</strong></span>
+            <span class="mat-h1"><strong>{{game?.redsLeft}}</strong></span>
         </button>
     </mat-toolbar>
 
-    <mat-grid-list class="agents-board" cols="5" rowHeight="2:0.9" gutterSize="0.5rem" *ngIf="!error">
-        <mat-grid-tile class="agent-tile" *ngFor="let agent of board; let i = index; trackBy: agentId">
+    <mat-grid-list class="agents-board" cols="5" rowHeight="2:0.9" gutterSize="0.5rem" *ngIf="!error && game">
+        <mat-grid-tile class="agent-tile" *ngFor="let agent of game.board; let i = index; trackBy: agentId">
 
             <div class="agent-wrapper">
                 <app-agent

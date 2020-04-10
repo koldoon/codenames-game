@@ -1,18 +1,19 @@
-export enum AgentSide {
-    UNKNOWN,
-    RED,
-    BLUE,
-    BLACK,
-    NEUTRAL
-}
+import { Agent } from '../api/agent';
+import { AgentSide } from '../api/agent_side';
 
-export class AgentModel {
-    name = '';
-    side = AgentSide.UNKNOWN;
+export class AgentModel implements Agent {
+    constructor(
+        public index = 0,
+        public name = '',
+        public side = AgentSide.UNKNOWN,
+        public onChange?: (agent: AgentModel) => any) {
+    }
+
     uncovered = false;
 
-    constructor(name: string, side: AgentSide) {
-        this.name = name;
-        this.side = side;
+    uncover() {
+        this.uncovered = true;
+        if (this.onChange)
+            this.onChange(this);
     }
 }

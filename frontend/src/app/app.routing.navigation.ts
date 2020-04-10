@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BoardVariant } from './types/board_variant';
+import { PlayerType } from '../../../server/src/api/player_type';
 
 /**
  * To simplify refactoring and reusing different application
@@ -18,8 +18,8 @@ export class AppRoutingNavigation {
         return this.router.navigate(['game', gameId, 'join']);
     }
 
-    toGameBoard(gameId: string, board: BoardVariant) {
-        return this.router.navigate(['game', gameId, 'board', board]);
+    toGameBoard(gameId: string, playerType: PlayerType) {
+        return this.router.navigate(['game', gameId, 'player', playerType, 'board']);
     }
 
     getJoinLink(gameId: string) {

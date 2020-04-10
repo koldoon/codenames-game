@@ -1,7 +1,7 @@
 @import '~@angular/material/theming';
 
 mat-card.agent {
-    border-radius: 0;
+    border-radius: 2px;
     height: 100%;
     width: 100%;
 
@@ -17,6 +17,7 @@ mat-card.agent {
 
     > mat-progress-bar {
         position: absolute;
+        border-radius: 2px;
         bottom: 0;
         left: 0;
         right: 0;

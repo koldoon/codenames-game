@@ -1,5 +1,5 @@
-import { AgentModel } from '../model/agent_model';
+import { Agent } from './agent';
 
 export interface UncoverAgentResponse {
-    agent: AgentModel;
+    agent: Agent;
 }

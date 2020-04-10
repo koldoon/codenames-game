@@ -1,82 +1,66 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { AgentModel, AgentSide } from './model/agent_model';
+import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
+import { Agent } from './api/agent';
+import { AgentSide } from './api/agent_side';
+import { Game } from './api/game';
+import { PlayerType } from './api/player_type';
+import { DictionaryModel } from './model/dictionary_model';
 import { GameModel } from './model/game_model';
+import { GagaDictionary } from './model/impl/gaga_dictionary';
+import { httpAssertFound } from './utils/http_assert_exists';
 import shuffle = require('shuffle-array');
-import uuid = require('uuid');
 
 export type GameId = string;
 
 @Injectable()
-export class GamesService {
-    private readonly words = 'вождь подьем полис запах строй гений лимузин паук луч полиция ночь ' +
-        'механизм нож помет лист германия журавль смерть дума корабль фокус церковь ' +
-        'вид греция фига москва рог волна водолаз время порода блин десна юпитер икра парк ' +
-        'лазер шуба рейд жук агент колода крошка дыра лук путь антарктида гранат платье карта червь ' +
-        'концерт титан тур пассаж зуб курс орган рубашка шар газ язык венец обрез золото пилот высота ' +
-        'кокетка стена норка стопа перемена берлин ерш образ мороженое свет профиль опера масло каша ствол ' +
-        'собака морковь супергерой такса аппарат дама мат киви олимп камера индия побег база стул проводник ' +
-        'утка гребень свидетель край сеть зебра кабинет камень салют палец центр пришелец дробь жила право ' +
-        'почка станок бермуды палата шоколад башня овсянка караул нота альпы тарелка зона осьминог ' +
-        'замок сантехник заяц бассейн корона мышь форма ветер королева звезда рысь бомба ласка перчатка ' +
-        'проказа мост туба батарея пекин состав ниндзя сердце стойка команда течение береза ключ область ' +
-        'горн орел номер прокат кошка секция дятел кость кавалер робот хлопок кран партия бочка кадр ' +
-        'клетка ученый налет лама лев флейта кора игра покров знак масса стан яд наряд игла кетчуп ' +
-        'кентавр бумага бревно ангел секрет гигант бар король перо узел альбом площадь день рак ведьма ' +
-        'небоскреб мир фаланга проспект кисть рыба институт солдат вирус ботинок спутник пирамида ' +
-        'операция больница принцесса стрела стадион огонь байкал банк танец труба учитель ссылка бык ' +
-        'точка утканос франция среда лондон привод голова лес медведь парашют рулетка снег облом ' +
-        'америка круг струна биржа единорог вес англия азия конек воздух доктор хвост китай ступень ' +
-        'токио болезнь лейка атлантида машина скат пара факел груша бутылка бабочка лицо колонна ' +
-        'кенгуру земля дух мелочь европа горло частица адвокат стол эльф отель мёд якорь динозавр ' +
-        'образование сняряд боевик шпагат жизнь пояс билет мушка шпион коса сила пляж панель ' +
-        'миллионер вагон век пистолет треугольник казино амфибия блок предприниматель предложение ' +
-        'вертолет глаз мексика вал микроскоп липа рок верфь пол пингвин место галоп диск луна удел ' +
-        'урал штат род пробка гвоздь африка яблоко барьер повар телескоп прибор ацтек лошадь вор ' +
-        'канал кулак взгляд автомат заноза контрабандист палочка рим раковина декрет трава сатурн ' +
-        'няня стекло эфир австралия совет голливуд акт дракон война судьба кол падение развод кролик ' +
-        'снеговик перевод кольцо гриф раствор карлик ясли лад плата вода залог театр подкова поток ' +
-        'брак линия бокс посольство баня экран вилка ложе рыцарь косяк призрак разворот запад рукав ' +
-        'лёд мотив боров египет нью-йорк урна соль крыло пират ударник поле кит борт пушкин крест пачка';
-
-    private readonly dictionary = this.words.split(' ');
+export class GamesService implements OnApplicationBootstrap {
+    private readonly logger = new Logger(GamesService.name);
+    private readonly dictionary: DictionaryModel = new GagaDictionary();
+    private words: string[] = [];
     private games = new Map<GameId, GameModel>();
 
-    async createGame() {
-        shuffle(this.dictionary);
-        const game = new GameModel(this.dictionary.slice(0, 25));
-        const id = uuid.v4();
-        this.games.set(id, game);
-        return id;
+    async onApplicationBootstrap() {
+        this.logger.debug('Using dictionary: ' + this.dictionary.constructor.name);
+        this.words = await this.dictionary.getWords();
     }
 
-    async getPublicBoard(gameId: GameId) {
-        const game = this.games.get(gameId);
-        if (!game)
-            throw new NotFoundException('Game not found');
-
-        return game.board.map(card => <AgentModel> {
-            name: card.name,
-            side: card.uncovered ? card.side : AgentSide.UNKNOWN
-        });
+    async createNewGame() {
+        shuffle(this.words);
+        const game = new GameModel().init(this.words.slice(0, 25));
+        this.games.set(game.id, game);
+        return game.id;
     }
 
-    async getPrivateBoard(gameId: GameId) {
-        const game = this.games.get(gameId);
-        if (!game)
-            throw new NotFoundException('Game not found');
-        return game.board;
+    async getGameStatus(gameId: GameId, playerType: PlayerType) {
+        let game = this.games.get(gameId);
+        while (game && game.nextGameId)
+            game = this.games.get(game.nextGameId);
+
+        httpAssertFound(game, 'Game not found');
+        let board: Agent[];
+        if (playerType == PlayerType.CAPTAIN) {
+            board = game.board.map(card => <Agent> {
+                name: card.name,
+                side: card.side,
+                uncovered: card.uncovered
+            });
+        }
+        else {
+            board = game.board.map(card => <Agent> {
+                name: card.name,
+                side: card.uncovered ? card.side : AgentSide.UNKNOWN
+            });
+        }
+        return <Game> { ...game, board };
     }
 
     async uncoverAgent(gameId: string, agentIndex: number) {
         const game = this.games.get(gameId);
-        if (!game)
-            throw new NotFoundException('Game not found');
+        httpAssertFound(game, 'Game not found');
 
         const agent = game.board[agentIndex];
-        if (!agent)
-            throw new NotFoundException('Agent not found');
+        httpAssertFound(agent, 'Agent not found');
 
-        agent.uncovered = true;
-        return agent;
+        agent.uncover();
+        return <Agent> agent;
     }
 }
