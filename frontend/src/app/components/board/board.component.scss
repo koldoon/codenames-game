@@ -6,32 +6,31 @@
 }
 
 .toolbar {
-    display: flex;
+    display: grid;
+    grid-template-columns: auto auto 1fr auto auto;
+    grid-column-gap: 0.6rem;
 
-    .codenames-title {
-        left: 0;
-        right: 0;
-        display: inline-block;
-        position: absolute;
+    .score {
         text-align: center;
-        overflow: hidden;
-
-        > button {
-            color: #b91f7f;
-        }
+        padding-top: 0.1rem;
+        border-radius: 0.2rem;
+        width: 2.5rem;
+        color: white;
     }
 
-    @media (max-width: 680px) {
-        .codenames-title {
-            display: none;
-        }
+    .score-blues {
+        background-color: #54a4f3;
+    }
+
+    .score-reds {
+        background-color: #dc5c60;
     }
 }
 
-.agents-board {
+mat-grid-list {
     margin: 1.5rem 1rem;
 
-    .agent-tile {
+    mat-grid-tile {
         overflow: visible;
 
         .agent-wrapper {

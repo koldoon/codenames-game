@@ -1,35 +1,20 @@
 <div class="container">
     <mat-toolbar class="toolbar">
-        <div class="codenames-title">
-            <button mat-button (click)="onCodenamesClick()">Codenames</button>
-        </div>
+        <button mat-stroked-button (click)="onCodenamesClick()">Codenames</button>
+        <button mat-stroked-button color="primary" (click)="onCopyGameLinkClick()">Ссылка на игру</button>
 
-        <button mat-button color="primary" (click)="onCopyGameLinkClick()">
-            Ссылка на игру
-        </button>
+        <div><!-- spacer --></div>
 
-        <!--
-        <button mat-button color="primary">
-            Опции
-        </button>
-        -->
-
-        <div class="flex-grow-1"><!-- spacer --></div>
-
-        <button mat-button color="primary">
+        <div class="score score-blues">
             <span class="mat-h1"><strong>{{game?.bluesLeft}}</strong></span>
-        </button>
-
-        <div>&nbsp;</div>
-
-        <button mat-button color="accent">
+        </div>
+        <div class="score score-reds">
             <span class="mat-h1"><strong>{{game?.redsLeft}}</strong></span>
-        </button>
+        </div>
     </mat-toolbar>
 
-    <mat-grid-list class="agents-board" cols="5" rowHeight="2:0.9" gutterSize="0.5rem" *ngIf="!error && game">
-        <mat-grid-tile class="agent-tile" *ngFor="let agent of game.board; let i = index; trackBy: agentId">
-
+    <mat-grid-list cols="5" rowHeight="2:0.9" gutterSize="0.5rem" *ngIf="!error && game">
+        <mat-grid-tile *ngFor="let agent of game.board; let i = index; trackBy: agentId">
             <div class="agent-wrapper">
                 <app-agent
                     [name]="agent.name"
@@ -39,7 +24,6 @@
                     (click)="uncoverAgent(i)">
                 </app-agent>
             </div>
-
         </mat-grid-tile>
     </mat-grid-list>
 
