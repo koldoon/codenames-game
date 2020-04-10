@@ -2,15 +2,16 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { BoardComponent } from './components/board/board.component';
 import { JoinComponent } from './components/join/join.component';
-import { LobbyComponent } from './components/lobby/lobby.component';
+import { StartComponent } from './components/start/start.component';
 
 const routes: Routes = [
-    { path: '', redirectTo: 'lobby', pathMatch: 'full' },
-    { path: 'lobby', component: LobbyComponent },
+    { path: '', redirectTo: 'start', pathMatch: 'full' },
+    { path: 'start', component: StartComponent },
     { path: 'game/:gameId', redirectTo: 'game/:gameId/join', pathMatch: 'full' },
     { path: 'game/:gameId/join', component: JoinComponent },
     { path: 'game/:gameId/board/:board', component: BoardComponent },
-    { path: 'game/:gameId/board/:board', component: BoardComponent }
+    { path: 'game/:gameId/board/:board', component: BoardComponent },
+    { path: '**', redirectTo: 'start' }
 ];
 
 @NgModule({

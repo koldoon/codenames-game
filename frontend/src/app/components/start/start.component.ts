@@ -4,12 +4,12 @@ import { Router } from '@angular/router';
 import { NewGameResponse } from '../../../../../server/src/api/new_game_response';
 
 @Component({
-    selector: 'app-lobby',
-    templateUrl: './lobby.component.html',
-    styleUrls: ['./lobby.component.scss'],
+    selector: 'app-start',
+    templateUrl: './start.component.html',
+    styleUrls: ['./start.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class LobbyComponent {
+export class StartComponent {
     constructor(
         private httpClient: HttpClient,
         private router: Router,

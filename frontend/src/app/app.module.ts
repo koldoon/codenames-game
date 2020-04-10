@@ -17,13 +17,13 @@ import { AppComponent } from './app.component';
 import { AppRouting } from './app.routing';
 import { BoardComponent } from './components/board/board.component';
 import { JoinComponent } from './components/join/join.component';
-import { LobbyComponent } from './components/lobby/lobby.component';
+import { StartComponent } from './components/start/start.component';
 import { AgentComponent } from './components/agent/agent.component';
 
 @NgModule({
     declarations: [
         AppComponent,
-        LobbyComponent,
+        StartComponent,
         BoardComponent,
         JoinComponent,
         AgentComponent

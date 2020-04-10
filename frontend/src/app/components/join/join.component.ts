@@ -43,6 +43,6 @@ export class JoinComponent implements OnInit {
     }
 
     async onBackClick() {
-        await this.router.navigate(['lobby']);
+        await this.router.navigate(['start']);
     }
 }

@@ -113,6 +113,6 @@ export class BoardComponent implements OnInit, OnDestroy {
     }
 
     async onCodenamesClick() {
-        await this.router.navigate(['lobby']);
+        await this.router.navigate(['start']);
     }
 }
