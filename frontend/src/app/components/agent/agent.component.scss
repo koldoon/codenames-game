@@ -1,0 +1,73 @@
+@import '~@angular/material/theming';
+
+mat-card {
+    border-radius: 0;
+    height: 100%;
+    width: 100%;
+
+    transition: all 0.3s cubic-bezier(.25, .8, .25, 1);;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    overflow: hidden;
+
+    user-select: none;
+
+    > mat-progress-bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        overflow: hidden;
+        height: 3px;
+    }
+
+    > .agent-name {
+        width: 100%;
+        font-size: calc(2.22vw - 0.15rem);
+        text-align: center;
+        text-transform: uppercase;
+    }
+}
+
+.blue {
+    background-color: #64b5f6;
+}
+
+.red {
+    background-color: #e57373;
+}
+
+.neutral {
+    background-color: #ffe0b2;
+    color: #8b6b61;
+}
+
+.black {
+    background-color: #2d2828;
+    color: #ffffff;
+
+    &.uncovered {
+        color: #6e6e6e;
+    }
+}
+
+.unknown {
+    background-color: #f8f8f8;
+    color: #1b1b1b;
+}
+
+.hover-enabled {
+    &:hover {
+        @include mat-elevation(4);
+        transform: translateY(-0.2rem);
+    }
+}
+
+.uncovered {
+    @include mat-elevation(0);
+    opacity: 0.2;
+}

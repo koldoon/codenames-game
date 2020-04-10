@@ -6,6 +6,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatGridListModule } from '@angular/material/grid-list';
+import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -17,13 +18,15 @@ import { AppRouting } from './app.routing';
 import { BoardComponent } from './components/board/board.component';
 import { JoinComponent } from './components/join/join.component';
 import { LobbyComponent } from './components/lobby/lobby.component';
+import { AgentComponent } from './components/agent/agent.component';
 
 @NgModule({
     declarations: [
         AppComponent,
         LobbyComponent,
         BoardComponent,
-        JoinComponent
+        JoinComponent,
+        AgentComponent
     ],
     imports: [
         BrowserModule,
@@ -38,7 +41,8 @@ import { LobbyComponent } from './components/lobby/lobby.component';
         MatCheckboxModule,
         MatCardModule,
         MatProgressBarModule,
-        MatRippleModule
+        MatRippleModule,
+        MatIconModule
     ],
     providers: [],
     bootstrap: [AppComponent]

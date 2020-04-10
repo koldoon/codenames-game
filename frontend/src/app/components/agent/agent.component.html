@@ -1,0 +1,18 @@
+<mat-card matRipple
+    [ngClass]="{
+        'uncovered': uncovered === true,
+        'hover-enabled': side == UNKNOWN && !uncoveringInProgress,
+
+        'unknown': side == UNKNOWN,
+        'blue': side == BLUE,
+        'red': side == RED,
+        'black': side == BLACK,
+        'neutral':side == NEUTRAL
+    }">
+
+    <div class="agent-name">
+        {{name}}
+    </div>
+
+    <mat-progress-bar *ngIf="uncoveringInProgress" mode="indeterminate" color="warn"></mat-progress-bar>
+</mat-card>

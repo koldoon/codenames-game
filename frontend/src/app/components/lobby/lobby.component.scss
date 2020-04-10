@@ -1,33 +1,39 @@
 .container {
     min-height: 100vh;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     background-color: #0d5aa7;
     overflow: scroll;
     padding: 2rem 1rem;
-}
 
-.card {
-    display: block;
-    width: 100%;
-    max-width: 25rem;
-    margin: 0 auto;
-    padding: 2rem 1.5rem 1rem;
-}
+    > mat-card {
+        display: block;
+        width: 100%;
+        max-width: 25rem;
+        margin: 0 auto;
+        padding: 2rem 1.5rem 1rem;
 
-.title {
-    text-transform: uppercase;
-    margin-bottom: 1.2rem;
-}
+        > mat-card-title {
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
 
-button {
-    text-transform: uppercase;
-}
+        > button {
+            text-transform: uppercase;
+            margin-top: 1.5rem;
+        }
 
-.mat-card-content {
-    margin-bottom: 2rem;
-}
+        > mat-progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            border-radius: 4px;
+        }
 
-.b {
-    font-weight: 500;
+        > .mat-error {
+            margin-top: 1rem;
+        }
+    }
+
 }

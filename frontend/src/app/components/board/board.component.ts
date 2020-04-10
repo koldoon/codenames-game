@@ -23,12 +23,6 @@ export class BoardComponent implements OnInit, OnDestroy {
         private cd: ChangeDetectorRef,
         private snackBar: MatSnackBar) { }
 
-    BLUE = AgentSide.BLUE;
-    RED = AgentSide.RED;
-    NEUTRAL = AgentSide.NEUTRAL;
-    BLACK = AgentSide.BLACK;
-    UNKNOWN = AgentSide.UNKNOWN;
-
     error = '';
     boardType: BoardVariant = BoardVariant.TEAMS;
     bluesLeft = 0;

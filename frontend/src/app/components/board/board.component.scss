@@ -1,129 +1,55 @@
-@import '~@angular/material/theming';
-
 .container {
     min-height: 100vh;
     min-width: 550px;
     background-color: #ebebeb;
     overflow: scroll;
-}
 
-.cards-grid {
-    margin: 1.5rem 1rem;
-}
+    > .toolbar {
+        display: flex;
 
-mat-grid-tile {
-    overflow: visible;
-}
-
-.agent-card {
-    border-radius: 0;
-    position: absolute;
-
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-
-    transition: all 0.3s cubic-bezier(.25, .8, .25, 1);;
-    cursor: pointer;
-
-    display: flex;
-    align-items: center;
-    padding: 0.5rem;
-    overflow: hidden;
-
-    user-select: none;
-
-    > .progress-bar {
-        position: absolute;
-        height: 2px;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        overflow: hidden;
-
-        > mat-progress-bar {
-            width: 100%;
+        .codenames-title {
+            left: 0;
+            right: 0;
+            display: inline-block;
+            position: absolute;
+            text-align: center;
             overflow: hidden;
-            height: 2px;
+
+            > button {
+                color: #b91f7f;
+            }
         }
+
+        @media (max-width: 680px) {
+            .codenames-title {
+                display: none;
+            }
+        }
+    }
+
+    > .agents-board {
+        margin: 1.5rem 1rem;
     }
 }
 
-.agent-name {
-    width: 100%;
-    font-size: calc(2.22vw - 0.15rem);
-    text-align: center;
-    text-transform: uppercase;
+.agent-tile {
+    overflow: visible;
+
+    .agent-wrapper {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+    }
 }
 
 button {
     text-transform: uppercase;
 }
 
-mat-toolbar {
-    display: flex;
-}
-
 .spacer {
     flex-grow: 1;
 }
 
-.agent-blue {
-    background-color: #64b5f6;
-}
 
-.agent-red {
-    background-color: #e57373;
-}
-
-.agent-neutral {
-    background-color: #ffe0b2;
-    color: #8b6b61;
-}
-
-.agent-black {
-    background-color: #4b4546;
-
-    > div {
-        color: #ffffff;
-    }
-}
-
-.agent-unknown {
-    background-color: #f8f8f8;
-
-    > div {
-        opacity: 0.8;
-    }
-}
-
-.hover-enabled {
-    &:hover {
-        @include mat-elevation(4);
-        transform: translateY(-0.2rem);
-    }
-}
-
-.muted {
-    opacity: 0.2;
-}
-
-.codenames-title {
-    left: 0;
-    right: 0;
-    display: inline-block;
-    position: absolute;
-    text-align: center;
-    overflow: hidden;
-
-    > button {
-        color: #b91f7f;
-    }
-}
-
-@media (max-width: 680px) {
-    .codenames-title {
-        display: none;
-    }
-}

@@ -1,23 +1,31 @@
 <div class="container">
-    <mat-card class="card mat-elevation-z4">
-        <mat-card-title class="title">Codenames</mat-card-title>
+
+    <mat-card class="mat-elevation-z4">
+        <mat-card-title>Codenames</mat-card-title>
 
         <mat-card-subtitle>
             Codenames — настольная игра, придуманная Владей Хватилом и
             опубликованная в 2015 году издательством Czech Games Edition.
         </mat-card-subtitle>
 
-        <div class="mat-card-content">
+        <div>
             Для того чтобы начать играть нажмите <span class="b">Создать новую игру</span>.
             Другие участники смогут присоединиться к игре после ее создания в любой момент.
         </div>
 
-        <button color="primary" mat-raised-button (click)="onCreateGameClick()">
+        <button mat-raised-button
+            color="primary"
+            [disabled]="inProgress"
+            (click)="onCreateGameClick()">
+
             Создать новую игру
         </button>
 
         <div class="mat-error" *ngIf="error">
-            Connection Error
+            Connection Error! Check console.
         </div>
+
+        <mat-progress-bar mode="indeterminate" *ngIf="inProgress"></mat-progress-bar>
     </mat-card>
+
 </div>
