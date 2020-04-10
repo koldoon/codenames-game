@@ -1,0 +1,21 @@
+.service-error {
+    padding: 2rem;
+
+    .oops {
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        opacity: 0.5;
+
+        mat-icon {
+            height: 3.5rem;
+            width: 5rem;
+            font-size: 3.5rem;
+        }
+
+        .oops-text {
+            opacity: 1;
+            padding-top: 0.2rem;
+        }
+    }
+}

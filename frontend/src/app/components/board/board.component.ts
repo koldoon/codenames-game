@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
@@ -78,7 +78,18 @@ export class BoardComponent implements OnInit, OnDestroy {
                             this.redsLeft += 1;
                     }
                 },
-                error => this.error = error,
+                error => {
+                    if (error instanceof HttpErrorResponse) {
+                        if (error.status === 404) {
+                            this.error = 'Игра не найдена, проверьте ссылку';
+                            this.cd.markForCheck();
+                        }
+                        else {
+                            this.error = 'Что-то пошло не так...';
+                            this.cd.markForCheck();
+                        }
+                    }
+                },
                 () => {
                     this.updateInProgress = false;
                     this.cd.markForCheck();
@@ -97,7 +108,7 @@ export class BoardComponent implements OnInit, OnDestroy {
             .get<UncoverAgentResponse>(`/api/games/${this.gameId}/agents/${index}/uncover`)
             .subscribe(
                 value => this.board[index] = { ...value.agent, uncovered: false },
-                error => this.error = error,
+                error => this.snackBar.open('Что-то пошло не так... :(', 'Блять!', { duration: 5000 }),
                 () => {
                     this.uncoveringInProgress.delete(index);
                     this.cd.markForCheck();

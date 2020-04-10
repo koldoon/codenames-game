@@ -20,6 +20,7 @@ import { BoardComponent } from './components/board/board.component';
 import { JoinComponent } from './components/join/join.component';
 import { StartComponent } from './components/start/start.component';
 import { AgentComponent } from './components/agent/agent.component';
+import { ErrorComponent } from './components/error/error.component';
 
 @NgModule({
     declarations: [
@@ -27,7 +28,9 @@ import { AgentComponent } from './components/agent/agent.component';
         StartComponent,
         BoardComponent,
         JoinComponent,
-        AgentComponent
+        AgentComponent,
+        ErrorComponent,
+        ErrorComponent
     ],
     imports: [
         BrowserModule,

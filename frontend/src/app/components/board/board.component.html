@@ -27,7 +27,7 @@
         </button>
     </mat-toolbar>
 
-    <mat-grid-list class="agents-board" cols="5" rowHeight="2:0.9" gutterSize="0.5rem">
+    <mat-grid-list class="agents-board" cols="5" rowHeight="2:0.9" gutterSize="0.5rem" *ngIf="!error">
         <mat-grid-tile class="agent-tile" *ngFor="let agent of board; let i = index; trackBy: agentId">
 
             <div class="agent-wrapper">
@@ -42,4 +42,6 @@
 
         </mat-grid-tile>
     </mat-grid-list>
+
+    <app-error *ngIf="error" [text]="error"></app-error>
 </div>
