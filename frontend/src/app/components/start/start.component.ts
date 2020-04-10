@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
-import { Router } from '@angular/router';
 import { NewGameResponse } from '../../../../../server/src/api/new_game_response';
+import { AppRoutingNavigation } from '../../app.routing.navigation';
 
 @Component({
     selector: 'app-start',
@@ -12,7 +12,7 @@ import { NewGameResponse } from '../../../../../server/src/api/new_game_response
 export class StartComponent {
     constructor(
         private httpClient: HttpClient,
-        private router: Router,
+        private navigation: AppRoutingNavigation,
         private cd: ChangeDetectorRef) { }
 
     inProgress = false;
@@ -25,7 +25,7 @@ export class StartComponent {
         this.httpClient
             .get<NewGameResponse>(`/api/games/create`)
             .subscribe(
-                value => this.router.navigate(['game', value.gameId, 'join']),
+                value => this.navigation.toJoinGame(value.gameId),
                 error => this.error = JSON.stringify(error),
                 () => this.cd.markForCheck()
             );

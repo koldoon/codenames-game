@@ -10,7 +10,6 @@ const routes: Routes = [
     { path: 'game/:gameId', redirectTo: 'game/:gameId/join', pathMatch: 'full' },
     { path: 'game/:gameId/join', component: JoinComponent },
     { path: 'game/:gameId/board/:board', component: BoardComponent },
-    { path: 'game/:gameId/board/:board', component: BoardComponent },
     { path: '**', redirectTo: 'start' }
 ];
 

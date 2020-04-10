@@ -15,6 +15,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppComponent } from './app.component';
 import { AppRouting } from './app.routing';
+import { AppRoutingNavigation } from './app.routing.navigation';
 import { BoardComponent } from './components/board/board.component';
 import { JoinComponent } from './components/join/join.component';
 import { StartComponent } from './components/start/start.component';
@@ -44,7 +45,7 @@ import { AgentComponent } from './components/agent/agent.component';
         MatRippleModule,
         MatIconModule
     ],
-    providers: [],
+    providers: [AppRoutingNavigation],
     bootstrap: [AppComponent]
 })
 export class AppModule {}
