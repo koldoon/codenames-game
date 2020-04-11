@@ -1,6 +1,7 @@
 import { Application } from 'express-ws';
 import * as WebSocket from 'ws';
 import { AgentUncoveredMessage, GameMessage, GameMessageKind, JoinGameMessage } from '../api/ws/game_message';
+import { asyncDelay } from '../core/async_delay';
 import { bindClass } from '../core/bind_class';
 import { OnApplicationInit } from '../core/on_application_init';
 import { GamesService } from './games_service';
@@ -18,7 +19,7 @@ export class GamesGateway implements OnApplicationInit {
     private gamePlayers = new Map<GameId, Set<WebSocket>>();
     private playerGame = new Map<WebSocket, GameId>();
 
-    init() {
+    async init() {
         this.app.ws('/api/stream', this.onClientConnected);
 
         this.gamesService.agentUncovered$.subscribe(value => {
@@ -36,6 +37,26 @@ export class GamesGateway implements OnApplicationInit {
                 gameId: value.nextGameId
             })
         });
+
+        this.beginPingPong();
+    }
+
+    private async beginPingPong() {
+        console.debug('Ping clients');
+        await asyncDelay(10000);
+
+        for (const player of this.playerGame) {
+            const [ws] = player;
+            try {
+                ws.ping('ping');
+            }
+            catch (e) {
+                console.warn('Client disconnected due to ping/pong');
+                this.removePlayerFromGame(ws);
+            }
+        }
+
+        this.beginPingPong();
     }
 
     private sendMessageToPlayers(gameId: string, msg: GameMessage) {

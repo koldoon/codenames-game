@@ -5,6 +5,9 @@
 
         <div><!-- spacer --></div>
 
+        <button mat-icon-button (click)="updateGameStatus()">
+            <span class="material-icons">refresh</span>
+        </button>
         <div class="score score-blues">
             <span class="mat-h1"><strong>{{game?.bluesLeft}}</strong></span>
         </div>

@@ -38,7 +38,9 @@ export class BoardComponent implements OnInit, OnDestroy {
     updateInProgress = false;
     uncoveringInProgress = new Set<number>();
 
-    gameStream$ = webSocket<GameMessage>({ url: getWebSocketUrl('/api/stream') });
+    gameStream$ = webSocket<GameMessage>({
+        url: getWebSocketUrl('/api/stream')
+    });
 
     ngOnInit(): void {
         this.gameStream$
