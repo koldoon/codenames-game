@@ -2,14 +2,18 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
+import { delay, retryWhen } from 'rxjs/operators';
+import { webSocket } from 'rxjs/webSocket';
 import { Agent } from '../../../../../server/src/api/agent';
 import { AgentSide } from '../../../../../server/src/api/agent_side';
 import { Game } from '../../../../../server/src/api/game';
 import { GameStatusResponse } from '../../../../../server/src/api/game_status_response';
 import { PlayerType } from '../../../../../server/src/api/player_type';
 import { UncoverAgentResponse } from '../../../../../server/src/api/uncover_agent_response';
+import { GameMessage, GameMessageKind, JoinGameMessage } from '../../../../../server/src/api/ws/game_message';
 import { AppRoutingNavigation } from '../../app.routing.navigation';
 import { copyToClipboard } from '../../utils/copy_to_clipboard';
+import { getWebSocketUrl } from '../../utils/get_web_socket_url';
 import { switchHandler } from '../../utils/switch_handler';
 
 @Component({
@@ -27,25 +31,49 @@ export class BoardComponent implements OnInit, OnDestroy {
         private snackBar: MatSnackBar) { }
 
     error = '';
-    playerType = PlayerType.REGULAR;
+    playerType = PlayerType.Regular;
     gameId = '';
     game: Game;
 
-    polingTimer = 0;
     updateInProgress = false;
     uncoveringInProgress = new Set<number>();
 
+    gameStream$ = webSocket<GameMessage>({ url: getWebSocketUrl('/api/stream') });
+
     ngOnInit(): void {
+        this.gameStream$
+            .pipe(retryWhen(errors => {
+                this.updateGameStatus();
+                return errors.pipe(delay(2000));
+            }))
+            .subscribe(msg => this.onGameStreamMessage(msg));
+
         this.activatedRoute.paramMap.subscribe(value => {
             this.gameId = value.get('gameId');
             this.playerType = Number(value.get('playerType'));
             this.updateGameStatus();
-            this.polingTimer = setInterval(() => this.updateGameStatus(), 2000);
+
+            this.gameStream$.next(<JoinGameMessage> {
+                kind: GameMessageKind.JoinGame,
+                gameId: this.gameId
+            });
         });
     }
 
+    onGameStreamMessage(msg: GameMessage) {
+        if (msg.kind === GameMessageKind.AgentUncovered) {
+            this.game.board[msg.agent.index] = {
+                ...msg.agent,
+                uncovered: msg.agent.uncovered && this.playerType === PlayerType.Captain
+            };
+            this.game.bluesLeft = msg.bluesLeft;
+            this.game.redsLeft = msg.redsLeft;
+            this.cd.markForCheck();
+        }
+    }
+
     ngOnDestroy(): void {
-        clearInterval(this.polingTimer);
+        this.gameStream$.unsubscribe();
     }
 
     agentId(index: number, agent: Agent) {

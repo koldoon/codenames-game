@@ -7,23 +7,25 @@ import { OnApplicationInit } from '../core/on_application_init';
 import { GamesService } from './games_service';
 
 export class GamesController implements OnApplicationInit {
-    private router = Router();
+    constructor(
+        private app: Application,
+        private gamesService: GamesService) {
 
-    constructor(private app: Application, private gamesService: GamesService) {
         bindClass(this);
     }
 
     init() {
-        this.router
+        const router = Router()
             .get('/create', this.createGame)
             .get('/:gameId/status', this.getGameStatus)
             .get('/:gameId/agents/:agentId/uncover', this.uncoverAgent);
 
-        this.app.use('/api/games', this.router);
+        this.app.use('/api/games', router);
     }
 
     createGame(req: Request, res: Response, next: NextFunction) {
-        this.gamesService.createNewGame()
+        const { from } = req.query;
+        this.gamesService.createNewGame(String(from))
             .then(gameId => res.json(<NewGameResponse> { gameId }))
             .catch(next);
     }

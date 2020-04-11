@@ -1,20 +1,20 @@
+import { Agent } from '../api/agent';
 import { AgentSide } from '../api/agent_side';
 import { Game } from '../api/game';
 import { bindClass } from '../core/bind_class';
-import { AgentModel } from './agent_model';
 import shuffle = require('shuffle-array');
 import uuid = require('uuid');
 
 export class GameModel implements Game {
     id = uuid.v4();
-    board: AgentModel[] = [];
+    board: Agent[] = [];
     firstTurn = AgentSide.UNKNOWN;
     redsLeft = 8;
     bluesLeft = 8;
     isFinished = false;
     nextGameId = '';
 
-    constructor(private onChange?: (game: GameModel) => any) {
+    constructor() {
         bindClass(this);
     }
 
@@ -27,29 +27,36 @@ export class GameModel implements Game {
         this.firstTurn == AgentSide.BLUE
             ? this.bluesLeft += 1
             : this.redsLeft += 1;
+
         this.board = [];
         for (let i = 0; i < 25; i++) {
-            const agent = new AgentModel(i, names.pop(), boardConfig.sides.pop(), this.onAgentChange);
-            this.board.push(agent);
+            this.board.push({
+                index: i,
+                name: names.pop()!,
+                side: boardConfig.sides.pop()!,
+                uncovered: false
+            });
         }
         return this;
     }
 
-    onAgentChange(agent: AgentModel) {
-        if (agent.uncovered && agent.side == AgentSide.BLUE)
+    uncoverAgent(index: number) {
+        const agent = this.board[index];
+        agent.uncovered = true;
+
+        if (agent.side == AgentSide.BLUE)
             this.bluesLeft -= 1;
 
-        if (agent.uncovered && agent.side == AgentSide.RED)
+        if (agent.side == AgentSide.RED)
             this.redsLeft -= 1;
 
         if (!this.redsLeft || !this.bluesLeft || agent.side == AgentSide.BLACK)
             this.isFinished = true;
 
-        if (this.onChange)
-            this.onChange(this);
+        return agent;
     }
 
-    createRandomizedAgentsSidesList() {
+    private createRandomizedAgentsSidesList() {
         const sides: AgentSide[] = [
             AgentSide.BLACK,
             ...Array(8).fill(AgentSide.BLUE),

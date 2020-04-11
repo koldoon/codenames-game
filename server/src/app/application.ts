@@ -5,6 +5,7 @@ import { FrontendController } from './frontend_controller';
 import { GamesController } from './games_controller';
 import { GamesGateway } from './games_gateway';
 import { GamesService } from './games_service';
+import * as helmet from 'helmet';
 
 export class Application {
     constructor(private port: number) {
@@ -20,8 +21,8 @@ export class Application {
     app = express();
     ws = express_ws(this.app);
 
-    gamesGateway = new GamesGateway(this.ws.app);
-    gamesService = new GamesService(this.gamesGateway);
+    gamesService = new GamesService();
+    gamesGateway = new GamesGateway(this.ws.app, this.gamesService);
     gamesController = new GamesController(this.app, this.gamesService);
     frontendController = new FrontendController(this.app);
 
@@ -29,9 +30,12 @@ export class Application {
         await initModules(
             this.gamesService,
             this.gamesController,
+            this.gamesGateway,
             this.frontendController
         );
 
-        await this.app.listen(this.port, '0.0.0.0');
+        await this.app
+            .use(helmet())
+            .listen(this.port, '0.0.0.0');
     }
 }

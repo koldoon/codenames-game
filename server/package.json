@@ -14,21 +14,20 @@
     "lint": "eslint \"{src,appns,libs,test}/**/*.ts\" --fix"
   },
   "dependencies": {
-    "@types/http-errors": "^1.6.3",
     "express": "^4.17.1",
     "express-ws": "^4.0.0",
     "helmet": "^3.22.0",
     "http-errors": "^1.7.3",
-    "reflect-metadata": "^0.1.13",
-    "rimraf": "^3.0.2",
     "rxjs": "^6.5.5",
     "shuffle-array": "^1.0.1",
     "uuid": "^7.0.3",
     "ws": "^7.2.3"
   },
   "devDependencies": {
+    "@types/http-errors": "^1.6.3",
     "@types/express": "^4.17.6",
     "@types/express-ws": "^3.0.0",
+    "@types/helmet": "0.0.45",
     "@types/node": "^13.11.1",
     "@types/shuffle-array": "0.0.28",
     "@types/uuid": "^7.0.2",

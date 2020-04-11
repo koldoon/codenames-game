@@ -34,11 +34,11 @@ export class JoinComponent implements OnInit {
     }
 
     async onJoinAsCaptainClick() {
-        await this.navigation.toGameBoard(this.gameId, PlayerType.CAPTAIN);
+        await this.navigation.toGameBoard(this.gameId, PlayerType.Captain);
     }
 
     async onJoinAsTeammateClick() {
-        await this.navigation.toGameBoard(this.gameId, PlayerType.REGULAR);
+        await this.navigation.toGameBoard(this.gameId, PlayerType.Regular);
     }
 
     async onBackClick() {

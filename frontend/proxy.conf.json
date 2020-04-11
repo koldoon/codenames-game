@@ -3,7 +3,7 @@
     "target": "http://localhost:8091/",
     "secure": false
   },
-  "ws(s)?://localhost:4200/api/*": {
+  "/api/stream/*": {
     "target": "ws://localhost:8091/",
     "secure": false,
     "ws": true

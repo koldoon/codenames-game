@@ -1,3 +1,4 @@
+import { Subject } from 'rxjs';
 import * as shuffle from 'shuffle-array';
 import { Agent } from '../api/agent';
 import { AgentSide } from '../api/agent_side';
@@ -8,29 +9,37 @@ import { OnApplicationInit } from '../core/on_application_init';
 import { DictionaryModel } from '../model/dictionary_model';
 import { GameModel } from '../model/game_model';
 import { GagaDictionary } from '../model/impl/gaga_dictionary';
-import { GamesGateway } from './games_gateway';
 
 export type GameId = string;
 
 export class GamesService implements OnApplicationInit {
-    constructor(gateway: GamesGateway) {
-        console.debug('Dependency: ' + gateway.constructor.name);
-    }
+    agentUncovered$ = new Subject<{ game: Game, agent: Agent }>();
+    gamesChain$ = new Subject<{ prevGameId: string, nextGameId: string }>();
 
     private readonly dictionary: DictionaryModel = new GagaDictionary();
     private words: string[] = [];
     private games = new Map<GameId, GameModel>();
 
     async init() {
-        console.debug('Using dictionary: ' + this.dictionary.constructor.name);
+        console.debug('Using games dictionary: ' + this.dictionary.constructor.name);
         this.words = await this.dictionary.getWords();
     }
 
-    async createNewGame() {
+    async createNewGame(prevGameId?: string) {
         shuffle(this.words);
-        const game = new GameModel().init(this.words.slice(0, 25));
-        this.games.set(game.id, game);
-        return game.id;
+        const newGame = new GameModel().init(this.words.slice(0, 25));
+        this.games.set(newGame.id, newGame);
+
+        if (prevGameId) {
+            const prevGame = this.games.get(prevGameId)!;
+
+            if (prevGame && !prevGame.nextGameId) {
+                prevGame.nextGameId = newGame.id;
+                this.gamesChain$.next({ prevGameId: prevGame.id, nextGameId: newGame.id });
+            }
+        }
+
+        return newGame.id;
     }
 
     async getGameStatus(gameId: GameId, playerType: PlayerType) {
@@ -40,7 +49,7 @@ export class GamesService implements OnApplicationInit {
 
         httpAssertFound(game, 'Game not found');
         let board: Agent[];
-        if (playerType == PlayerType.CAPTAIN) {
+        if (playerType == PlayerType.Captain) {
             board = game.board.map(card => <Agent> {
                 name: card.name,
                 side: card.side,
@@ -60,10 +69,10 @@ export class GamesService implements OnApplicationInit {
         const game = this.games.get(gameId);
         httpAssertFound(game, 'Game not found');
 
-        const agent = game.board[agentIndex];
+        const agent = game.uncoverAgent(agentIndex);
         httpAssertFound(agent, 'Agent not found');
 
-        agent.uncover();
+        this.agentUncovered$.next({ game, agent });
         return <Agent> agent;
     }
 }
