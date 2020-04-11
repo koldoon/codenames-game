@@ -1,14 +1,14 @@
 import { AgentSide } from '../api/agent_side';
 import { Game } from '../api/game';
-import { bindClass } from '../utils/bind_class';
+import { bindClass } from '../core/bind_class';
 import { AgentModel } from './agent_model';
 import shuffle = require('shuffle-array');
 import uuid = require('uuid');
 
 export class GameModel implements Game {
     id = uuid.v4();
-    board: AgentModel[];
-    firstTurn: AgentSide;
+    board: AgentModel[] = [];
+    firstTurn = AgentSide.UNKNOWN;
     redsLeft = 8;
     bluesLeft = 8;
     isFinished = false;

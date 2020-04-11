@@ -1,25 +1,28 @@
-import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
-import { Agent } from './api/agent';
-import { AgentSide } from './api/agent_side';
-import { Game } from './api/game';
-import { PlayerType } from './api/player_type';
-import { DictionaryModel } from './model/dictionary_model';
-import { GameModel } from './model/game_model';
-import { GagaDictionary } from './model/impl/gaga_dictionary';
-import { httpAssertFound } from './utils/http_assert_exists';
-import shuffle = require('shuffle-array');
+import * as shuffle from 'shuffle-array';
+import { Agent } from '../api/agent';
+import { AgentSide } from '../api/agent_side';
+import { Game } from '../api/game';
+import { PlayerType } from '../api/player_type';
+import { httpAssertFound } from '../core/http_assert_exists';
+import { OnApplicationInit } from '../core/on_application_init';
+import { DictionaryModel } from '../model/dictionary_model';
+import { GameModel } from '../model/game_model';
+import { GagaDictionary } from '../model/impl/gaga_dictionary';
+import { GamesGateway } from './games_gateway';
 
 export type GameId = string;
 
-@Injectable()
-export class GamesService implements OnApplicationBootstrap {
-    private readonly logger = new Logger(GamesService.name);
+export class GamesService implements OnApplicationInit {
+    constructor(gateway: GamesGateway) {
+        console.debug('Dependency: ' + gateway.constructor.name);
+    }
+
     private readonly dictionary: DictionaryModel = new GagaDictionary();
     private words: string[] = [];
     private games = new Map<GameId, GameModel>();
 
-    async onApplicationBootstrap() {
-        this.logger.debug('Using dictionary: ' + this.dictionary.constructor.name);
+    async init() {
+        console.debug('Using dictionary: ' + this.dictionary.constructor.name);
         this.words = await this.dictionary.getWords();
     }
 

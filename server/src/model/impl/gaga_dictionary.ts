@@ -31,10 +31,10 @@ export class GagaDictionary implements DictionaryModel {
         'брак линия бокс посольство баня экран вилка ложе рыцарь косяк призрак разворот запад рукав ' +
         'лёд мотив боров египет нью-йорк урна соль крыло пират ударник поле кит борт пушкин крест пачка';
 
-    // Too long ;)
-    private removedWords = 'предприниматель';
-
     private readonly dictionary = this.words.split(' ');
+
+    // Too long ;)
+    removedWords = 'предприниматель';
 
     getWords(): Promise<string[]> | string[] {
         return this.dictionary;

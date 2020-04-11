@@ -4,7 +4,7 @@
  * somewhere without loosing the context.
  * @param {object} instance
  */
-export function bindClass(instance: object) {
+export function bindClass(instance: any) {
     const keys = Object.getOwnPropertyNames(instance.constructor.prototype);
     for (const key of keys) {
         if (key !== 'constructor' && typeof instance[key] === 'function') {
