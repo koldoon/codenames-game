@@ -68,6 +68,7 @@ export class BoardComponent implements OnInit, OnDestroy {
             };
             this.game.bluesLeft = msg.bluesLeft;
             this.game.redsLeft = msg.redsLeft;
+            this.uncoveringInProgress.delete(msg.agent.index);
             this.cd.markForCheck();
         }
     }
