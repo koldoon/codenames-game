@@ -1,7 +1,7 @@
 .container {
     min-height: 100vh;
     min-width: 550px;
-    background-color: #ebebeb;
+    background-color: #e9e9e9;
     overflow: scroll;
 }
 
@@ -9,6 +9,7 @@
     display: grid;
     grid-template-columns: repeat(3, auto) 1fr repeat(3, auto);
     grid-column-gap: 0.6rem;
+    border-bottom: #e4e4e4 1px solid;
 
     .refresh {
         opacity: 0.5;
@@ -33,8 +34,23 @@
     }
 }
 
+@keyframes show-agents {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
 mat-grid-list {
     margin: 1.5rem 1rem;
+
+    opacity: 0;
+    animation-name: show-agents;
+    animation-duration: 1s;
+    animation-delay: 1s;
+    animation-fill-mode: forwards;
 
     mat-grid-tile {
         overflow: visible;

@@ -6,7 +6,7 @@ import shuffle = require('shuffle-array');
 import uuid = require('uuid');
 
 export class GameModel implements Game {
-    private readonly boardSize = 25;
+    readonly boardSize = 25;
     readonly id = uuid.v4();
 
     board: Agent[] = [];

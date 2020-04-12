@@ -1,5 +1,4 @@
 import { Subject } from 'rxjs';
-import * as shuffle from 'shuffle-array';
 import { Agent } from '../api/agent';
 import { AgentSide } from '../api/agent_side';
 import { Game } from '../api/game';
@@ -18,26 +17,40 @@ export class GamesService implements OnApplicationInit {
     readonly gamesChain$ = new Subject<{ prevGameId: string, nextGameId: string }>();
 
     private readonly dictionary: DictionaryModel = new GagaDictionary();
-    private words: string[] = [];
     private games = new Map<GameId, GameModel>();
 
     async init() {
         console.debug('Using games dictionary: ' + this.dictionary.constructor.name);
-        this.words = await this.dictionary.getWords();
-
         const hour1 = 1000 * 60 * 60;
         this.beginOldGamesRemovingCycle(hour1);
     }
 
     async createNewGame(prevGameId?: string) {
-        shuffle(this.words);
-        const newGame = new GameModel().init(this.words.slice(0, 25));
+        // look if new game was already created by somebody
+        if (prevGameId) {
+            const prevGame = this.games.get(prevGameId);
+
+            if (prevGame && prevGame.nextGameId) {
+                let newGame: GameModel | undefined = prevGame;
+
+                while (newGame && newGame.nextGameId) {
+                    newGame = this.games.get(newGame.nextGameId);
+                }
+
+                if (newGame && newGame.id != prevGame.id)
+                    return newGame.id;
+            }
+        }
+
+        const newGame = new GameModel();
+        const randomWords = await this.dictionary.getRandomWords(newGame.boardSize);
+        newGame.init(randomWords);
         this.games.set(newGame.id, newGame);
 
         if (prevGameId) {
-            const prevGame = this.games.get(prevGameId)!;
+            const prevGame = this.games.get(prevGameId);
 
-            if (prevGame && !prevGame.nextGameId) {
+            if (prevGame) {
                 prevGame.nextGameId = newGame.id;
                 this.gamesChain$.next({ prevGameId: prevGame.id, nextGameId: newGame.id });
             }

@@ -1,3 +1,4 @@
+import * as shuffle from 'shuffle-array';
 import { DictionaryModel } from '../dictionary_model';
 
 export class GagaDictionary implements DictionaryModel {
@@ -43,4 +44,11 @@ export class GagaDictionary implements DictionaryModel {
     getWords(): Promise<string[]> | string[] {
         return this.dictionary;
     }
+
+    getRandomWords(count: number): Promise<string[]> | string[] {
+        shuffle(this.dictionary);
+        return this.dictionary.slice(0, count);
+    }
+
+
 }
