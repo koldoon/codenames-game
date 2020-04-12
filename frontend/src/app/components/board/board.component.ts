@@ -103,7 +103,13 @@ export class BoardComponent implements OnInit, OnDestroy {
             .subscribe(
                 value => {
                     this.game = value.game;
-                    this.gameId = this.game.id; // in case of games chain may differ
+                    if (this.gameId !== this.game.id) { // in case of games chain may differ
+                        this.gameId = this.game.id;
+                        this.gameStream$.next(<JoinGameMessage> {
+                            kind: GameMessageKind.JoinGame,
+                            gameId: this.gameId
+                        });
+                    }
                 },
                 error => {
                     if (error instanceof HttpErrorResponse) {
