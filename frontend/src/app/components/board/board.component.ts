@@ -2,6 +2,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
+import { Subject } from 'rxjs';
 import { delay, retryWhen } from 'rxjs/operators';
 import { webSocket } from 'rxjs/webSocket';
 import { Agent } from '../../../../../server/src/api/agent';
@@ -11,7 +12,7 @@ import { GameStatusResponse } from '../../../../../server/src/api/game_status_re
 import { NewGameResponse } from '../../../../../server/src/api/new_game_response';
 import { PlayerType } from '../../../../../server/src/api/player_type';
 import { UncoverAgentResponse } from '../../../../../server/src/api/uncover_agent_response';
-import { GameMessage, GameMessageKind, JoinGameMessage } from '../../../../../server/src/api/ws/game_message';
+import { GameMessage, GameMessageKind, JoinGameMessage, PingGameMessage } from '../../../../../server/src/api/ws/game_message';
 import { AppRoutingNavigation } from '../../app.routing.navigation';
 import { copyToClipboard } from '../../utils/copy_to_clipboard';
 import { getWebSocketUrl } from '../../utils/get_web_socket_url';
@@ -40,11 +41,15 @@ export class BoardComponent implements OnInit, OnDestroy {
     updateInProgress = false;
     uncoveringInProgress = new Set<number>();
 
+    connected$ = new Subject<Event>();
     gameStream$ = webSocket<GameMessage>({
-        url: getWebSocketUrl('/api/stream')
+        url: getWebSocketUrl('/api/stream'),
+        openObserver: this.connected$
     });
 
     ngOnInit(): void {
+        let connected = false;
+
         this.gameStream$
             .pipe(retryWhen(errors => {
                 this.updateGameStatus();
@@ -57,10 +62,23 @@ export class BoardComponent implements OnInit, OnDestroy {
             this.playerType = Number(value.get('playerType'));
             this.updateGameStatus();
 
-            this.gameStream$.next(<JoinGameMessage> {
-                kind: GameMessageKind.JoinGame,
-                gameId: this.gameId
-            });
+            if (connected) // not to send 'join' twice
+                this.joinGameStream();
+        });
+
+        this.connected$.subscribe(value => {
+            connected = true;
+            this.joinGameStream();
+        });
+    }
+
+    joinGameStream() {
+        if (!this.gameId)
+            return;
+
+        this.gameStream$.next(<JoinGameMessage> {
+            kind: GameMessageKind.JoinGame,
+            gameId: this.gameId
         });
     }
 
@@ -162,5 +180,12 @@ export class BoardComponent implements OnInit, OnDestroy {
         await this.httpClient
             .get<NewGameResponse>(`/api/games/create?from=${this.gameId}`)
             .toPromise();
+    }
+
+    onRefreshClick() {
+        this.updateGameStatus();
+        this.gameStream$.next(<PingGameMessage> {
+            kind: GameMessageKind.Ping
+        });
     }
 }

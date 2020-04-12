@@ -35,7 +35,7 @@ export class GamesGateway implements OnApplicationInit {
             this.sendMessageToPlayers(value.prevGameId, <JoinGameMessage> {
                 kind: GameMessageKind.JoinGame,
                 gameId: value.nextGameId
-            })
+            });
         });
 
         this.beginPingPong();
@@ -98,7 +98,6 @@ export class GamesGateway implements OnApplicationInit {
 
     private onClientDisconnected(ws: WebSocket) {
         this.removePlayerFromGame(ws);
-        console.log(`Client left: games total: ${this.gamePlayers.size} | players total: ${this.playerGame.size}`);
     }
 
     // Remove Player from currently playing Game.

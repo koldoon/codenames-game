@@ -4,16 +4,22 @@ export enum GameMessageKind {
     JoinGame,
     AgentUncovered,
     PlayerJoined,
-    PlayerLeft
+    PlayerLeft,
+    Ping
 }
 
 export type GameMessage =
     JoinGameMessage |
     AgentUncoveredMessage |
-    PlayersChangeMessage;
+    PlayersChangeMessage |
+    PingGameMessage;
 
 interface AbstractGameMessage {
     kind: GameMessageKind
+}
+
+export interface PingGameMessage {
+    kind: GameMessageKind.Ping
 }
 
 export interface PlayersChangeMessage extends AbstractGameMessage {
