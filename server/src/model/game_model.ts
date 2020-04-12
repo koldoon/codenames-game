@@ -47,13 +47,15 @@ export class GameModel implements Game {
         this.lastModified = new Date();
 
         const agent = this.board[index];
-        agent.uncovered = true;
+        if (agent && !agent.uncovered) {
+            agent.uncovered = true;
 
-        if (agent.side == AgentSide.BLUE)
-            this.bluesLeft -= 1;
+            if (agent.side == AgentSide.BLUE)
+                this.bluesLeft -= 1;
 
-        if (agent.side == AgentSide.RED)
-            this.redsLeft -= 1;
+            if (agent.side == AgentSide.RED)
+                this.redsLeft -= 1;
+        }
 
         if (!this.redsLeft || !this.bluesLeft || agent.side == AgentSide.BLACK)
             this.isFinished = true;
