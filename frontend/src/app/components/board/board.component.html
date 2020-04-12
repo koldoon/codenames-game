@@ -1,7 +1,7 @@
 <div class="container">
     <mat-toolbar class="toolbar">
         <button mat-stroked-button (click)="onCodenamesClick()">Codenames</button>
-
+        <button mat-stroked-button (click)="onNewGameClick()">Новая игра</button>
         <button mat-stroked-button color="primary"
             [matBadge]="playersCount.toString()" [matBadgeHidden]="playersCount <= 1"
             (click)="onCopyGameLinkClick()">

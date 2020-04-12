@@ -7,7 +7,7 @@
 
 .toolbar {
     display: grid;
-    grid-template-columns: repeat(2, auto) 1fr repeat(3, auto);
+    grid-template-columns: repeat(3, auto) 1fr repeat(3, auto);
     grid-column-gap: 0.6rem;
 
     .refresh {

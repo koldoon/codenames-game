@@ -8,6 +8,7 @@ import { Agent } from '../../../../../server/src/api/agent';
 import { AgentSide } from '../../../../../server/src/api/agent_side';
 import { Game } from '../../../../../server/src/api/game';
 import { GameStatusResponse } from '../../../../../server/src/api/game_status_response';
+import { NewGameResponse } from '../../../../../server/src/api/new_game_response';
 import { PlayerType } from '../../../../../server/src/api/player_type';
 import { UncoverAgentResponse } from '../../../../../server/src/api/uncover_agent_response';
 import { GameMessage, GameMessageKind, JoinGameMessage } from '../../../../../server/src/api/ws/game_message';
@@ -63,7 +64,7 @@ export class BoardComponent implements OnInit, OnDestroy {
         });
     }
 
-    onGameStreamMessage(msg: GameMessage) {
+    async onGameStreamMessage(msg: GameMessage) {
         if (msg.kind === GameMessageKind.AgentUncovered) {
             this.game.board[msg.agent.index] = {
                 ...msg.agent,
@@ -75,6 +76,9 @@ export class BoardComponent implements OnInit, OnDestroy {
         }
         else if (msg.kind === GameMessageKind.PlayerJoined || msg.kind === GameMessageKind.PlayerLeft) {
             this.playersCount = msg.playersCount;
+        }
+        else if (msg.kind === GameMessageKind.JoinGame) {
+            await this.navigation.toJoinGame(msg.gameId);
         }
         this.cd.markForCheck();
     }
@@ -146,5 +150,11 @@ export class BoardComponent implements OnInit, OnDestroy {
 
     async onCodenamesClick() {
         await this.navigation.toStart();
+    }
+
+    async onNewGameClick() {
+        await this.httpClient
+            .get<NewGameResponse>(`/api/games/create?from=${this.gameId}`)
+            .toPromise();
     }
 }
