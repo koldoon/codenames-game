@@ -38,7 +38,8 @@ export class GamesGateway implements OnApplicationInit {
             });
         });
 
-        this.beginClientsPingPongCycle();
+        const sec10 = 1000 * 10;
+        this.beginClientsPingPongCycle(sec10);
     }
 
     private sendMessageToPlayers(gameId: string, msg: GameMessage) {
@@ -120,7 +121,7 @@ export class GamesGateway implements OnApplicationInit {
     // This is 'must have' when server locates behind the proxy, like nginx.
     // Otherwise connection will be closed due to inactivity
     // (for nginx default is 30 sec).
-    private async beginClientsPingPongCycle(intervalMs = 1000 * 10) {
+    private async beginClientsPingPongCycle(intervalMs: number) {
         await asyncDelay(intervalMs);
 
         for (const player of this.playerGame) {

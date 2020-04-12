@@ -14,25 +14,21 @@ export type GameMessage =
     PlayersChangeMessage |
     PingGameMessage;
 
-interface AbstractGameMessage {
-    kind: GameMessageKind
-}
-
 export interface PingGameMessage {
     kind: GameMessageKind.Ping
 }
 
-export interface PlayersChangeMessage extends AbstractGameMessage {
+export interface PlayersChangeMessage {
     kind: GameMessageKind.PlayerJoined | GameMessageKind.PlayerLeft;
     playersCount: number;
 }
 
-export interface JoinGameMessage extends AbstractGameMessage {
+export interface JoinGameMessage {
     kind: GameMessageKind.JoinGame;
     gameId: string;
 }
 
-export interface AgentUncoveredMessage extends AbstractGameMessage {
+export interface AgentUncoveredMessage {
     kind: GameMessageKind.AgentUncovered;
     agent: Agent;
     redsLeft: number;

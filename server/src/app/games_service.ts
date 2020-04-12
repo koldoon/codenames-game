@@ -24,7 +24,9 @@ export class GamesService implements OnApplicationInit {
     async init() {
         console.debug('Using games dictionary: ' + this.dictionary.constructor.name);
         this.words = await this.dictionary.getWords();
-        this.beginOldGamesRemovingCycle();
+
+        const hour1 = 1000 * 60 * 60;
+        this.beginOldGamesRemovingCycle(hour1);
     }
 
     async createNewGame(prevGameId?: string) {
@@ -78,7 +80,7 @@ export class GamesService implements OnApplicationInit {
         return <Agent> agent;
     }
 
-    private async beginOldGamesRemovingCycle(intervalMs = 1000 * 60 * 60) {
+    private async beginOldGamesRemovingCycle(intervalMs: number) {
         await asyncDelay(intervalMs);
         const now = Date.now();
 
