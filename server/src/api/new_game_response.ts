@@ -1,3 +1,3 @@
 export interface NewGameResponse {
-    gameId: string
+    gameId: string;
 }

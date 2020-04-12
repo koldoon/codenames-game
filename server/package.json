@@ -10,7 +10,7 @@
     "prebuild": "rimraf dist",
     "build": "tsc",
     "start": "node ../dist/server/main",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "format": "prettier --write \"src/**/*.ts\"",
     "lint": "eslint \"{src,appns,libs,test}/**/*.ts\" --fix"
   },
   "dependencies": {

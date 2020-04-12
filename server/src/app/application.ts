@@ -9,11 +9,10 @@ import * as helmet from 'helmet';
 
 export class Application {
     constructor(private port: number) {
-        this.bootstrap()
-            .then(() => {
-                console.warn('Application started');
-                console.warn(`Listening on port: ${port}`);
-            });
+        this.bootstrap().then(() => {
+            console.warn('Application started');
+            console.warn(`Listening on port: ${port}`);
+        });
     }
 
     // Application Context

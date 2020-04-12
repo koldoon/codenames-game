@@ -1,7 +1,8 @@
 import { DictionaryModel } from '../dictionary_model';
 
 export class GagaDictionary implements DictionaryModel {
-    private readonly words = 'вождь подьем полис запах строй гений лимузин паук луч полиция ночь ' +
+    private readonly words =
+        'вождь подьем полис запах строй гений лимузин паук луч полиция ночь ' +
         'механизм нож помет лист германия журавль смерть дума корабль фокус церковь ' +
         'вид греция фига москва рог волна водолаз время порода блин десна юпитер икра парк ' +
         'лазер шуба рейд жук агент колода крошка дыра лук путь антарктида гранат платье карта червь ' +
@@ -31,7 +32,10 @@ export class GagaDictionary implements DictionaryModel {
         'брак линия бокс посольство баня экран вилка ложе рыцарь косяк призрак разворот запад рукав ' +
         'лёд мотив боров египет нью-йорк урна соль крыло пират ударник поле кит борт пушкин крест пачка';
 
-    private readonly dictionary = this.words.split(' ').map(w => w.trim()).filter(w => w != '');
+    private readonly dictionary = this.words
+        .split(' ')
+        .map(w => w.trim())
+        .filter(w => w != '');
 
     // Too long ;)
     removedWords = 'предприниматель';

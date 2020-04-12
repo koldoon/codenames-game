@@ -9,13 +9,13 @@ export enum GameMessageKind {
 }
 
 export type GameMessage =
-    JoinGameMessage |
-    AgentUncoveredMessage |
-    PlayersChangeMessage |
-    PingGameMessage;
+    | JoinGameMessage
+    | AgentUncoveredMessage
+    | PlayersChangeMessage
+    | PingGameMessage;
 
 export interface PingGameMessage {
-    kind: GameMessageKind.Ping
+    kind: GameMessageKind.Ping;
 }
 
 export interface PlayersChangeMessage {
@@ -34,6 +34,3 @@ export interface AgentUncoveredMessage {
     redsLeft: number;
     bluesLeft: number;
 }
-
-
-
