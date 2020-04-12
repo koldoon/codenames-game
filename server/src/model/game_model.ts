@@ -6,12 +6,15 @@ import shuffle = require('shuffle-array');
 import uuid = require('uuid');
 
 export class GameModel implements Game {
-    id = uuid.v4();
+    private readonly boardSize = 25;
+    readonly id = uuid.v4();
+
     board: Agent[] = [];
     firstTurn = AgentSide.UNKNOWN;
-    redsLeft = 8;
-    bluesLeft = 8;
+    redsLeft = (this.boardSize - 1) / 3;
+    bluesLeft = (this.boardSize - 1) / 3;
     isFinished = false;
+    lastModified = new Date();
     nextGameId = '';
 
     constructor() {
@@ -19,17 +22,17 @@ export class GameModel implements Game {
     }
 
     init(names: string[]) {
-        if (!names || names.length < 25)
-            throw Error('We need at least 25 words for a game');
+        if (!names || names.length < this.boardSize)
+            throw Error(`We need at least ${this.boardSize} words for a game`);
 
-        const boardConfig = this.createRandomizedAgentsSidesList();
+        const boardConfig = GameModel.createRandomizedAgentsSidesList();
         this.firstTurn = boardConfig.firstTurnSide;
         this.firstTurn == AgentSide.BLUE
             ? this.bluesLeft += 1
             : this.redsLeft += 1;
 
         this.board = [];
-        for (let i = 0; i < 25; i++) {
+        for (let i = 0; i < this.boardSize; i++) {
             this.board.push({
                 index: i,
                 name: names.pop()!,
@@ -41,6 +44,8 @@ export class GameModel implements Game {
     }
 
     uncoverAgent(index: number) {
+        this.lastModified = new Date();
+
         const agent = this.board[index];
         agent.uncovered = true;
 
@@ -56,12 +61,11 @@ export class GameModel implements Game {
         return agent;
     }
 
-    private createRandomizedAgentsSidesList() {
+    private static createRandomizedAgentsSidesList() {
         const sides: AgentSide[] = [
-            AgentSide.BLACK,
+            ...Array(7).fill(AgentSide.NEUTRAL), AgentSide.BLACK,
             ...Array(8).fill(AgentSide.BLUE),
-            ...Array(8).fill(AgentSide.RED),
-            ...Array(7).fill(AgentSide.NEUTRAL)
+            ...Array(8).fill(AgentSide.RED)
         ];
 
         const firstTurnSide = Math.random() > 0.5 ? AgentSide.RED : AgentSide.BLUE;
