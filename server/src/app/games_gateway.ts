@@ -1,6 +1,6 @@
 import { Application } from 'express-ws';
 import * as WebSocket from 'ws';
-import { AgentUncoveredMessage, GameMessage, GameMessageKind, JoinGameMessage } from '../api/ws/game_message';
+import { AgentUncoveredMessage, GameMessage, GameMessageKind, JoinGameMessage, PlayersChangeMessage } from '../api/ws/game_message';
 import { asyncDelay } from '../core/async_delay';
 import { bindClass } from '../core/bind_class';
 import { OnApplicationInit } from '../core/on_application_init';
@@ -42,16 +42,14 @@ export class GamesGateway implements OnApplicationInit {
     }
 
     private async beginPingPong() {
-        console.debug('Ping clients');
         await asyncDelay(10000);
 
         for (const player of this.playerGame) {
             const [ws] = player;
             try {
-                ws.ping('ping');
+                ws.ping(1);
             }
             catch (e) {
-                console.warn('Client disconnected due to ping/pong');
                 this.removePlayerFromGame(ws);
             }
         }
@@ -91,7 +89,11 @@ export class GamesGateway implements OnApplicationInit {
         this.removePlayerFromGame(ws);
         this.playerGame.set(ws, gameId);
         this.getGamePlayers(gameId).add(ws);
-        console.log(`Client joined game channel: ${gameId} | games total: ${this.gamePlayers.size} | players total: ${this.playerGame.size}`);
+
+        this.sendMessageToPlayers(gameId, <PlayersChangeMessage> {
+            kind: GameMessageKind.PlayerJoined,
+            playersCount: this.getGamePlayers(gameId).size
+        });
     }
 
     private onClientDisconnected(ws: WebSocket) {
@@ -102,16 +104,25 @@ export class GamesGateway implements OnApplicationInit {
     // Remove Player from currently playing Game.
     // If the Game is empty - remove it as well.
     private removePlayerFromGame(ws: WebSocket) {
-        const playerCurrentGameId = this.playerGame.get(ws);
-        if (!playerCurrentGameId)
+        const gameId = this.playerGame.get(ws);
+        if (!gameId)
             return;
+
         this.playerGame.delete(ws);
-        const players = this.gamePlayers.get(playerCurrentGameId);
+        const players = this.gamePlayers.get(gameId);
         if (!players)
             return;
+
         players.delete(ws);
-        if (players.size == 0)
-            this.gamePlayers.delete(playerCurrentGameId);
+        if (players.size == 0) {
+            this.gamePlayers.delete(gameId);
+        }
+        else {
+            this.sendMessageToPlayers(gameId, <PlayersChangeMessage> {
+                kind: GameMessageKind.PlayerLeft,
+                playersCount: this.getGamePlayers(gameId).size
+            });
+        }
     }
 
     // Conventional method.

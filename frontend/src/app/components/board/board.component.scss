@@ -7,8 +7,14 @@
 
 .toolbar {
     display: grid;
-    grid-template-columns: auto auto 1fr auto auto auto;
+    grid-template-columns: repeat(2, auto) 1fr repeat(3, auto);
     grid-column-gap: 0.6rem;
+
+    .refresh {
+        opacity: 0.5;
+        // fix for mat-button-icon icon position
+        font-size: 0;
+    }
 
     .score {
         text-align: center;

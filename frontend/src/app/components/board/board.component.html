@@ -1,13 +1,20 @@
 <div class="container">
     <mat-toolbar class="toolbar">
         <button mat-stroked-button (click)="onCodenamesClick()">Codenames</button>
-        <button mat-stroked-button color="primary" (click)="onCopyGameLinkClick()">Ссылка на игру</button>
+
+        <button mat-stroked-button color="primary"
+            [matBadge]="playersCount.toString()" [matBadgeHidden]="playersCount <= 1"
+            (click)="onCopyGameLinkClick()">
+
+            Ссылка на игру
+        </button>
 
         <div><!-- spacer --></div>
 
-        <button mat-icon-button (click)="updateGameStatus()">
+        <button class="refresh" mat-icon-button (click)="updateGameStatus()">
             <span class="material-icons">refresh</span>
         </button>
+
         <div class="score score-blues">
             <span class="mat-h1"><strong>{{game?.bluesLeft}}</strong></span>
         </div>

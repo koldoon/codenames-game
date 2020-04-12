@@ -34,6 +34,7 @@ export class BoardComponent implements OnInit, OnDestroy {
     playerType = PlayerType.Regular;
     gameId = '';
     game: Game;
+    playersCount = 0;
 
     updateInProgress = false;
     uncoveringInProgress = new Set<number>();
@@ -71,8 +72,11 @@ export class BoardComponent implements OnInit, OnDestroy {
             this.game.bluesLeft = msg.bluesLeft;
             this.game.redsLeft = msg.redsLeft;
             this.uncoveringInProgress.delete(msg.agent.index);
-            this.cd.markForCheck();
         }
+        else if (msg.kind === GameMessageKind.PlayerJoined || msg.kind === GameMessageKind.PlayerLeft) {
+            this.playersCount = msg.playersCount;
+        }
+        this.cd.markForCheck();
     }
 
     ngOnDestroy(): void {
