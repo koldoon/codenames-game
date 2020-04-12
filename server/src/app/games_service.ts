@@ -78,14 +78,14 @@ export class GamesService implements OnApplicationInit {
         return <Agent> agent;
     }
 
-    private async beginOldGamesRemovingCycle(periodMs = 1000 * 60 * 60) {
-        await asyncDelay(periodMs);
+    private async beginOldGamesRemovingCycle(intervalMs = 1000 * 60 * 60) {
+        await asyncDelay(intervalMs);
         const now = Date.now();
 
         const oldGames: GameId[] = [];
         for (const g of this.games) {
             const [gameId, game] = g;
-            if (now - game.lastModified.getTime() > periodMs)
+            if (now - game.lastModified.getTime() > intervalMs)
                 oldGames.push(gameId);
         }
 
@@ -94,6 +94,6 @@ export class GamesService implements OnApplicationInit {
         }
 
         console.log(`Old games cleaned: ${oldGames.length}`);
-        this.beginOldGamesRemovingCycle(periodMs);
+        this.beginOldGamesRemovingCycle(intervalMs);
     }
 }

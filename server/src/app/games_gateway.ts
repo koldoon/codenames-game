@@ -38,23 +38,7 @@ export class GamesGateway implements OnApplicationInit {
             });
         });
 
-        this.beginPingPong();
-    }
-
-    private async beginPingPong() {
-        await asyncDelay(10000);
-
-        for (const player of this.playerGame) {
-            const [ws] = player;
-            try {
-                ws.ping(1);
-            }
-            catch (e) {
-                this.removePlayerFromGame(ws);
-            }
-        }
-
-        this.beginPingPong();
+        this.beginClientsPingPongCycle();
     }
 
     private sendMessageToPlayers(gameId: string, msg: GameMessage) {
@@ -130,5 +114,25 @@ export class GamesGateway implements OnApplicationInit {
         if (!this.gamePlayers.get(gameId))
             this.gamePlayers.set(gameId, new Set<WebSocket>());
         return this.gamePlayers.get(gameId)!;
+    }
+
+    // Periodically send 'ping' message to web-socket clients.
+    // This is 'must have' when server locates behind the proxy, like nginx.
+    // Otherwise connection will be closed due to inactivity
+    // (for nginx default is 30 sec).
+    private async beginClientsPingPongCycle(intervalMs = 1000 * 10) {
+        await asyncDelay(intervalMs);
+
+        for (const player of this.playerGame) {
+            const [ws] = player;
+            try {
+                ws.ping(1);
+            }
+            catch (e) {
+                this.removePlayerFromGame(ws);
+            }
+        }
+
+        this.beginClientsPingPongCycle(intervalMs);
     }
 }
