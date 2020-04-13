@@ -1,15 +1,21 @@
 .container {
     min-height: 100vh;
-    min-width: 550px;
+    min-width: 660px;
     background-color: #e9e9e9;
     overflow: scroll;
 }
 
 .toolbar {
     display: grid;
-    grid-template-columns: repeat(3, auto) 1fr repeat(3, auto);
-    grid-column-gap: 0.6rem;
+    grid-template-columns: repeat(4, auto) 1fr repeat(3, auto);
+    grid-column-gap: 0.5rem;
     border-bottom: #e4e4e4 1px solid;
+
+    .delimiter {
+        border-right: #e4e4e4 1px solid;
+        height: 2.5rem;
+        margin: 0 0.6rem;
+    }
 
     .refresh {
         opacity: 0.5;
@@ -34,22 +40,26 @@
     }
 }
 
-@keyframes show-agents {
-    0% {
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
-    }
+.welcome {
+    position: absolute;
+    left: 0;
+    right: 0;
+    display: flex;
+    font-size: 10vw;
+    line-height: 30vw;
+    align-items: center;
+    justify-content: center;
+
+    animation-duration: 3s;
+    animation-name: welcome;
+    animation-fill-mode: forwards;
 }
 
 mat-grid-list {
     margin: 1.5rem 1rem;
 
-    opacity: 0;
-    animation-name: show-agents;
-    animation-duration: 1s;
-    animation-delay: 1s;
+    animation-name: agents;
+    animation-duration: 3.5s;
     animation-fill-mode: forwards;
 
     mat-grid-tile {
@@ -67,4 +77,26 @@ mat-grid-list {
 
 button {
     text-transform: uppercase;
+}
+
+
+@keyframes welcome {
+    0%, 20% {
+        opacity: 0;
+    }
+    50%, 80% {
+        opacity: 0.3;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes agents {
+    0%, 80% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }

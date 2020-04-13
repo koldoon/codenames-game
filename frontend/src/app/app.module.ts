@@ -4,6 +4,7 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatChipsModule } from '@angular/material/chips';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatGridListModule } from '@angular/material/grid-list';
@@ -48,7 +49,8 @@ import { StartComponent } from './components/start/start.component';
         MatProgressBarModule,
         MatRippleModule,
         MatIconModule,
-        MatBadgeModule
+        MatBadgeModule,
+        MatChipsModule
     ],
     providers: [AppRoutingNavigation],
     bootstrap: [AppComponent]

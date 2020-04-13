@@ -1,13 +1,17 @@
 <div class="container">
     <mat-toolbar class="toolbar">
-        <button mat-stroked-button (click)="onCodenamesClick()">Codenames</button>
-        <button mat-stroked-button (click)="onNewGameClick()">Новая игра</button>
-        <button mat-stroked-button color="primary"
-            [matBadge]="playersCount.toString()" [matBadgeHidden]="playersCount <= 1"
-            (click)="onCopyGameLinkClick()">
+        <!--        <button mat-stroked-button (click)="onCodenamesClick()">Codenames</button>-->
 
-            Ссылка на игру
-        </button>
+        <button mat-stroked-button color="primary" (click)="onCopyGameLinkClick()">Ссылка на игру</button>
+        <button mat-stroked-button color="accent" (click)="onNewGameClick()">Новая игра</button>
+
+        <div class="delimiter"></div>
+
+        <mat-chip-list>
+            <mat-chip color="accent" selected *ngIf="game?.gameInChain > 1">{{game?.gameInChain - 1}} сыграно</mat-chip>
+            <mat-chip selected *ngIf="playersCount > 1">{{playersCount}} он-лайн</mat-chip>
+            <mat-chip disabled selected *ngIf="playersCount <= 1"> ждем игроков...</mat-chip>
+        </mat-chip-list>
 
         <div><!-- spacer --></div>
 
@@ -22,6 +26,10 @@
             <span class="mat-h1"><strong>{{game?.redsLeft}}</strong></span>
         </div>
     </mat-toolbar>
+
+    <div class="welcome">
+        Готовы?
+    </div>
 
     <mat-grid-list cols="5" rowHeight="2:0.9" gutterSize="0.5rem" *ngIf="!error && game">
         <mat-grid-tile *ngFor="let agent of game.board; let i = index; trackBy: agentId">
