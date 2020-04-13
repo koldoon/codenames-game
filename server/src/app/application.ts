@@ -1,6 +1,7 @@
 import * as express from 'express';
 import * as express_ws from 'express-ws';
 import { initModules } from '../core/init_modules';
+import { ErrorsController } from './errors_controller';
 import { FrontendController } from './frontend_controller';
 import { GamesController } from './games_controller';
 import { GamesGateway } from './games_gateway';
@@ -15,25 +16,25 @@ export class Application {
         });
     }
 
-    // Application Context
+    private async bootstrap() {
+        const app = express();
+        const ws = express_ws(app);
 
-    app = express();
-    ws = express_ws(this.app);
+        const gamesService = new GamesService();
+        const gamesGateway = new GamesGateway(ws.app, gamesService);
+        const gamesController = new GamesController(app, gamesService);
+        const frontendController = new FrontendController(app);
+        const errorsController = new ErrorsController(app);
 
-    gamesService = new GamesService();
-    gamesGateway = new GamesGateway(this.ws.app, this.gamesService);
-    gamesController = new GamesController(this.app, this.gamesService);
-    frontendController = new FrontendController(this.app);
-
-    async bootstrap() {
         await initModules(
-            this.gamesService,
-            this.gamesController,
-            this.gamesGateway,
-            this.frontendController
+            gamesService,
+            gamesController,
+            gamesGateway,
+            frontendController,
+            errorsController
         );
 
-        await this.app
+        await app
             .use(helmet())
             .listen(this.port, '0.0.0.0');
     }
