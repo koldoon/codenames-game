@@ -1,6 +1,6 @@
 import { Application } from 'express-ws';
 import * as WebSocket from 'ws';
-import { AgentUncoveredMessage, GameMessage, GameMessageKind, JoinGameMessage, PlayersChangeMessage } from '../api/ws/game_message';
+import { AgentUncoveredMessage, GameMessage, GameMessageKind, JoinGameMessage, PlayersChangeMessage } from '../api/ws/game_messages';
 import { asyncDelay } from '../core/async_delay';
 import { bindClass } from '../core/bind_class';
 import { OnApplicationInit } from '../core/on_application_init';

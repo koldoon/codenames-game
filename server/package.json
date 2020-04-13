@@ -7,8 +7,8 @@
   "license": "UNLICENSED",
   "scripts": {
     "link-nm": "ln -sf ../../server/node_modules ../dist/server/node_modules",
-    "prebuild": "rimraf dist",
-    "build": "tsc",
+    "prebuild": "rimraf ../dist/server",
+    "build": "tsc && npm run link-nm",
     "start": "node ../dist/server/main",
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "eslint \"{src,appns,libs,test}/**/*.ts\" --fix"
@@ -19,6 +19,7 @@
     "express-ws": "^4.0.0",
     "helmet": "^3.22.0",
     "http-errors": "^1.7.3",
+    "rimraf": "^3.0.2",
     "rxjs": "^6.5.5",
     "shuffle-array": "^1.0.1",
     "uuid": "^7.0.3",

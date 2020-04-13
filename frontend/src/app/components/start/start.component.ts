@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
-import { NewGameResponse } from '../../../../../server/src/api/new_game_response';
+import { NewGameResponse } from '../../../../../server/src/api/http/new_game_response';
 import { AppRoutingNavigation } from '../../app.routing.navigation';
 
 @Component({

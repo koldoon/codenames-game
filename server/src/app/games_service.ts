@@ -4,7 +4,7 @@ import { AgentSide } from '../api/agent_side';
 import { Game } from '../api/game';
 import { PlayerType } from '../api/player_type';
 import { asyncDelay } from '../core/async_delay';
-import { httpAssertFound } from '../core/http_assert_exists';
+import { httpAssertFound } from '../core/http_asserts';
 import { OnApplicationInit } from '../core/on_application_init';
 import { DictionaryModel } from '../model/dictionary_model';
 import { GameModel } from '../model/game_model';
@@ -105,6 +105,18 @@ export class GamesService implements OnApplicationInit {
         return <Agent> agent;
     }
 
+    /**
+     * Game is treated as "old" if it hasn't been modified longer
+     * than "intervalMs". If game is part of game chain, all of games
+     * in chain have to be "untouched" during "intervalMs", otherwise
+     * the whole chain is marked as "active" and remains in memory.
+     *
+     * This is done because in real any player can join the game
+     * by link to any of chained games, so they must exist the whole time.
+     *
+     * @param {number} intervalMs
+     * @returns {Promise<void>}
+     */
     private async beginOldGamesRemovingCycle(intervalMs: number) {
         await asyncDelay(intervalMs);
 
@@ -112,7 +124,6 @@ export class GamesService implements OnApplicationInit {
         const activeGames = new Map<GameId, GameModel>();
         const oldGames = new Map<GameId, GameModel>();
 
-        // game is active if one of the games in chain is active
         for (const g of this.games) {
             const [gameId, game] = g;
 

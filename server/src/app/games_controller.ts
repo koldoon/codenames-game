@@ -1,7 +1,7 @@
 import { Application, NextFunction, Request, Response, Router } from 'express';
-import { GameStatusResponse } from '../api/game_status_response';
-import { NewGameResponse } from '../api/new_game_response';
-import { UncoverAgentResponse } from '../api/uncover_agent_response';
+import { GameStatusResponse } from '../api/http/game_status_response';
+import { NewGameResponse } from '../api/http/new_game_response';
+import { UncoverAgentResponse } from '../api/http/uncover_agent_response';
 import { bindClass } from '../core/bind_class';
 import { OnApplicationInit } from '../core/on_application_init';
 import { GamesService } from './games_service';
