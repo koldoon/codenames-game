@@ -31,7 +31,7 @@ export class GameModel {
         if (!names || names.length < this.boardSize)
             throw Error(`We need at least ${this.boardSize} words for a game`);
 
-        const boardConfig = GameModel.createRandomizedAgentsSidesList();
+        const boardConfig = GameModel.createRandomizedAgentsSidesList(this.boardSize);
         this.firstTurn = boardConfig.firstTurnSide;
         this.firstTurn == AgentSide.BLUE
             ? this.bluesLeft += 1
@@ -69,11 +69,11 @@ export class GameModel {
         return agent;
     }
 
-    private static createRandomizedAgentsSidesList() {
+    private static createRandomizedAgentsSidesList(boardSize: number) {
         const sides: AgentSide[] = [
-            ...Array(7).fill(AgentSide.NEUTRAL), AgentSide.BLACK,
-            ...Array(8).fill(AgentSide.BLUE),
-            ...Array(8).fill(AgentSide.RED)
+            ...Array((boardSize - 1) / 3 - 1).fill(AgentSide.NEUTRAL), AgentSide.BLACK,
+            ...Array((boardSize - 1) / 3).fill(AgentSide.BLUE),
+            ...Array((boardSize - 1) / 3).fill(AgentSide.RED)
         ];
 
         const firstTurnSide = Math.random() > 0.5 ? AgentSide.RED : AgentSide.BLUE;
