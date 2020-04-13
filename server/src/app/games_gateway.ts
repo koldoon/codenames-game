@@ -84,8 +84,10 @@ export class GamesGateway implements OnApplicationInit {
         this.removePlayerFromGame(ws);
     }
 
-    // Remove Player from currently playing Game.
-    // If the Game is empty - remove it as well.
+    /**
+     * Remove Player from currently playing Game.
+     * If the Game is empty - remove it as well.
+     */
     private removePlayerFromGame(ws: WebSocket) {
         const gameId = this.playerGame.get(ws);
         if (!gameId)
@@ -108,18 +110,22 @@ export class GamesGateway implements OnApplicationInit {
         }
     }
 
-    // Conventional method.
-    // Creates game players Set if not exists yet.
+    /**
+     * Conventional method.
+     * Creates game players Set if not exists yet.
+     */
     private getGamePlayers(gameId: GameId) {
         if (!this.gamePlayers.get(gameId))
             this.gamePlayers.set(gameId, new Set<WebSocket>());
         return this.gamePlayers.get(gameId)!;
     }
 
-    // Periodically send 'ping' message to web-socket clients.
-    // This is 'must have' when server is located behind the proxy, like nginx.
-    // Otherwise connection will be closed due to inactivity
-    // (for nginx default is 30 sec).
+    /**
+     * Periodically send 'ping' message to web-socket clients.
+     * This is 'must have' when server is located behind the proxy, like nginx.
+     * Otherwise connection will be closed due to inactivity
+     * (for nginx default is 30 sec).
+     */
     private async beginClientsPingPongCycle(intervalMs: number) {
         await asyncDelay(intervalMs);
 

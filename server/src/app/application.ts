@@ -7,9 +7,10 @@ import { GamesController } from './games_controller';
 import { GamesGateway } from './games_gateway';
 import { GamesService } from './games_service';
 import * as helmet from 'helmet';
+import * as compression from 'compression';
 
 export class Application {
-    constructor(private port: number) {
+    constructor(private port: number | string) {
         this.bootstrap().then(() => {
             console.warn('Application started');
             console.warn(`Listening on port: ${port}`);
@@ -26,6 +27,10 @@ export class Application {
         const frontendController = new FrontendController(app);
         const errorsController = new ErrorsController(app);
 
+        app
+            .use(helmet())
+            .use(compression());
+
         await initModules(
             gamesService,
             gamesController,
@@ -34,8 +39,6 @@ export class Application {
             errorsController
         );
 
-        await app
-            .use(helmet())
-            .listen(this.port, '0.0.0.0');
+        await app.listen(Number(this.port), '0.0.0.0');
     }
 }
