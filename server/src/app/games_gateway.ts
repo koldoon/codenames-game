@@ -117,7 +117,7 @@ export class GamesGateway implements OnApplicationInit {
     }
 
     // Periodically send 'ping' message to web-socket clients.
-    // This is 'must have' when server locates behind the proxy, like nginx.
+    // This is 'must have' when server is located behind the proxy, like nginx.
     // Otherwise connection will be closed due to inactivity
     // (for nginx default is 30 sec).
     private async beginClientsPingPongCycle(intervalMs: number) {

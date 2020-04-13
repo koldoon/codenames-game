@@ -1,3 +1,4 @@
+import { Clipboard } from '@angular/cdk/clipboard';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -14,7 +15,6 @@ import { PlayerType } from '../../../../../server/src/api/player_type';
 import { UncoverAgentResponse } from '../../../../../server/src/api/uncover_agent_response';
 import { GameMessage, GameMessageKind, JoinGameMessage, PingGameMessage } from '../../../../../server/src/api/ws/game_message';
 import { AppRoutingNavigation } from '../../app.routing.navigation';
-import { copyToClipboard } from '../../utils/copy_to_clipboard';
 import { getWebSocketUrl } from '../../utils/get_web_socket_url';
 import { switchHandler } from '../../utils/switch_handler';
 
@@ -30,7 +30,8 @@ export class BoardComponent implements OnInit, OnDestroy {
         private navigation: AppRoutingNavigation,
         private activatedRoute: ActivatedRoute,
         private cd: ChangeDetectorRef,
-        private snackBar: MatSnackBar) { }
+        private snackBar: MatSnackBar,
+        private clipboard: Clipboard) { }
 
     error = '';
     playerType = PlayerType.Regular;
@@ -164,8 +165,8 @@ export class BoardComponent implements OnInit, OnDestroy {
             );
     }
 
-    onCopyGameLinkClick() {
-        copyToClipboard(this.navigation.getJoinLink(this.gameId));
+    async onCopyGameLinkClick() {
+        await this.clipboard.copy(this.navigation.getJoinLink(this.gameId));
         this.snackBar.open('Ссылка скопирована в буфер обмена.', 'Огонь!', {
             horizontalPosition: 'center',
             duration: 3000

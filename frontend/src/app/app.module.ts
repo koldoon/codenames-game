@@ -1,3 +1,4 @@
+import { ClipboardModule } from '@angular/cdk/clipboard';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { MatBadgeModule } from '@angular/material/badge';
@@ -39,6 +40,7 @@ import { StartComponent } from './components/start/start.component';
         HttpClientModule,
         AppRouting,
         BrowserAnimationsModule,
+        ClipboardModule,
         MatButtonModule,
         MatDividerModule,
         MatSnackBarModule,
