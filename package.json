@@ -1,0 +1,13 @@
+{
+  "name": "codenames-game",
+  "version": "0.0.1",
+  "description": "Codenames online game implementation",
+  "author": "koldoon",
+  "private": true,
+  "license": "UNLICENSED",
+  "scripts": {
+    "install": "cd ./server && npm i && cd ../frontend &&  npm i && cd ..",
+    "build": "cd ./server && npm run build && cd ../frontend && npm run build && cd ..",
+    "start": "node ./dist/server/main.js"
+  }
+}

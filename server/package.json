@@ -8,7 +8,7 @@
   "scripts": {
     "link-nm": "ln -sf ../../server/node_modules ../dist/server/node_modules",
     "prebuild": "rimraf ../dist/server",
-    "build": "tsc && npm run link-nm",
+    "build": "tsc && npx copy-node-modules ./ ../dist/server",
     "start": "node ../dist/server/main",
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "eslint \"{src,appns,libs,test}/**/*.ts\" --fix"
@@ -37,6 +37,7 @@
     "@types/ws": "^7.2.3",
     "@typescript-eslint/eslint-plugin": "^2.27.0",
     "@typescript-eslint/parser": "^2.27.0",
+    "copy-node-modules": "^1.1.1",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.1",
     "eslint-plugin-import": "^2.20.2",
