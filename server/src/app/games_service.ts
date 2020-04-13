@@ -13,7 +13,7 @@ import { GagaDictionary } from '../model/impl/gaga_dictionary';
 export type GameId = string;
 
 export class GamesService implements OnApplicationInit {
-    readonly agentUncovered$ = new Subject<{ game: Game, agent: Agent }>();
+    readonly agentUncovered$ = new Subject<{ game: GameModel, agent: Agent }>();
     readonly gamesChain$ = new Subject<{ prevGameId: string, nextGameId: string }>();
 
     private readonly dictionary: DictionaryModel = new GagaDictionary();
@@ -26,16 +26,16 @@ export class GamesService implements OnApplicationInit {
     }
 
     async createNewGame(prevGameId?: string) {
-        // look if new game was already created by somebody
+        // look if new game has been already created by somebody
         if (prevGameId) {
             const prevGame = this.games.get(prevGameId);
 
-            if (prevGame && prevGame.nextGameId) {
+            if (prevGame && prevGame.nextGame) {
                 let newGame: GameModel | undefined = prevGame;
 
-                while (newGame && newGame.nextGameId) {
-                    newGame = this.games.get(newGame.nextGameId);
-                }
+                // find the newest game in chain
+                while (newGame && newGame.nextGame)
+                    newGame = newGame.nextGame;
 
                 if (newGame && newGame.id != prevGame.id)
                     return newGame.id;
@@ -51,7 +51,9 @@ export class GamesService implements OnApplicationInit {
             const prevGame = this.games.get(prevGameId);
 
             if (prevGame) {
-                prevGame.nextGameId = newGame.id;
+                prevGame.nextGame = newGame;
+                newGame.prevGame = prevGame;
+                newGame.gameInChain = prevGame.gameInChain + 1;
                 this.gamesChain$.next({ prevGameId: prevGame.id, nextGameId: newGame.id });
             }
         }
@@ -61,8 +63,8 @@ export class GamesService implements OnApplicationInit {
 
     async getGameStatus(gameId: GameId, playerType: PlayerType) {
         let game = this.games.get(gameId);
-        while (game && game.nextGameId)
-            game = this.games.get(game.nextGameId);
+        while (game && game.nextGame)
+            game = game.nextGame;
 
         httpAssertFound(game, 'Game not found');
         let board: Agent[];
@@ -79,7 +81,17 @@ export class GamesService implements OnApplicationInit {
                 side: card.uncovered ? card.side : AgentSide.UNKNOWN
             });
         }
-        return <Game> { ...game, board };
+
+        return <Game> {
+            id: game.id,
+            redsLeft: game.redsLeft,
+            bluesLeft: game.bluesLeft,
+            firstTurn: game.firstTurn,
+            isFinished: game.isFinished,
+            nextGameId: game.nextGameId,
+            gameInChain: game.gameInChain,
+            board
+        };
     }
 
     async uncoverAgent(gameId: string, agentIndex: number) {
@@ -95,20 +107,60 @@ export class GamesService implements OnApplicationInit {
 
     private async beginOldGamesRemovingCycle(intervalMs: number) {
         await asyncDelay(intervalMs);
-        const now = Date.now();
 
-        const oldGames: GameId[] = [];
+        const now = Date.now();
+        const activeGames = new Map<GameId, GameModel>();
+        const oldGames = new Map<GameId, GameModel>();
+
+        // game is active if one of the games in chain is active
         for (const g of this.games) {
             const [gameId, game] = g;
-            if (now - game.lastModified.getTime() > intervalMs)
-                oldGames.push(gameId);
+
+            if (activeGames.has(gameId) || oldGames.has(gameId))
+                continue;
+
+            let linkedGame: GameModel | undefined;
+            if (now - game.lastModified.getTime() < intervalMs) {
+                activeGames.set(game.id, game);
+
+                linkedGame = game;
+                while (linkedGame.nextGame) {
+                    linkedGame = linkedGame.nextGame;
+                    activeGames.set(linkedGame.id, linkedGame);
+                }
+
+                linkedGame = game;
+                while (linkedGame.prevGame) {
+                    linkedGame = linkedGame.prevGame;
+                    activeGames.set(linkedGame.id, linkedGame);
+                }
+            }
+            else {
+                const unknownChain: GameModel[] = [game];
+                let isActive = false;
+
+                linkedGame = game;
+                while (linkedGame.nextGame) {
+                    linkedGame = linkedGame.nextGame;
+                    unknownChain.push(linkedGame);
+                    isActive = isActive || now - linkedGame.lastModified.getTime() < intervalMs;
+                }
+
+                linkedGame = game;
+                while (linkedGame.prevGame) {
+                    linkedGame = linkedGame.prevGame;
+                    unknownChain.push(linkedGame);
+                    isActive = isActive || now - linkedGame.lastModified.getTime() < intervalMs;
+                }
+
+                isActive
+                    ? unknownChain.forEach(game => activeGames.set(game.id, game))
+                    : unknownChain.forEach(game => oldGames.set(game.id, game));
+            }
         }
 
-        for (const gameId of oldGames) {
-            this.games.delete(gameId);
-        }
-
-        console.log(`Old games cleaned: ${oldGames.length}`);
+        console.log(`Old games to clear: ${oldGames.size}`);
+        this.games = activeGames;
         this.beginOldGamesRemovingCycle(intervalMs);
     }
 }

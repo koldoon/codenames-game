@@ -8,5 +8,7 @@ export interface Game {
     redsLeft: number;
     bluesLeft: number;
     isFinished: boolean;
+
     nextGameId: string;
+    gameInChain: number;
 }

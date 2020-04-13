@@ -52,7 +52,6 @@ export class GamesGateway implements OnApplicationInit {
                 ws.send(JSON.stringify(msg));
             }
             catch (e) {
-                console.warn(`Could not send message to client of game: ${gameId}}`);
             }
         }
     }

@@ -1,11 +1,10 @@
 import { Agent } from '../api/agent';
 import { AgentSide } from '../api/agent_side';
-import { Game } from '../api/game';
 import { bindClass } from '../core/bind_class';
 import shuffle = require('shuffle-array');
 import uuid = require('uuid');
 
-export class GameModel implements Game {
+export class GameModel {
     readonly boardSize = 25;
     readonly id = uuid.v4();
 
@@ -15,10 +14,17 @@ export class GameModel implements Game {
     bluesLeft = (this.boardSize - 1) / 3;
     isFinished = false;
     lastModified = new Date();
-    nextGameId = '';
+
+    prevGame: GameModel | undefined; // previous game in chain
+    nextGame: GameModel | undefined; // next game in chain
+    gameInChain = 1;                 // counter of games in chain
 
     constructor() {
         bindClass(this);
+    }
+
+    get nextGameId(): string {
+        return this.nextGame ? this.nextGame.id : '';
     }
 
     init(names: string[]) {
