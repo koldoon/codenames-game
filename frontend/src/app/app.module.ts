@@ -7,6 +7,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatRippleModule } from '@angular/material/core';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatIconModule } from '@angular/material/icon';
@@ -24,6 +25,7 @@ import { BoardComponent } from './components/board/board.component';
 import { ErrorComponent } from './components/error/error.component';
 import { JoinComponent } from './components/join/join.component';
 import { StartComponent } from './components/start/start.component';
+import { ConfirmComponent } from './components/confirm/confirm.component';
 
 @NgModule({
     declarations: [
@@ -33,7 +35,8 @@ import { StartComponent } from './components/start/start.component';
         JoinComponent,
         AgentComponent,
         ErrorComponent,
-        ErrorComponent
+        ErrorComponent,
+        ConfirmComponent
     ],
     imports: [
         BrowserModule,
@@ -52,7 +55,8 @@ import { StartComponent } from './components/start/start.component';
         MatRippleModule,
         MatIconModule,
         MatBadgeModule,
-        MatChipsModule
+        MatChipsModule,
+        MatDialogModule
     ],
     providers: [AppRoutingNavigation],
     bootstrap: [AppComponent]

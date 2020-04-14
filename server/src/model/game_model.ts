@@ -50,20 +50,28 @@ export class GameModel {
     }
 
     uncoverAgent(index: number) {
+        const agent = this.board[index];
+
+        if (this.isFinished)
+            return agent;
+
         this.lastModified = new Date();
 
-        const agent = this.board[index];
         if (agent && !agent.uncovered) {
             agent.uncovered = true;
 
-            if (agent.side == AgentSide.BLUE)
+            if (agent.side == AgentSide.BLUE) {
                 this.bluesLeft -= 1;
-
-            if (agent.side == AgentSide.RED)
+            }
+            else if (agent.side == AgentSide.RED) {
                 this.redsLeft -= 1;
+            }
+            else if (agent.side == AgentSide.BLACK) {
+                this.isFinished = true;
+            }
         }
 
-        if (!this.redsLeft || !this.bluesLeft || agent.side == AgentSide.BLACK)
+        if (!this.redsLeft || !this.bluesLeft)
             this.isFinished = true;
 
         return agent;

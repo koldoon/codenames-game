@@ -33,4 +33,5 @@ export interface AgentUncoveredMessage {
     agent: Agent;
     redsLeft: number;
     bluesLeft: number;
+    isFinished: boolean;
 }

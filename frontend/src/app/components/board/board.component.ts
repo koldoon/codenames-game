@@ -1,6 +1,7 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -11,12 +12,13 @@ import { AgentSide } from '../../../../../server/src/api/agent_side';
 import { Game } from '../../../../../server/src/api/game';
 import { GameStatusResponse } from '../../../../../server/src/api/http/game_status_response';
 import { NewGameResponse } from '../../../../../server/src/api/http/new_game_response';
-import { PlayerType } from '../../../../../server/src/api/player_type';
 import { UncoverAgentResponse } from '../../../../../server/src/api/http/uncover_agent_response';
+import { PlayerType } from '../../../../../server/src/api/player_type';
 import { GameMessage, GameMessageKind, JoinGameMessage, PingGameMessage } from '../../../../../server/src/api/ws/game_messages';
 import { AppRoutingNavigation } from '../../app.routing.navigation';
 import { getWebSocketUrl } from '../../utils/get_web_socket_url';
 import { switchHandler } from '../../utils/switch_handler';
+import { ConfirmComponent } from '../confirm/confirm.component';
 
 @Component({
     selector: 'app-board',
@@ -31,7 +33,8 @@ export class BoardComponent implements OnInit, OnDestroy {
         private activatedRoute: ActivatedRoute,
         private cd: ChangeDetectorRef,
         private snackBar: MatSnackBar,
-        private clipboard: Clipboard) { }
+        private clipboard: Clipboard,
+        private dialog: MatDialog) { }
 
     error = '';
     playerType = PlayerType.Regular;
@@ -91,6 +94,7 @@ export class BoardComponent implements OnInit, OnDestroy {
             };
             this.game.bluesLeft = msg.bluesLeft;
             this.game.redsLeft = msg.redsLeft;
+            this.game.isFinished = msg.isFinished;
             this.uncoveringInProgress.delete(msg.agent.index);
         }
         else if (msg.kind === GameMessageKind.PlayerJoined || msg.kind === GameMessageKind.PlayerLeft) {
@@ -178,6 +182,19 @@ export class BoardComponent implements OnInit, OnDestroy {
     }
 
     async onNewGameClick() {
+        if (this.game.isFinished) {
+            this.createNewLinkedGame();
+        }
+        else {
+            const dialogRef = this.dialog.open(ConfirmComponent, {});
+            dialogRef.afterClosed().subscribe(async value => {
+                if (value === 1)
+                    this.createNewLinkedGame();
+            });
+        }
+    }
+
+    async createNewLinkedGame() {
         await this.httpClient
             .get<NewGameResponse>(`/api/games/create?from=${this.gameId}`)
             .toPromise();

@@ -27,7 +27,8 @@ export class GamesGateway implements OnApplicationInit {
                 kind: GameMessageKind.AgentUncovered,
                 agent: value.agent,
                 redsLeft: value.game.redsLeft,
-                bluesLeft: value.game.bluesLeft
+                bluesLeft: value.game.bluesLeft,
+                isFinished:value.game.isFinished
             });
         });
 
