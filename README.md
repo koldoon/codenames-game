@@ -7,12 +7,12 @@ one hour of inactivity.
 The Game is implemented with Russian interface and includes Russian words dictionary (so far).
 You can create your own dictionary by implementing `DictionaryModel` interface (see `GamesService` for usage).
 
-## Steps to run:
+## Steps to run
  - Install [Node.js](https://nodejs.org/en/)
- - Clone this repo
+ - Clone this repo: `$ git clone https://github.com/koldoon/codenames-game.git`
  - `$ cd codenames-game`
  - `$ npm i` - install dependencies
- - `$ npm run build` - build sources into ./dist
+ - `$ npm run build` - build sources into `./dist`
  - `$ npm run start` - start game server serving API and frontend
  - Open `http://localhost:8091/` and have a fun
 
