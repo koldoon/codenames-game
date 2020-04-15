@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { AgentSide } from '../../../../../server/src/api/agent_side';
+import { AgentSide } from '../../../../../server/src/model/agent_side';
 
 @Component({
     selector: 'app-agent',

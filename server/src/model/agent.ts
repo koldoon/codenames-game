@@ -1,4 +1,4 @@
-import { AgentSide } from './agent_side';
+import { AgentSide } from '../model/agent_side';
 
 export interface Agent {
     readonly index: number;

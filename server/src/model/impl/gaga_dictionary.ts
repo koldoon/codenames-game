@@ -1,7 +1,7 @@
 import * as shuffle from 'shuffle-array';
-import { DictionaryModel } from '../dictionary_model';
+import { Dictionary } from '../dictionary';
 
-export class GagaDictionary implements DictionaryModel {
+export class GagaDictionary implements Dictionary {
     private readonly words =
         'вождь подьем полис запах строй гений лимузин паук луч полиция ночь ' +
         'механизм нож помет лист германия журавль смерть дума корабль фокус церковь ' +

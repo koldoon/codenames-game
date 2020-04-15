@@ -1,5 +1,5 @@
-import { Game } from '../game';
+import { GameStatus } from '../game_status';
 
 export interface GameStatusResponse {
-    game: Game;
+    game: GameStatus;
 }

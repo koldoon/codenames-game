@@ -1,4 +1,6 @@
-import { Application, NextFunction, Request, Response, Router } from 'express';
+import { Application, json, NextFunction, Request, Response, Router } from 'express';
+import { CommitCodeRequest } from '../api/http/commit_code_request';
+import { CommitCodeResponse } from '../api/http/commit_code_response';
 import { GameStatusResponse } from '../api/http/game_status_response';
 import { NewGameResponse } from '../api/http/new_game_response';
 import { UncoverAgentResponse } from '../api/http/uncover_agent_response';
@@ -18,7 +20,8 @@ export class GamesController implements OnApplicationInit {
         const router = Router()
             .get('/create', this.createGame)
             .get('/:gameId/status', this.getGameStatus)
-            .get('/:gameId/agents/:agentId/uncover', this.uncoverAgent);
+            .post('/:gameId/agents/:agentId/uncover', this.uncoverAgent)
+            .post('/:gameId/commit-code', json(), this.commitCode);
 
         this.app.use('/api/games', router);
     }
@@ -42,6 +45,14 @@ export class GamesController implements OnApplicationInit {
         const { gameId, agentId } = req.params;
         this.gamesService.uncoverAgent(gameId, Number(agentId))
             .then(agent => res.json(<UncoverAgentResponse> { agent }))
+            .catch(next);
+    }
+
+    commitCode(req: Request, res: Response, next: NextFunction) {
+        const { gameId } = req.params;
+        const { code, count } = req.body as CommitCodeRequest;
+        this.gamesService.commitCode(gameId, code, count)
+            .then(turn => res.json(<CommitCodeResponse> { turn }))
             .catch(next);
     }
 }

@@ -5,11 +5,11 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
-import { delay, retryWhen } from 'rxjs/operators';
+import { delay, finalize, retryWhen } from 'rxjs/operators';
 import { webSocket } from 'rxjs/webSocket';
-import { Agent } from '../../../../../server/src/api/agent';
-import { AgentSide } from '../../../../../server/src/api/agent_side';
-import { Game } from '../../../../../server/src/api/game';
+import { GameStatus } from '../../../../../server/src/api/game_status';
+import { Agent } from '../../../../../server/src/model/agent';
+import { AgentSide } from '../../../../../server/src/model/agent_side';
 import { GameStatusResponse } from '../../../../../server/src/api/http/game_status_response';
 import { NewGameResponse } from '../../../../../server/src/api/http/new_game_response';
 import { UncoverAgentResponse } from '../../../../../server/src/api/http/uncover_agent_response';
@@ -41,7 +41,7 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
     cardFontSize = 12;
     playerType = PlayerType.Regular;
     gameId = '';
-    game: Game;
+    game: GameStatus;
     playersCount = 0;
 
     loadingInProgress = false;
@@ -125,6 +125,11 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
 
         this.httpClient
             .get<GameStatusResponse>(`/api/games/${this.gameId}/status?player=${this.playerType}`)
+            .pipe(finalize(() => {
+                this.loadingInProgress = false;
+                this.uncoveringInProgress.clear();
+                this.cd.markForCheck();
+            }))
             .subscribe(
                 value => {
                     this.game = value.game;
@@ -137,14 +142,8 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
                     }
                 },
                 error => {
-                    if (error instanceof HttpErrorResponse) {
+                    if (error instanceof HttpErrorResponse)
                         this.navigation.toError(error.status);
-                    }
-                },
-                () => {
-                    this.loadingInProgress = false;
-                    this.uncoveringInProgress.clear();
-                    this.cd.markForCheck();
                 }
             );
     }
@@ -157,13 +156,20 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
         this.cd.markForCheck();
 
         this.httpClient
-            .get<UncoverAgentResponse>(`/api/games/${this.gameId}/agents/${index}/uncover`)
+            .post<UncoverAgentResponse>(`/api/games/${this.gameId}/agents/${index}/uncover`, {})
+            .pipe(finalize(() => {
+                this.uncoveringInProgress.delete(index);
+                this.cd.markForCheck();
+            }))
             .subscribe(
                 value => this.game.board[index] = { ...value.agent, uncovered: false },
-                error => this.snackBar.open('Что-то пошло не так... :(', 'Блять!', { duration: 5000 }),
-                () => {
-                    this.uncoveringInProgress.delete(index);
-                    this.cd.markForCheck();
+                error => {
+                    if (error instanceof HttpErrorResponse) {
+                        if (error.status !== 400)
+                            this.snackBar.open('Что-то пошло не так... :(', 'Блять!', { duration: 5000 })
+                    }
+
+                    return error;
                 }
             );
     }

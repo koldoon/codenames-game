@@ -1,23 +1,24 @@
 import { Subject } from 'rxjs';
-import { Agent } from '../api/agent';
-import { AgentSide } from '../api/agent_side';
-import { Game } from '../api/game';
+import { Agent } from '../model/agent';
+import { AgentSide } from '../model/agent_side';
 import { PlayerType } from '../api/player_type';
 import { asyncDelay } from '../core/async_delay';
-import { httpAssertFound } from '../core/http_asserts';
+import { httpAssertFound, httpAssertGoodRequest } from '../core/http_asserts';
 import { OnApplicationInit } from '../core/on_application_init';
-import { DictionaryModel } from '../model/dictionary_model';
-import { GameModel } from '../model/game_model';
+import { Dictionary } from '../model/dictionary';
+import { Game } from '../model/game';
 import { GagaDictionary } from '../model/impl/gaga_dictionary';
+import { Turn } from '../model/turn';
 
 export type GameId = string;
 
 export class GamesService implements OnApplicationInit {
-    readonly agentUncovered$ = new Subject<{ game: GameModel, agent: Agent }>();
+    readonly agentUncovered$ = new Subject<{ game: Game, agent: Agent }>();
+    readonly turned$ = new Subject<{ game: Game, turn: Turn }>();
     readonly gamesChain$ = new Subject<{ prevGameId: string, nextGameId: string }>();
 
-    private readonly dictionary: DictionaryModel = new GagaDictionary();
-    private games = new Map<GameId, GameModel>();
+    private readonly dictionary: Dictionary = new GagaDictionary();
+    private games = new Map<GameId, Game>();
 
     async init() {
         console.debug('Using games dictionary: ' + this.dictionary.constructor.name);
@@ -31,7 +32,7 @@ export class GamesService implements OnApplicationInit {
             const prevGame = this.games.get(prevGameId);
 
             if (prevGame && prevGame.nextGame) {
-                let newGame: GameModel | undefined = prevGame;
+                let newGame: Game | undefined = prevGame;
 
                 // find the newest game in chain
                 while (newGame && newGame.nextGame)
@@ -42,7 +43,7 @@ export class GamesService implements OnApplicationInit {
             }
         }
 
-        const newGame = new GameModel();
+        const newGame = new Game();
         const randomWords = await this.dictionary.getRandomWords(newGame.boardSize);
         newGame.init(randomWords);
         this.games.set(newGame.id, newGame);
@@ -86,7 +87,7 @@ export class GamesService implements OnApplicationInit {
             id: game.id,
             redsLeft: game.redsLeft,
             bluesLeft: game.bluesLeft,
-            firstTurn: game.firstTurn,
+            turn: game.turn,
             isFinished: game.isFinished,
             nextGameId: game.nextGameId,
             gameInChain: game.gameInChain,
@@ -97,12 +98,24 @@ export class GamesService implements OnApplicationInit {
     async uncoverAgent(gameId: string, agentIndex: number) {
         const game = this.games.get(gameId);
         httpAssertFound(game, 'Game not found');
+        httpAssertFound(game.board[agentIndex], 'Agent not found');
 
         const agent = game.uncoverAgent(agentIndex);
-        httpAssertFound(agent, 'Agent not found');
+        httpAssertGoodRequest(agent, 'Game or turn is finished or not inited');
 
         this.agentUncovered$.next({ game, agent });
-        return <Agent> agent;
+        return agent;
+    }
+
+    async commitCode(gameId: string, code: string, count: number) {
+        const game = this.games.get(gameId);
+        httpAssertFound(game, 'Game not found');
+
+        const turn = game.commitCode(code, count);
+        httpAssertGoodRequest(turn, 'Game is finished');
+
+        this.turned$.next({ game, turn });
+        return turn;
     }
 
     /**
@@ -121,8 +134,8 @@ export class GamesService implements OnApplicationInit {
         await asyncDelay(intervalMs);
 
         const now = Date.now();
-        const activeGames = new Map<GameId, GameModel>();
-        const oldGames = new Map<GameId, GameModel>();
+        const activeGames = new Map<GameId, Game>();
+        const oldGames = new Map<GameId, Game>();
 
         for (const g of this.games) {
             const [gameId, game] = g;
@@ -130,7 +143,7 @@ export class GamesService implements OnApplicationInit {
             if (activeGames.has(gameId) || oldGames.has(gameId))
                 continue;
 
-            let linkedGame: GameModel | undefined;
+            let linkedGame: Game | undefined;
             if (now - game.lastModified.getTime() < intervalMs) {
                 activeGames.set(game.id, game);
 
@@ -147,7 +160,7 @@ export class GamesService implements OnApplicationInit {
                 }
             }
             else {
-                const unknownChain: GameModel[] = [game];
+                const unknownChain: Game[] = [game];
                 let isActive = false;
 
                 linkedGame = game;

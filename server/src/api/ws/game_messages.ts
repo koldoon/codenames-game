@@ -1,22 +1,32 @@
-import { Agent } from '../agent';
+import { Agent } from '../../model/agent';
+import { AgentSide } from '../../model/agent_side';
 
 export enum GameMessageKind {
     JoinGame,
     AgentUncovered,
     PlayerJoined,
     PlayerLeft,
-    Ping
+    Ping,
+    ChatMessage
 }
 
 export type GameMessage =
     | JoinGameMessage
     | AgentUncoveredMessage
     | PlayersChangeMessage
-    | PingGameMessage;
+    | PingGameMessage
+    | ChatMessage;
 
 export interface PingGameMessage {
     kind: GameMessageKind.Ping;
 }
+
+export interface ChatMessage {
+    kind: GameMessageKind.ChatMessage;
+    message: string;
+    side: AgentSide.BLUE | AgentSide.RED;
+}
+
 
 export interface PlayersChangeMessage {
     kind: GameMessageKind.PlayerJoined | GameMessageKind.PlayerLeft;
