@@ -1,6 +1,6 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
@@ -17,7 +17,6 @@ import { PlayerType } from '../../../../../server/src/api/player_type';
 import { GameMessage, GameMessageKind, JoinGameMessage, PingGameMessage } from '../../../../../server/src/api/ws/game_messages';
 import { AppRoutingNavigation } from '../../app.routing.navigation';
 import { getWebSocketUrl } from '../../utils/get_web_socket_url';
-import { switchHandler } from '../../utils/switch_handler';
 import { ConfirmComponent } from '../confirm/confirm.component';
 
 @Component({
@@ -26,7 +25,7 @@ import { ConfirmComponent } from '../confirm/confirm.component';
     styleUrls: ['./board.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BoardComponent implements OnInit, OnDestroy {
+export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
     constructor(
         private httpClient: HttpClient,
         private navigation: AppRoutingNavigation,
@@ -36,13 +35,16 @@ export class BoardComponent implements OnInit, OnDestroy {
         private clipboard: Clipboard,
         private dialog: MatDialog) { }
 
-    error = '';
+    @ViewChild('container')
+    boardView: ElementRef<HTMLDivElement>;
+
+    cardFontSize = 12;
     playerType = PlayerType.Regular;
     gameId = '';
     game: Game;
     playersCount = 0;
 
-    updateInProgress = false;
+    loadingInProgress = false;
     uncoveringInProgress = new Set<number>();
 
     connected$ = new Subject<Event>();
@@ -115,10 +117,10 @@ export class BoardComponent implements OnInit, OnDestroy {
     }
 
     updateGameStatus() {
-        if (this.updateInProgress)
+        if (this.loadingInProgress)
             return;
 
-        this.updateInProgress = true;
+        this.loadingInProgress = true;
         this.cd.markForCheck();
 
         this.httpClient
@@ -136,15 +138,12 @@ export class BoardComponent implements OnInit, OnDestroy {
                 },
                 error => {
                     if (error instanceof HttpErrorResponse) {
-                        switchHandler(error.status, {
-                            404: () => this.error = 'Игра не найдена, проверьте ссылку или создайте новую',
-                            else: () => this.error = 'Что-то пошло не так...'
-                        });
-                        this.cd.markForCheck();
+                        this.navigation.toError(error.status);
                     }
                 },
                 () => {
-                    this.updateInProgress = false;
+                    this.loadingInProgress = false;
+                    this.uncoveringInProgress.clear();
                     this.cd.markForCheck();
                 }
             );
@@ -205,5 +204,14 @@ export class BoardComponent implements OnInit, OnDestroy {
         this.gameStream$.next(<PingGameMessage> {
             kind: GameMessageKind.Ping
         });
+    }
+
+    ngAfterViewInit(): void {
+        this.onBoardResized();
+    }
+
+    @HostListener('window:resize', ['$event'])
+    onBoardResized() {
+        this.cardFontSize = (this.boardView.nativeElement.offsetWidth - 16 * 2 - 8 * 4) / 5 * 0.1;
     }
 }

@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { BoardComponent } from './components/board/board.component';
+import { ErrorComponent } from './components/error/error.component';
 import { JoinComponent } from './components/join/join.component';
 import { StartComponent } from './components/start/start.component';
 
@@ -10,6 +11,7 @@ const routes: Routes = [
     { path: 'game/:gameId', redirectTo: 'game/:gameId/join', pathMatch: 'full' },
     { path: 'game/:gameId/join', component: JoinComponent },
     { path: 'game/:gameId/player/:playerType/board', component: BoardComponent },
+    { path: 'error/:code', component: ErrorComponent },
     { path: '**', redirectTo: 'start' }
 ];
 

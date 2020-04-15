@@ -15,20 +15,8 @@ mat-card.agent {
 
     user-select: none;
 
-    > mat-progress-bar {
-        position: absolute;
-        border-radius: 2px;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        width: 100%;
-        overflow: hidden;
-        height: 3px;
-    }
-
     .agent-name {
         width: 100%;
-        font-size: calc(2.22vw - 0.15rem);
         text-align: center;
         text-transform: uppercase;
     }

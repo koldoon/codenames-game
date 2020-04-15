@@ -10,9 +10,7 @@
         'agent-neutral':side == NEUTRAL
     }">
 
-    <div class="agent-name">
+    <div class="agent-name" [style]="{ 'font-size': fontSize + 'px' }">
         {{name}}
     </div>
-
-    <mat-progress-bar *ngIf="uncoveringInProgress" mode="indeterminate" color="warn"></mat-progress-bar>
 </mat-card>

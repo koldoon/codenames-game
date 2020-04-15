@@ -39,10 +39,32 @@ body {
     box-sizing: border-box;
 }
 
+button {
+    text-transform: uppercase;
+}
+
 .b {
     font-weight: 500;
 }
 
 .flex-grow-1 {
     flex-grow: 1;
+}
+
+// material icons inside mat-icon-button vertical alignment fix
+.mat-icon-button {
+    .mat-button-wrapper {
+        display: flex;
+        align-items: center;
+
+        .material-icons {
+            display: inline-block;
+            margin: 0 auto;
+        }
+    }
+}
+
+// fix for min-with of matInput (it can not be less than 180px)
+.mat-form-field-infix {
+    width: unset !important;
 }

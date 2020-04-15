@@ -25,4 +25,8 @@ export class AppRoutingNavigation {
     getJoinLink(gameId: string) {
         return `${window.location.origin}/game/${gameId}/join`;
     }
+
+    toError(code: number) {
+        return this.router.navigate(['error', code]);
+    }
 }

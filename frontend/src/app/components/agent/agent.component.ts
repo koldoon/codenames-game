@@ -12,6 +12,7 @@ export class AgentComponent {
     @Input() side = AgentSide.UNKNOWN;
     @Input() uncovered = false;
     @Input() uncoveringInProgress = false;
+    @Input() fontSize = 12;
 
     BLUE = AgentSide.BLUE;
     RED = AgentSide.RED;

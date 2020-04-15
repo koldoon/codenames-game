@@ -1,15 +1,16 @@
 .container {
     min-height: 100vh;
-    min-width: 660px;
+    min-width: 780px;
     background-color: #e9e9e9;
     overflow: scroll;
 }
 
-.toolbar {
+mat-toolbar {
     display: grid;
-    grid-template-columns: repeat(4, auto) 1fr repeat(3, auto);
+    grid-template-columns: repeat(5, auto) 1fr repeat(3, auto);
     grid-column-gap: 0.5rem;
     border-bottom: #e4e4e4 1px solid;
+    height: 56px;
 
     .delimiter {
         border-right: #e4e4e4 1px solid;
@@ -19,8 +20,28 @@
 
     .refresh {
         opacity: 0.5;
-        // fix for mat-button-icon icon position
-        font-size: 0;
+    }
+
+    .stat {
+        display: flex;
+        font-size: 14px;
+        text-transform: uppercase;
+
+        div {
+            margin-left: 1rem;
+        }
+
+        .games-played {
+            color: #795548;
+        }
+
+        .wait-for-players {
+            opacity: 0.5;
+        }
+
+        .players-online {
+            color: #558b2f;
+        }
     }
 
     .score {
@@ -29,38 +50,25 @@
         border-radius: 0.2rem;
         width: 2.5rem;
         color: white;
-    }
 
-    .score-blues {
-        background-color: #54a4f3;
-    }
+        &.score-blues {
+            background-color: #54a4f3;
+        }
 
-    .score-reds {
-        background-color: #dc5c60;
+        &.score-reds {
+            background-color: #dc5c60;
+        }
     }
 }
 
-.welcome {
-    position: absolute;
-    left: 0;
-    right: 0;
-    display: flex;
-    font-size: 10vw;
-    line-height: 30vw;
-    align-items: center;
-    justify-content: center;
-
-    animation-duration: 3s;
-    animation-name: welcome;
-    animation-fill-mode: forwards;
+.progress {
+    height: 2px;
+    overflow: hidden;
+    margin-top: -1px;
 }
 
 mat-grid-list {
-    margin: 1.5rem 1rem;
-
-    animation-name: agents;
-    animation-duration: 3.5s;
-    animation-fill-mode: forwards;
+    margin: 1.5rem 1rem 0.5rem;
 
     mat-grid-tile {
         overflow: visible;
@@ -75,28 +83,3 @@ mat-grid-list {
     }
 }
 
-button {
-    text-transform: uppercase;
-}
-
-
-@keyframes welcome {
-    0%, 20% {
-        opacity: 0;
-    }
-    50%, 80% {
-        opacity: 0.3;
-    }
-    100% {
-        opacity: 0;
-    }
-}
-
-@keyframes agents {
-    0%, 80% {
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
-    }
-}
