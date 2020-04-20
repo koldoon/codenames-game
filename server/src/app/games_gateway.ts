@@ -1,12 +1,14 @@
+import { Request } from 'express';
 import { Application } from 'express-ws';
 import * as WebSocket from 'ws';
-import { AgentUncoveredMessage, GameMessage, GameMessageKind, JoinGameMessage, PlayersChangeMessage } from '../api/ws/game_messages';
+import { GameEventMessage, JoinGameMessage, Message, MessageKind, PlayersChangeMessage } from '../api/ws/game_messages';
 import { asyncDelay } from '../core/async_delay';
 import { bindClass } from '../core/bind_class';
 import { OnApplicationInit } from '../core/on_application_init';
 import { GamesService } from './games_service';
 
 type GameId = string;
+const t_10seconds = 1000 * 10;
 
 export class GamesGateway implements OnApplicationInit {
     constructor(
@@ -22,28 +24,30 @@ export class GamesGateway implements OnApplicationInit {
     async init() {
         this.app.ws('/api/stream', this.onClientConnected);
 
-        this.gamesService.agentUncovered$.subscribe(value => {
-            this.sendMessageToPlayers(value.game.id, <AgentUncoveredMessage> {
-                kind: GameMessageKind.AgentUncovered,
-                agent: value.agent,
-                redsLeft: value.game.redsLeft,
-                bluesLeft: value.game.bluesLeft,
-                isFinished:value.game.isFinished
+        this.beginClientsPingPongCycle(t_10seconds);
+        this.bindToGamesEvents();
+    }
+
+    private bindToGamesEvents() {
+        this.gamesService.gameEvent$.subscribe(value => {
+            this.sendMessageToPlayers(value.game.id, <GameEventMessage> {
+                kind: MessageKind.GameEvent,
+                gameId: value.game.id,
+                blueLeft: value.game.blueLeft,
+                redLeft: value.game.redLeft,
+                event: value.event
             });
         });
 
         this.gamesService.gamesChain$.subscribe(value => {
             this.sendMessageToPlayers(value.prevGameId, <JoinGameMessage> {
-                kind: GameMessageKind.JoinGame,
+                kind: MessageKind.JoinGame,
                 gameId: value.nextGameId
             });
         });
-
-        const sec10 = 1000 * 10;
-        this.beginClientsPingPongCycle(sec10);
     }
 
-    private sendMessageToPlayers(gameId: string, msg: GameMessage) {
+    private sendMessageToPlayers(gameId: string, msg: Message) {
         const players = this.gamePlayers.get(gameId);
         if (!players)
             return;
@@ -57,57 +61,68 @@ export class GamesGateway implements OnApplicationInit {
         }
     }
 
-    private onClientConnected(ws: WebSocket) {
+    private onClientConnected(ws: WebSocket, req: Request) {
+        req.headers['x-forwarded-for'] && typeof req.headers['x-forwarded-for'] == 'string'
+            ? console.log('Client connected: ' + req.headers['x-forwarded-for'].split(/\s*,\s*/)[0])
+            : console.log('Client connected: ' + req.connection.remoteAddress);
+
         ws.on('close', (code, reason) => {
             this.onClientDisconnected(ws);
         });
 
         ws.on('message', data => {
-            const msg = <GameMessage> JSON.parse(data.toString());
-            if (msg.kind == GameMessageKind.JoinGame) {
+            const msg = <Message> JSON.parse(data.toString());
+            if (msg.kind == MessageKind.JoinGame)
                 this.onJoinGame(ws, msg.gameId);
-            }
         });
     }
 
     private onJoinGame(ws: WebSocket, gameId: string) {
-        this.removePlayerFromGame(ws);
-        this.playerGame.set(ws, gameId);
-        this.getGamePlayers(gameId).add(ws);
+        this.movePlayerToGame(ws, gameId);
 
         this.sendMessageToPlayers(gameId, <PlayersChangeMessage> {
-            kind: GameMessageKind.PlayerJoined,
+            kind: MessageKind.PlayerJoined,
             playersCount: this.getGamePlayers(gameId).size
         });
     }
 
     private onClientDisconnected(ws: WebSocket) {
-        this.removePlayerFromGame(ws);
+        this.movePlayerToGame(ws, null);
     }
 
     /**
      * Remove Player from currently playing Game.
      * If the Game is empty - remove it as well.
+     * @param ws Client socket
+     * @param toGameId If empty - remove player from all the games
      */
-    private removePlayerFromGame(ws: WebSocket) {
+    private movePlayerToGame(ws: WebSocket, toGameId: GameId | null) {
         const gameId = this.playerGame.get(ws);
-        if (!gameId)
+        if (gameId == toGameId)
             return;
 
         this.playerGame.delete(ws);
-        const players = this.gamePlayers.get(gameId);
-        if (!players)
-            return;
+        if(gameId) {
+            const players = this.gamePlayers.get(gameId);
 
-        players.delete(ws);
-        if (players.size == 0) {
-            this.gamePlayers.delete(gameId);
+            if (players) {
+                players.delete(ws);
+
+                if (players.size == 0) {
+                    this.gamePlayers.delete(gameId);
+                }
+                else {
+                    this.sendMessageToPlayers(gameId, <PlayersChangeMessage> {
+                        kind: MessageKind.PlayerLeft,
+                        playersCount: this.getGamePlayers(gameId).size
+                    });
+                }
+            }
         }
-        else {
-            this.sendMessageToPlayers(gameId, <PlayersChangeMessage> {
-                kind: GameMessageKind.PlayerLeft,
-                playersCount: this.getGamePlayers(gameId).size
-            });
+
+        if (toGameId) {
+            this.playerGame.set(ws, toGameId);
+            this.getGamePlayers(toGameId).add(ws);
         }
     }
 
@@ -136,7 +151,7 @@ export class GamesGateway implements OnApplicationInit {
                 ws.ping(1);
             }
             catch (e) {
-                this.removePlayerFromGame(ws);
+                this.movePlayerToGame(ws, null);
             }
         }
 

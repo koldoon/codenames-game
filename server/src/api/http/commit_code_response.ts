@@ -1,5 +1,5 @@
-import { Turn } from '../../model/turn';
+import { GameMove } from '../../model/game_move';
 
 export interface CommitCodeResponse {
-    turn: Turn
+    move: GameMove
 }

@@ -1,29 +1,29 @@
 import { Subject } from 'rxjs';
-import { Agent } from '../model/agent';
-import { AgentSide } from '../model/agent_side';
+import { GameStatus } from '../api/game_status';
 import { PlayerType } from '../api/player_type';
 import { asyncDelay } from '../core/async_delay';
-import { httpAssertFound, httpAssertGoodRequest } from '../core/http_asserts';
+import { httpAssertFound, httpAssertRange, httpAssertValue } from '../core/http_asserts';
 import { OnApplicationInit } from '../core/on_application_init';
+import { Agent } from '../model/agent';
+import { Side } from '../model/agent_side';
 import { Dictionary } from '../model/dictionary';
-import { Game } from '../model/game';
-import { GagaDictionary } from '../model/impl/gaga_dictionary';
-import { Turn } from '../model/turn';
+import { GameEvent } from '../model/game_log_item';
+import { GameModel } from '../model/game_model';
+import { AdultDictionary } from '../model/impl/plus18_dictoinary';
 
 export type GameId = string;
+const t_1hour = 1000 * 60 * 60;
 
 export class GamesService implements OnApplicationInit {
-    readonly agentUncovered$ = new Subject<{ game: Game, agent: Agent }>();
-    readonly turned$ = new Subject<{ game: Game, turn: Turn }>();
+    readonly gameEvent$ = new Subject<{ game: GameModel, event: GameEvent }>();
     readonly gamesChain$ = new Subject<{ prevGameId: string, nextGameId: string }>();
 
-    private readonly dictionary: Dictionary = new GagaDictionary();
-    private games = new Map<GameId, Game>();
+    private readonly dictionary: Dictionary = new AdultDictionary();
+    private games = new Map<GameId, GameModel>();
 
     async init() {
         console.debug('Using games dictionary: ' + this.dictionary.constructor.name);
-        const hour1 = 1000 * 60 * 60;
-        this.beginOldGamesRemovingCycle(hour1);
+        this.beginOldGamesRemovingCycle(t_1hour);
     }
 
     async createNewGame(prevGameId?: string) {
@@ -32,7 +32,7 @@ export class GamesService implements OnApplicationInit {
             const prevGame = this.games.get(prevGameId);
 
             if (prevGame && prevGame.nextGame) {
-                let newGame: Game | undefined = prevGame;
+                let newGame: GameModel | undefined = prevGame;
 
                 // find the newest game in chain
                 while (newGame && newGame.nextGame)
@@ -43,7 +43,7 @@ export class GamesService implements OnApplicationInit {
             }
         }
 
-        const newGame = new Game();
+        const newGame = new GameModel();
         const randomWords = await this.dictionary.getRandomWords(newGame.boardSize);
         newGame.init(randomWords);
         this.games.set(newGame.id, newGame);
@@ -67,9 +67,9 @@ export class GamesService implements OnApplicationInit {
         while (game && game.nextGame)
             game = game.nextGame;
 
-        httpAssertFound(game, 'Game not found');
+        httpAssertFound(game, 'Game not found.');
         let board: Agent[];
-        if (playerType == PlayerType.Captain) {
+        if (playerType == PlayerType.Spymaster) {
             board = game.board.map(card => <Agent> {
                 name: card.name,
                 side: card.side,
@@ -79,43 +79,55 @@ export class GamesService implements OnApplicationInit {
         else {
             board = game.board.map(card => <Agent> {
                 name: card.name,
-                side: card.uncovered ? card.side : AgentSide.UNKNOWN
+                side: card.uncovered ? card.side : Side.UNKNOWN
             });
         }
 
-        return <Game> {
+        return <GameStatus> {
             id: game.id,
-            redsLeft: game.redsLeft,
-            bluesLeft: game.bluesLeft,
-            turn: game.turn,
+            redLeft: game.redLeft,
+            blueLeft: game.blueLeft,
+            move: game.move,
             isFinished: game.isFinished,
             nextGameId: game.nextGameId,
             gameInChain: game.gameInChain,
+            log: game.events,
             board
         };
     }
 
     async uncoverAgent(gameId: string, agentIndex: number) {
         const game = this.games.get(gameId);
-        httpAssertFound(game, 'Game not found');
-        httpAssertFound(game.board[agentIndex], 'Agent not found');
+        httpAssertFound(game, 'Game not found.');
+        httpAssertFound(game.board[agentIndex], 'Agent not found.');
 
         const agent = game.uncoverAgent(agentIndex);
-        httpAssertGoodRequest(agent, 'Game or turn is finished or not inited');
+        httpAssertValue(agent, 'Agent is already uncovered or game or move is finished or not yet inited.');
 
-        this.agentUncovered$.next({ game, agent });
+        this.gameEvent$.next({ game, event: game.events[game.events.length - 1] });
         return agent;
     }
 
-    async commitCode(gameId: string, code: string, count: number) {
+    async commitCode(gameId: string, message: string) {
         const game = this.games.get(gameId);
-        httpAssertFound(game, 'Game not found');
+        //<editor-fold desc="asserts">
+        httpAssertFound(game, 'Game not found.');
+        //</editor-fold>
 
-        const turn = game.commitCode(code, count);
-        httpAssertGoodRequest(turn, 'Game is finished');
+        const [hint, count_s] = message.split(/[\s,;]+/);
+        const count = Number(count_s);
+        //<editor-fold desc="asserts">
+        httpAssertValue(hint != '', 'Invalid code word.');
+        httpAssertRange(count, [0, (game.boardSize - 1) / 3 + 1], 'Invalid code word match count.');
+        //</editor-fold>
 
-        this.turned$.next({ game, turn });
-        return turn;
+        const move = game.commitHint(hint, count);
+        //<editor-fold desc="asserts">
+        httpAssertValue(move, 'Game is finished.');
+        //</editor-fold>
+
+        this.gameEvent$.next({ game, event: game.events[game.events.length - 1] });
+        return move;
     }
 
     /**
@@ -134,8 +146,8 @@ export class GamesService implements OnApplicationInit {
         await asyncDelay(intervalMs);
 
         const now = Date.now();
-        const activeGames = new Map<GameId, Game>();
-        const oldGames = new Map<GameId, Game>();
+        const activeGames = new Map<GameId, GameModel>();
+        const oldGames = new Map<GameId, GameModel>();
 
         for (const g of this.games) {
             const [gameId, game] = g;
@@ -143,7 +155,7 @@ export class GamesService implements OnApplicationInit {
             if (activeGames.has(gameId) || oldGames.has(gameId))
                 continue;
 
-            let linkedGame: Game | undefined;
+            let linkedGame: GameModel | undefined;
             if (now - game.lastModified.getTime() < intervalMs) {
                 activeGames.set(game.id, game);
 
@@ -160,7 +172,7 @@ export class GamesService implements OnApplicationInit {
                 }
             }
             else {
-                const unknownChain: Game[] = [game];
+                const unknownChain: GameModel[] = [game];
                 let isActive = false;
 
                 linkedGame = game;
@@ -183,7 +195,7 @@ export class GamesService implements OnApplicationInit {
             }
         }
 
-        console.log(`Old games to clear: ${oldGames.size}`);
+        console.log(`Old games clearing: ${oldGames.size}`);
         this.games = activeGames;
         this.beginOldGamesRemovingCycle(intervalMs);
     }

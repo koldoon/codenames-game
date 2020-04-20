@@ -50,9 +50,9 @@ export class GamesController implements OnApplicationInit {
 
     commitCode(req: Request, res: Response, next: NextFunction) {
         const { gameId } = req.params;
-        const { code, count } = req.body as CommitCodeRequest;
-        this.gamesService.commitCode(gameId, code, count)
-            .then(turn => res.json(<CommitCodeResponse> { turn }))
+        const { message } = req.body as CommitCodeRequest;
+        this.gamesService.commitCode(gameId, message)
+            .then(turn => res.json(<CommitCodeResponse> { move: turn }))
             .catch(next);
     }
 }

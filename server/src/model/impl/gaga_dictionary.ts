@@ -33,10 +33,7 @@ export class GagaDictionary implements Dictionary {
         'брак линия бокс посольство баня экран вилка ложе рыцарь косяк призрак разворот запад рукав ' +
         'лёд мотив боров египет нью-йорк урна соль крыло пират ударник поле кит борт пушкин крест пачка';
 
-    private readonly dictionary = this.words
-        .split(' ')
-        .map(w => w.trim())     // to prevent any whitespaces possible
-        .filter(w => w != '');  // in case of accidental spaces
+    private readonly dictionary = this.words.split(/[\s]+/);
 
     // Too long ;)
     removedWords = 'предприниматель';

@@ -1,10 +1,10 @@
-import { AgentSide } from './agent_side';
+import { PlayerSide } from './player_side';
 
-export interface Turn {
+export interface GameMove {
     /**
      * secret word committed by Captain
      */
-    code: string;
+    hint: string;
 
     /**
      * Number of words associated to secret code
@@ -14,7 +14,7 @@ export interface Turn {
     /**
      * Captain team side
      */
-    side: AgentSide.BLUE | AgentSide.RED | AgentSide.UNKNOWN;
+    side: PlayerSide;
     isFinished: boolean;
 
     /**

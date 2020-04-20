@@ -1,4 +1,4 @@
 export enum PlayerType {
     Regular,
-    Captain
+    Spymaster
 }

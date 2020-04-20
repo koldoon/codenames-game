@@ -1,47 +1,45 @@
-import { Agent } from '../../model/agent';
-import { AgentSide } from '../../model/agent_side';
+import { GameEvent } from '../../model/game_log_item';
 
-export enum GameMessageKind {
+export type Message =
+    | PingMessage
+    | PlayersChangeMessage
+    | JoinGameMessage
+    | GameEventMessage;
+
+export enum MessageKind {
     JoinGame,
-    AgentUncovered,
     PlayerJoined,
     PlayerLeft,
     Ping,
-    ChatMessage
+    GameEvent
 }
 
-export type GameMessage =
-    | JoinGameMessage
-    | AgentUncoveredMessage
-    | PlayersChangeMessage
-    | PingGameMessage
-    | ChatMessage;
-
-export interface PingGameMessage {
-    kind: GameMessageKind.Ping;
-}
-
-export interface ChatMessage {
-    kind: GameMessageKind.ChatMessage;
-    message: string;
-    side: AgentSide.BLUE | AgentSide.RED;
+export interface PingMessage {
+    kind: MessageKind.Ping;
 }
 
 
-export interface PlayersChangeMessage {
-    kind: GameMessageKind.PlayerJoined | GameMessageKind.PlayerLeft;
-    playersCount: number;
-}
-
-export interface JoinGameMessage {
-    kind: GameMessageKind.JoinGame;
+export interface AbstractGameMessage {
     gameId: string;
 }
 
-export interface AgentUncoveredMessage {
-    kind: GameMessageKind.AgentUncovered;
-    agent: Agent;
-    redsLeft: number;
-    bluesLeft: number;
-    isFinished: boolean;
+export interface PlayersChangeMessage extends AbstractGameMessage {
+    kind: MessageKind.PlayerJoined | MessageKind.PlayerLeft;
+    playersCount: number;
+}
+
+/**
+ * Can be send by both sides:
+ *   - frontend (intend to join a game "room") and
+ *   - backend (inform frontend about game change due to games chain)
+ */
+export interface JoinGameMessage extends AbstractGameMessage {
+    kind: MessageKind.JoinGame;
+}
+
+export interface GameEventMessage extends AbstractGameMessage {
+    kind: MessageKind.GameEvent;
+    event: GameEvent;
+    redLeft: number;
+    blueLeft: number;
 }

@@ -1,5 +1,6 @@
 import { Agent } from '../model/agent';
-import { Turn } from '../model/turn';
+import { GameEvent } from '../model/game_log_item';
+import { GameMove } from '../model/game_move';
 
 /**
  * Simplified interface of Game
@@ -7,10 +8,11 @@ import { Turn } from '../model/turn';
 export interface GameStatus {
     id: string;
     board: Agent[];
-    turn: Turn;
-    redsLeft: number;
-    bluesLeft: number;
+    move: GameMove;
+    redLeft: number;
+    blueLeft: number;
     isFinished: boolean;
+    log: GameEvent[];
 
     nextGameId: string;
     gameInChain: number;

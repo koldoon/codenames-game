@@ -1,7 +1,7 @@
-export enum AgentSide {
+export enum Side {
     UNKNOWN,
     RED,
     BLUE,
-    BLACK,
+    ASSASSIN,
     NEUTRAL
 }
