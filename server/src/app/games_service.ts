@@ -9,16 +9,16 @@ import { Side } from '../model/agent_side';
 import { Dictionary } from '../model/dictionary';
 import { GameEvent } from '../model/game_log_item';
 import { GameModel } from '../model/game_model';
-import { AdultDictionary } from '../model/impl/plus18_dictoinary';
+import { DeNullDictionary } from '../model/impl/denull_dictionary';
 
 export type GameId = string;
 const t_1hour = 1000 * 60 * 60;
 
 export class GamesService implements OnApplicationInit {
-    readonly gameEvent$ = new Subject<{ game: GameModel, event: GameEvent }>();
+    readonly gameEvents$ = new Subject<{ game: GameModel, event: GameEvent }>();
     readonly gamesChain$ = new Subject<{ prevGameId: string, nextGameId: string }>();
 
-    private readonly dictionary: Dictionary = new AdultDictionary();
+    private readonly dictionary: Dictionary = new DeNullDictionary();
     private games = new Map<GameId, GameModel>();
 
     async init() {
@@ -101,10 +101,13 @@ export class GamesService implements OnApplicationInit {
         httpAssertFound(game, 'Game not found.');
         httpAssertFound(game.board[agentIndex], 'Agent not found.');
 
+        const eventsBefore = game.events.length;
         const agent = game.uncoverAgent(agentIndex);
         httpAssertValue(agent, 'Agent is already uncovered or game or move is finished or not yet inited.');
 
-        this.gameEvent$.next({ game, event: game.events[game.events.length - 1] });
+        for (let i = eventsBefore; i < game.events.length; i++)
+            this.gameEvents$.next({ game, event: game.events[i] });
+
         return agent;
     }
 
@@ -114,7 +117,7 @@ export class GamesService implements OnApplicationInit {
         httpAssertFound(game, 'Game not found.');
         //</editor-fold>
 
-        const [hint, count_s] = message.split(/[\s,;]+/);
+        const [hint, count_s] = message.trim().split(/[\s,;]+/);
         const count = Number(count_s);
         //<editor-fold desc="asserts">
         httpAssertValue(hint != '', 'Invalid code word.');
@@ -126,7 +129,7 @@ export class GamesService implements OnApplicationInit {
         httpAssertValue(move, 'Game is finished.');
         //</editor-fold>
 
-        this.gameEvent$.next({ game, event: game.events[game.events.length - 1] });
+        this.gameEvents$.next({ game, event: game.events[game.events.length - 1] });
         return move;
     }
 

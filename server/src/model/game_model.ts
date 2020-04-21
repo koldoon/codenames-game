@@ -11,7 +11,7 @@ export class GameModel {
     readonly boardSize = 25;
     readonly id = uuid.v4();
 
-    gameControl = false;  // If true model will restrict uncovering not in a turn
+    gameControl = true;    // If true model will restrict uncovering not in a turn
     board: Agent[] = [];
     move: GameMove = {
         hint: '',
@@ -118,13 +118,13 @@ export class GameModel {
             return false;
 
         const side = this.move.isInited
-            ? this.move.side
-            : this.move.side == Side.BLUE ? Side.RED : Side.BLUE;
+            ? this.move.side == Side.BLUE ? Side.RED : Side.BLUE
+            : this.move.side;
 
         this.move = {
             hint,
             side,
-            count: matchCount == 0 ? this.boardSize : matchCount,
+            count: matchCount == 0 ? this.boardSize : (matchCount + 1),
             isInited: true,
             isFinished: false
         };
@@ -133,7 +133,7 @@ export class GameModel {
             kind: GameEventKind.SpymasterHint,
             hint,
             side,
-            matchCount: this.move.count
+            matchCount
         });
 
         return this.move;

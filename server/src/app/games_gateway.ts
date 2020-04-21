@@ -29,7 +29,7 @@ export class GamesGateway implements OnApplicationInit {
     }
 
     private bindToGamesEvents() {
-        this.gamesService.gameEvent$.subscribe(value => {
+        this.gamesService.gameEvents$.subscribe(value => {
             this.sendMessageToPlayers(value.game.id, <GameEventMessage> {
                 kind: MessageKind.GameEvent,
                 gameId: value.game.id,
