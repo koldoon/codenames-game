@@ -15,7 +15,9 @@
 <div class="spymaster-controls" [formGroup]="form" *ngIf="playerType == SPYMASTER">
     <div class="mat-h3">Связь с агентами</div>
 
-    <mat-form-field class="hint-input" appearance="legacy" color="primary" floatLabel="always">
+    <mat-form-field class="hint-input" appearance="legacy" floatLabel="always"
+        [color]="moveSide == BLUE ? 'primary' : 'accent'">
+
         <mat-label>Шифровка из Центра (слово и цифра)</mat-label>
         <input matInput formControlName="message" autocomplete="off">
     </mat-form-field>
