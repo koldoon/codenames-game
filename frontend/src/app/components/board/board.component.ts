@@ -105,18 +105,21 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
                     side: event.side,
                     uncovered: this.playerType === PlayerType.Spymaster
                 };
-                log[log.length - 1].push({
+                log[0].push({
                     side: event.side,
                     text: this.game.board[event.index].name
                 });
                 this.uncoveringInProgress.delete(event.index);
             }
             else if (event.kind === GameEventKind.SpymasterHint) {
-                log.push([{
+                log.unshift([{
                     side: event.side,
                     count: event.matchCount,
                     text: event.hint
                 }]);
+            }
+            else if (event.kind === GameEventKind.GameFinished) {
+                this.game.isFinished = true;
             }
 
             console.log(log);
@@ -166,13 +169,13 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
                     const log: LogItem[][] = [];
                     this.game.log.forEach(item => {
                         if (item.kind === GameEventKind.AgentUncovered) {
-                            log[log.length - 1].push({
+                            log[0].push({
                                 text: this.game.board[item.index].name,
                                 side: item.side
                             });
                         }
                         else if (item.kind === GameEventKind.SpymasterHint) {
-                            log.push([{
+                            log.unshift([{
                                 text: item.hint,
                                 side: item.side,
                                 count: item.matchCount
