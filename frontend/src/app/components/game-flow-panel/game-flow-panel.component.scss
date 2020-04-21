@@ -1,0 +1,51 @@
+:host {
+    background-color: whitesmoke;
+    border-top: #e4e4e4 1px solid;
+    border-bottom: #e4e4e4 1px solid;
+    padding: 1rem;
+
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-column-gap: 0.5rem;
+
+    .game-log {
+        grid-column: 1/4;
+        padding: 0 0.5rem;
+
+        .messages-area {
+            min-height: 6rem;
+            overflow: scroll;
+        }
+    }
+
+    .spymaster-controls {
+        grid-column: 4/6;
+        padding: 0 0.5rem;
+
+        .hint-input {
+            display: block;
+        }
+
+        .send-button-blue {
+            background-color: #64b5f6;
+            color: white;
+        }
+
+        .send-button-red {
+            background-color: #dc5c60;
+            color: white;
+        }
+    }
+}
+
+.turn {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    align-content: flex-start;
+    //margin-bottom: 0.2rem;
+}
+
+.muted {
+    opacity: 0.5;
+}

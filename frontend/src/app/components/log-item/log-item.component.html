@@ -1,0 +1,17 @@
+<div class="container" *ngIf="logItem"
+    [class.code-word]="isHint"
+    [ngClass]="{
+        'side-red': logItem.side == RED,
+        'side-blue': logItem.side == BLUE,
+        'side-assassin': logItem.side == ASSASSIN,
+        'side-neutral': logItem.side == NEUTRAL }">
+
+    <ng-container *ngIf="isHint">
+        <div>{{logItem.text}}</div>
+        <div class="match-count">{{logItem.count}}</div>
+    </ng-container>
+
+    <ng-container *ngIf="!isHint">
+        {{logItem.text}}
+    </ng-container>
+</div>

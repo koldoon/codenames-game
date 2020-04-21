@@ -35,7 +35,7 @@ export class JoinComponent implements OnInit {
     }
 
     async onJoinAsCaptainClick() {
-        await this.navigation.toGameBoard(this.gameId, PlayerType.Captain);
+        await this.navigation.toGameBoard(this.gameId, PlayerType.Spymaster);
     }
 
     async onJoinAsTeammateClick() {

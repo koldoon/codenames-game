@@ -1,0 +1,30 @@
+<div class="game-log">
+    <div class="mat-h3">Вести из Центра</div>
+
+    <div class="messages-area">
+        <div class="muted" *ngIf="(gameFlowLog$|async).length == 0">
+            Центр сохраняет молчание
+        </div>
+
+        <div *ngFor="let turn of (gameFlowLog$|async)" class="turn">
+            <app-log-item *ngFor="let item of turn, let i=index, trackBy: logItemText" [logItem]="item" [isHint]="i==0"></app-log-item>
+        </div>
+    </div>
+</div>
+
+<div class="spymaster-controls" [formGroup]="form" *ngIf="playerType == SPYMASTER">
+    <div class="mat-h3">Связь с агентами</div>
+
+    <mat-form-field class="hint-input" appearance="legacy" color="primary" floatLabel="always">
+        <mat-label>Шифровка из Центра (слово и цифра)</mat-label>
+        <input matInput formControlName="message" autocomplete="off">
+    </mat-form-field>
+
+    <button mat-raised-button
+        (click)="onSendClick()"
+        [class.send-button-blue]="moveSide == BLUE"
+        [class.send-button-red]="moveSide == RED">
+
+        Отправить
+    </button>
+</div>

@@ -10,7 +10,7 @@
         'agent-neutral':side == NEUTRAL
     }">
 
-    <div class="agent-name" [style]="{ 'font-size': fontSize + 'px' }">
+    <div class="agent-name" [class.show-name]="fontSize" [style]="{ 'font-size': fontSize + 'px' }">
         {{name}}
     </div>
 </mat-card>

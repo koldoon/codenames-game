@@ -25,7 +25,7 @@ mat-toolbar {
     .stat {
         display: flex;
         font-size: 14px;
-        text-transform: uppercase;
+        //text-transform: uppercase;
 
         div {
             margin-left: 1rem;
@@ -59,6 +59,10 @@ mat-toolbar {
             background-color: #dc5c60;
         }
     }
+
+    //button {
+    //    text-transform: uppercase;
+    //}
 }
 
 .progress {
@@ -82,4 +86,3 @@ mat-grid-list {
         }
     }
 }
-

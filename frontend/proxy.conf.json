@@ -1,10 +1,10 @@
 {
   "/api/*": {
-    "target": "http://localhost:8091/",
+    "target": "http://localhost:8095/",
     "secure": false
   },
   "/api/stream/*": {
-    "target": "ws://localhost:8091/",
+    "target": "ws://localhost:8095/",
     "secure": false,
     "ws": true
   }

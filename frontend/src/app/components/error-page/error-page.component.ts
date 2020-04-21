@@ -2,12 +2,12 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } 
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
-    selector: 'app-error',
-    templateUrl: './error.component.html',
-    styleUrls: ['./error.component.scss'],
+    selector: 'app-error-page',
+    templateUrl: './error-page.component.html',
+    styleUrls: ['./error-page.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ErrorComponent implements OnInit {
+export class ErrorPageComponent implements OnInit {
     constructor(
         private activatedRoute: ActivatedRoute,
         private cd: ChangeDetectorRef) {}

@@ -4,20 +4,22 @@ import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, E
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { delay, finalize, retryWhen } from 'rxjs/operators';
 import { webSocket } from 'rxjs/webSocket';
 import { GameStatus } from '../../../../../server/src/api/game_status';
-import { Agent } from '../../../../../server/src/model/agent';
-import { AgentSide } from '../../../../../server/src/model/agent_side';
 import { GameStatusResponse } from '../../../../../server/src/api/http/game_status_response';
 import { NewGameResponse } from '../../../../../server/src/api/http/new_game_response';
 import { UncoverAgentResponse } from '../../../../../server/src/api/http/uncover_agent_response';
 import { PlayerType } from '../../../../../server/src/api/player_type';
-import { GameMessage, GameMessageKind, JoinGameMessage, PingGameMessage } from '../../../../../server/src/api/ws/game_messages';
+import { JoinGameMessage, Message, MessageKind, PingMessage } from '../../../../../server/src/api/ws/game_messages';
+import { Agent } from '../../../../../server/src/model/agent';
+import { Side } from '../../../../../server/src/model/agent_side';
+import { GameEventKind } from '../../../../../server/src/model/game_log_item';
 import { AppRoutingNavigation } from '../../app.routing.navigation';
 import { getWebSocketUrl } from '../../utils/get_web_socket_url';
-import { ConfirmComponent } from '../confirm/confirm.component';
+import { ConfirmPopupComponent } from '../confirm-popup/confirm-popup.component';
+import { LogItem } from '../game-flow-panel/game-flow-panel.component';
 
 @Component({
     selector: 'app-board',
@@ -38,17 +40,21 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
     @ViewChild('container')
     boardView: ElementRef<HTMLDivElement>;
 
-    cardFontSize = 12;
+    cardFontSize = 0;
     playerType = PlayerType.Regular;
     gameId = '';
-    game: GameStatus;
+    game = <GameStatus> {
+        board: Array(25).fill(<Agent> { name: '' })
+    };
+
     playersCount = 0;
+    gameFlowLog$ = new BehaviorSubject<LogItem[][]>([[]]);
 
     loadingInProgress = false;
     uncoveringInProgress = new Set<number>();
 
     connected$ = new Subject<Event>();
-    gameStream$ = webSocket<GameMessage>({
+    gameStream$ = webSocket<Message>({
         url: getWebSocketUrl('/api/stream'),
         openObserver: this.connected$
     });
@@ -83,26 +89,45 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
             return;
 
         this.gameStream$.next(<JoinGameMessage> {
-            kind: GameMessageKind.JoinGame,
+            kind: MessageKind.JoinGame,
             gameId: this.gameId
         });
     }
 
-    async onGameStreamMessage(msg: GameMessage) {
-        if (msg.kind === GameMessageKind.AgentUncovered) {
-            this.game.board[msg.agent.index] = {
-                ...msg.agent,
-                uncovered: msg.agent.uncovered && this.playerType === PlayerType.Captain
-            };
-            this.game.bluesLeft = msg.bluesLeft;
-            this.game.redsLeft = msg.redsLeft;
-            this.game.isFinished = msg.isFinished;
-            this.uncoveringInProgress.delete(msg.agent.index);
+    async onGameStreamMessage(msg: Message) {
+        if (msg.kind === MessageKind.GameEvent) {
+            const event = msg.event;
+            const log = this.gameFlowLog$.value;
+
+            if (event.kind === GameEventKind.AgentUncovered) {
+                this.game.board[event.index] = {
+                    ...this.game.board[event.index],
+                    side: event.side,
+                    uncovered: this.playerType === PlayerType.Spymaster
+                };
+                log[log.length - 1].push({
+                    side: event.side,
+                    text: this.game.board[event.index].name
+                });
+                this.uncoveringInProgress.delete(event.index);
+            }
+            else if (event.kind === GameEventKind.SpymasterHint) {
+                log.push([{
+                    side: event.side,
+                    count: event.matchCount,
+                    text: event.hint
+                }]);
+            }
+
+            console.log(log);
+            this.gameFlowLog$.next(log);
+            this.game.blueLeft = msg.blueLeft;
+            this.game.redLeft = msg.redLeft;
         }
-        else if (msg.kind === GameMessageKind.PlayerJoined || msg.kind === GameMessageKind.PlayerLeft) {
+        else if (msg.kind === MessageKind.PlayerJoined || msg.kind === MessageKind.PlayerLeft) {
             this.playersCount = msg.playersCount;
         }
-        else if (msg.kind === GameMessageKind.JoinGame) {
+        else if (msg.kind === MessageKind.JoinGame) {
             await this.navigation.toJoinGame(msg.gameId);
         }
         this.cd.markForCheck();
@@ -114,6 +139,11 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
 
     agentId(index: number, agent: Agent) {
         return `${index}-${agent.name}`;
+    }
+
+
+    getOppositeSide(side: Side) {
+        return side === Side.BLUE ? Side.RED : Side.BLUE;
     }
 
     updateGameStatus() {
@@ -133,10 +163,28 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
             .subscribe(
                 value => {
                     this.game = value.game;
+                    const log: LogItem[][] = [];
+                    this.game.log.forEach(item => {
+                        if (item.kind === GameEventKind.AgentUncovered) {
+                            log[log.length - 1].push({
+                                text: this.game.board[item.index].name,
+                                side: item.side
+                            });
+                        }
+                        else if (item.kind === GameEventKind.SpymasterHint) {
+                            log.push([{
+                                text: item.hint,
+                                side: item.side,
+                                count: item.matchCount
+                            }]);
+                        }
+                    });
+                    this.gameFlowLog$.next(log);
+
                     if (this.gameId !== this.game.id) { // in case of games chain may differ
                         this.gameId = this.game.id;
                         this.gameStream$.next(<JoinGameMessage> {
-                            kind: GameMessageKind.JoinGame,
+                            kind: MessageKind.JoinGame,
                             gameId: this.gameId
                         });
                     }
@@ -149,7 +197,7 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     uncoverAgent(index: number) {
-        if (this.game.board[index].side !== AgentSide.UNKNOWN)
+        if (this.game.board[index].side !== Side.UNKNOWN)
             return;
 
         this.uncoveringInProgress.add(index);
@@ -191,7 +239,7 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
             this.createNewLinkedGame();
         }
         else {
-            const dialogRef = this.dialog.open(ConfirmComponent, {});
+            const dialogRef = this.dialog.open(ConfirmPopupComponent, {});
             dialogRef.afterClosed().subscribe(async value => {
                 if (value === 1)
                     this.createNewLinkedGame();
@@ -207,8 +255,8 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
 
     onRefreshClick() {
         this.updateGameStatus();
-        this.gameStream$.next(<PingGameMessage> {
-            kind: GameMessageKind.Ping
+        this.gameStream$.next(<PingMessage> {
+            kind: MessageKind.Ping
         });
     }
 
@@ -216,8 +264,9 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
         this.onBoardResized();
     }
 
-    @HostListener('window:resize', ['$event'])
+    @HostListener('window:resize')
     onBoardResized() {
         this.cardFontSize = (this.boardView.nativeElement.offsetWidth - 16 * 2 - 8 * 4) / 5 * 0.1;
+        this.cd.markForCheck();
     }
 }

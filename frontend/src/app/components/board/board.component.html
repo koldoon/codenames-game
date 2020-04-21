@@ -22,11 +22,11 @@
         </button>
 
         <div class="score score-blues">
-            <span class="mat-h1"><strong>{{game?.bluesLeft}}</strong></span>
+            <span class="mat-h1"><strong>{{game?.blueLeft}}</strong></span>
         </div>
 
         <div class="score score-reds">
-            <span class="mat-h1"><strong>{{game?.redsLeft}}</strong></span>
+            <span class="mat-h1"><strong>{{game?.redLeft}}</strong></span>
         </div>
     </mat-toolbar>
 
@@ -35,17 +35,23 @@
     </div>
 
     <mat-grid-list cols="5" rowHeight="2:0.9" gutterSize="0.5rem">
-        <mat-grid-tile *ngFor="let agent of game?.board; let i = index; trackBy: agentId">
+        <mat-grid-tile *ngFor="let agent of game.board; let i = index; trackBy: agentId">
             <div class="agent-wrapper">
-                <app-agent
+                <app-agent-card
                     [name]="agent.name"
                     [side]="agent.side"
                     [uncovered]="agent.uncovered"
                     [uncoveringInProgress]="uncoveringInProgress.has(i)"
                     [fontSize]="cardFontSize"
                     (click)="uncoverAgent(i)">
-                </app-agent>
+                </app-agent-card>
             </div>
         </mat-grid-tile>
     </mat-grid-list>
+
+    <app-game-flow-panel
+        [gameFlowLog$]="gameFlowLog$"
+        [gameId]="gameId"
+        [playerType]="playerType"
+        [moveSide]="game.move.isInited ? getOppositeSide(game.move.side) : game.move.side"></app-game-flow-panel>
 </div>

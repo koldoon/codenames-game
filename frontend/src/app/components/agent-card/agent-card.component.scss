@@ -19,6 +19,12 @@ mat-card.agent {
         width: 100%;
         text-align: center;
         text-transform: uppercase;
+        opacity: 0;
+        transition: opacity 500ms ease-out;
+
+        &.show-name {
+            opacity: 1;
+        }
     }
 
     // --- Agent Card Options ---
