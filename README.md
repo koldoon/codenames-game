@@ -14,9 +14,9 @@ You can create your own dictionary by implementing `DictionaryModel` interface (
  - `$ npm i` - install dependencies
  - `$ npm run build` - build sources into `./dist`
  - `$ npm run start` - start game server serving API and frontend
- - Open `http://localhost:8091/` and have a fun
+ - Open `http://localhost:8095/` and have a fun
 
-Default http port (8091) can be changed via `CODENAMES_HTTP_PORT` environment variable.
+Default http port (8095) can be changed via `CODENAMES_HTTP_PORT` environment variable.
 
 ## How to play
 See [Wikipedia](https://en.wikipedia.org/wiki/Codenames_(board_game)) for the rules and details.
