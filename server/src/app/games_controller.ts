@@ -1,12 +1,14 @@
-import { Application, json, NextFunction, Request, Response, Router } from 'express';
+import { Application, json, NextFunction, Request, Response } from 'express';
 import { CommitCodeRequest } from '../api/http/commit_code_request';
 import { CommitCodeResponse } from '../api/http/commit_code_response';
 import { GameStatusResponse } from '../api/http/game_status_response';
 import { NewGameResponse } from '../api/http/new_game_response';
 import { UncoverAgentResponse } from '../api/http/uncover_agent_response';
 import { bindClass } from '../core/bind_class';
+import { defineNestedRoutes } from '../core/define_nested_routes';
 import { OnApplicationInit } from '../core/on_application_init';
 import { GamesService } from './games_service';
+
 
 export class GamesController implements OnApplicationInit {
     constructor(
@@ -17,13 +19,11 @@ export class GamesController implements OnApplicationInit {
     }
 
     init() {
-        const router = Router()
+        defineNestedRoutes('/api/games', this.app)
             .get('/create', this.createGame)
             .get('/:gameId/status', this.getGameStatus)
             .post('/:gameId/agents/:agentId/uncover', this.uncoverAgent)
             .post('/:gameId/commit-code', json(), this.commitCode);
-
-        this.app.use('/api/games', router);
     }
 
     createGame(req: Request, res: Response, next: NextFunction) {
