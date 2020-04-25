@@ -4,6 +4,7 @@ import { CommitCodeRequest } from '../src/api/http/commit_code_request';
 import { CommitCodeResponse } from '../src/api/http/commit_code_response';
 import { GameStatusResponse } from '../src/api/http/game_status_response';
 import { NewGameResponse } from '../src/api/http/new_game_response';
+import { UncoverAgentResponse } from '../src/api/http/uncover_agent_response';
 import { PlayerType } from '../src/api/player_type';
 import { Side } from '../src/model/agent_side';
 
@@ -55,7 +56,7 @@ test('Board configuration', () => {
     expect(game.blueLeft).toBe(sidesCount.get(Side.BLUE));
 });
 
-test('Commit code', async () => {
+test('Commit code in general', async () => {
     const res = <CommitCodeResponse> await postJson(
         `${serverUrl}/api/games/${gameId}/commit-code`,
         <CommitCodeRequest> {
@@ -74,4 +75,38 @@ test('Commit code', async () => {
 
     expect(res.move.side >= Side.UNKNOWN).toBeTruthy();
     expect(res.move.side <= Side.NEUTRAL).toBeTruthy();
+});
+
+test('Uncover the agent', async () => {
+    const index = Number((Math.random() * 24).toFixed(0));
+    const res = <UncoverAgentResponse> await postJson(
+        `${serverUrl}/api/games/${gameId}/agents/${index}/uncover`
+    );
+
+    expect(res).toMatchObject(<UncoverAgentResponse> {
+        agent: {
+            index: index,
+            name: game.board[index].name,
+            side: game.board[index].side,
+            uncovered: true
+        }
+    });
+});
+
+test('Commit code zero', async () => {
+    const res = <CommitCodeResponse> await postJson(
+        `${serverUrl}/api/games/${gameId}/commit-code`,
+        <CommitCodeRequest> {
+            message: 'Joy 0'
+        }
+    );
+
+    expect(res).toMatchObject(<CommitCodeResponse> {
+        move: {
+            hint: 'Joy',
+            count: 25,
+            isInited: true,
+            isFinished: false
+        }
+    });
 });
