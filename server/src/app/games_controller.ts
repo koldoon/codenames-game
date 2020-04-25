@@ -26,32 +26,32 @@ export class GamesController implements OnApplicationInit {
             .post('/:gameId/commit-code', json(), async(this.commitCode));
     }
 
-    async createGame(req: Request) {
+    async createGame(req: Request): Promise<NewGameResponse> {
         const { from } = req.query;
-        return <NewGameResponse> {
+        return {
             gameId: await this.gamesService.createNewGame(String(from))
         }
     }
 
-    async getGameStatus(req: Request) {
+    async getGameStatus(req: Request): Promise<GameStatusResponse> {
         const { gameId } = req.params;
         const { player } = req.query;
-        return <GameStatusResponse> {
+        return {
             game: await this.gamesService.getGameStatus(gameId, Number(player))
         }
     }
 
-    async uncoverAgent(req: Request) {
+    async uncoverAgent(req: Request): Promise<UncoverAgentResponse> {
         const { gameId, agentId } = req.params;
-        return <UncoverAgentResponse> {
+        return {
             agent: await this.gamesService.uncoverAgent(gameId, Number(agentId))
         }
     }
 
-    async commitCode(req: Request) {
+    async commitCode(req: Request): Promise<CommitCodeResponse> {
         const { gameId } = req.params;
         const { message } = req.body as CommitCodeRequest;
-        return <CommitCodeResponse> {
+        return {
             move: await this.gamesService.commitCode(gameId, message)
         }
     }
