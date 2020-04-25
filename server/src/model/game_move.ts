@@ -7,7 +7,7 @@ export interface GameMove {
     hint: string;
 
     /**
-     * Number of words associated to secret code
+     * Number of agents possible to uncover
      */
     count: number
 

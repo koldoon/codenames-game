@@ -1,4 +1,4 @@
-import { Application, json, NextFunction, Request, Response } from 'express';
+import { Application, json, Request } from 'express';
 import { CommitCodeRequest } from '../api/http/commit_code_request';
 import { CommitCodeResponse } from '../api/http/commit_code_response';
 import { GameStatusResponse } from '../api/http/game_status_response';
@@ -6,9 +6,9 @@ import { NewGameResponse } from '../api/http/new_game_response';
 import { UncoverAgentResponse } from '../api/http/uncover_agent_response';
 import { bindClass } from '../core/bind_class';
 import { defineNestedRoutes } from '../core/define_nested_routes';
+import { async } from '../core/express_async';
 import { OnApplicationInit } from '../core/on_application_init';
 import { GamesService } from './games_service';
-
 
 export class GamesController implements OnApplicationInit {
     constructor(
@@ -20,39 +20,39 @@ export class GamesController implements OnApplicationInit {
 
     init() {
         defineNestedRoutes('/api/games', this.app)
-            .get('/create', this.createGame)
-            .get('/:gameId/status', this.getGameStatus)
-            .post('/:gameId/agents/:agentId/uncover', this.uncoverAgent)
-            .post('/:gameId/commit-code', json(), this.commitCode);
+            .get('/create', async(this.createGame))
+            .get('/:gameId/status', async(this.getGameStatus))
+            .post('/:gameId/agents/:agentId/uncover', async(this.uncoverAgent))
+            .post('/:gameId/commit-code', json(), async(this.commitCode));
     }
 
-    createGame(req: Request, res: Response, next: NextFunction) {
+    async createGame(req: Request) {
         const { from } = req.query;
-        this.gamesService.createNewGame(String(from))
-            .then(gameId => res.json(<NewGameResponse> { gameId }))
-            .catch(next);
+        return <NewGameResponse> {
+            gameId: await this.gamesService.createNewGame(String(from))
+        }
     }
 
-    getGameStatus(req: Request, res: Response, next: NextFunction) {
+    async getGameStatus(req: Request) {
         const { gameId } = req.params;
         const { player } = req.query;
-        this.gamesService.getGameStatus(gameId, Number(player))
-            .then(game => res.json(<GameStatusResponse> { game }))
-            .catch(next);
+        return <GameStatusResponse> {
+            game: await this.gamesService.getGameStatus(gameId, Number(player))
+        }
     }
 
-    uncoverAgent(req: Request, res: Response, next: NextFunction) {
+    async uncoverAgent(req: Request) {
         const { gameId, agentId } = req.params;
-        this.gamesService.uncoverAgent(gameId, Number(agentId))
-            .then(agent => res.json(<UncoverAgentResponse> { agent }))
-            .catch(next);
+        return <UncoverAgentResponse> {
+            agent: await this.gamesService.uncoverAgent(gameId, Number(agentId))
+        }
     }
 
-    commitCode(req: Request, res: Response, next: NextFunction) {
+    async commitCode(req: Request) {
         const { gameId } = req.params;
         const { message } = req.body as CommitCodeRequest;
-        this.gamesService.commitCode(gameId, message)
-            .then(turn => res.json(<CommitCodeResponse> { move: turn }))
-            .catch(next);
+        return <CommitCodeResponse> {
+            move: await this.gamesService.commitCode(gameId, message)
+        }
     }
 }

@@ -7,7 +7,7 @@ import { NewGameResponse } from '../src/api/http/new_game_response';
 import { PlayerType } from '../src/api/player_type';
 import { Side } from '../src/model/agent_side';
 
-const serverUrl = 'http://localhost:8095';
+const serverUrl = 'http://localhost:3000';
 const getJson = bent('json');
 const postJson = bent('POST', 'json');
 
@@ -66,7 +66,7 @@ test('Commit code', async () => {
     expect(res).toMatchObject(<CommitCodeResponse> {
         move: {
             hint: 'Allegra',
-            count: 8,
+            count: 9,
             isInited: true,
             isFinished: false
         }
