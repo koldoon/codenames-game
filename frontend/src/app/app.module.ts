@@ -25,7 +25,7 @@ import { AppRouting } from './app.routing';
 import { AppRoutingNavigation } from './app.routing.navigation';
 import { AgentCardComponent } from './components/agent-card/agent-card.component';
 import { BoardComponent } from './components/board/board.component';
-import { ConfirmPopupComponent } from './components/confirm-popup/confirm-popup.component';
+import { NewGameConfirmPopupComponent } from './components/new-game-confirm-popup/new-game-confirm-popup.component';
 import { ErrorPageComponent } from './components/error-page/error-page.component';
 import { GameFlowPanelComponent } from './components/game-flow-panel/game-flow-panel.component';
 import { JoinComponent } from './components/join/join.component';
@@ -40,7 +40,7 @@ import { LogItemComponent } from './components/log-item/log-item.component';
         JoinComponent,
         AgentCardComponent,
         ErrorPageComponent,
-        ConfirmPopupComponent,
+        NewGameConfirmPopupComponent,
         GameFlowPanelComponent,
         LogItemComponent
     ],

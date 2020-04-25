@@ -18,7 +18,7 @@ import { Side } from '../../../../../server/src/model/agent_side';
 import { GameEventKind } from '../../../../../server/src/model/game_log_item';
 import { AppRoutingNavigation } from '../../app.routing.navigation';
 import { getWebSocketUrl } from '../../utils/get_web_socket_url';
-import { ConfirmPopupComponent } from '../confirm-popup/confirm-popup.component';
+import { NewGameConfirmPopupComponent } from '../new-game-confirm-popup/new-game-confirm-popup.component';
 import { LogItem } from '../game-flow-panel/game-flow-panel.component';
 
 @Component({
@@ -242,7 +242,7 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
             this.createNewLinkedGame();
         }
         else {
-            const dialogRef = this.dialog.open(ConfirmPopupComponent, {});
+            const dialogRef = this.dialog.open(NewGameConfirmPopupComponent, {});
             dialogRef.afterClosed().subscribe(async value => {
                 if (value === 1)
                     this.createNewLinkedGame();
@@ -270,6 +270,6 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
     @HostListener('window:resize')
     onBoardResized() {
         this.cardFontSize = (this.boardView.nativeElement.offsetWidth - 16 * 2 - 8 * 4) / 5 * 0.1;
-        this.cd.markForCheck();
+        this.cd.detectChanges();
     }
 }
