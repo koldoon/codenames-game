@@ -152,9 +152,7 @@ export class GamesService implements OnApplicationInit {
         const activeGames = new Map<GameId, GameModel>();
         const oldGames = new Map<GameId, GameModel>();
 
-        for (const g of this.games) {
-            const [gameId, game] = g;
-
+        for (const [gameId, game] of this.games) {
             if (activeGames.has(gameId) || oldGames.has(gameId))
                 continue;
 
