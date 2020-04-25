@@ -15,18 +15,18 @@ export class ErrorsController implements OnApplicationInit {
 
 
     onHttpError(err: Error, req: Request, res: Response, next: NextFunction) {
-        if (err instanceof httpErrors.HttpError) {
-            if (process.env.NODE_ENV === 'production')
-                delete err.stack;
+        if (err.stack)
+            console.error(err.stack);
 
+        if (process.env.NODE_ENV === 'production')
+            delete err.stack;
+
+        if (err instanceof httpErrors.HttpError) {
             res.setHeader('Content-Type', 'application/json; charset=utf-8');
             res.status(err.statusCode).send(JSON.stringify(err, Object.getOwnPropertyNames(err)));
-
-            if (err.stack)
-                console.error(err.stack);
         }
         else {
-            res.status(500).send({ message: 'Unknown service error' });
+            res.status(500).send({ message: 'Service error. See logs for details.' });
         }
     }
 }
