@@ -10,6 +10,9 @@ import { GamesService } from './games_service';
 type GameId = string;
 const t_10seconds = 1000 * 10;
 
+/**
+ * WebSocket gateway for games events
+ */
 export class GamesGateway implements OnApplicationInit {
     constructor(
         private app: Application,

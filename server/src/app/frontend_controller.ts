@@ -3,6 +3,9 @@ import * as express from 'express';
 import * as path from 'path';
 import { OnApplicationInit } from '../core/on_application_init';
 
+/**
+ * Serves static frontend.
+ */
 export class FrontendController implements OnApplicationInit {
     constructor(private app: Application) {}
 

@@ -14,6 +14,9 @@ import { DeNullDictionary } from '../model/impl/denull_dictionary';
 export type GameId = string;
 const t_1hour = 1000 * 60 * 60;
 
+/**
+ * Manages games lifecycle
+ */
 export class GamesService implements OnApplicationInit {
     readonly gameEvents$ = new Subject<{ game: GameModel, event: GameEvent }>();
     readonly gamesChain$ = new Subject<{ prevGameId: string, nextGameId: string }>();
