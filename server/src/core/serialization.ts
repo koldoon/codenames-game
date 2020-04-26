@@ -1,200 +1,205 @@
-// import { isPrimitive } from './is_primitive';
-//
-// /**
-//  * Special Property type marker.
-//  * Use it with @PropertyType() property decorator to pass
-//  * source value "as is"
-//  */
-// export class AsIs extends Object {
-// }
-//
-// export namespace serialization {
-//     export type Constructor<T> = new (...args: any[]) => T;
-//
-//     type PropertySetter<T> = (target: T, prop: string, value: any) => void;
-//     type ClassMeta<T> = Map<string, PropertySetter<T>>;
-//
-//     class AnyClass {}
-//
-//     // TODO: Revert (invert) properties scanning from target to source and implement this as "assign(source, toObject)" function.
-//     // (useful for db filters with nullable properties)
-//
-//     /**
-//      * Similar to Object.assign() method, but also respect typed (annotated) arrays
-//      * and undefined (annotated) properties.
-//      *
-//      * Use @ArrayElementType and @PropertyType annotations to add information
-//      * about desired property types.
-//      */
-//     export function extract<T extends AnyClass>(target: T, source: any): T {
-//         if (typeof target === 'function')
-//             throw Error(`target must be an instance`);
-//
-//         if (!source || !target)
-//             return source;
-//
-//         const targetTypeMeta = getTypeMetadata(target.constructor);
-//         for (const [prop, setProperty] of targetTypeMeta) {
-//             if (!isPrimitive(source) && prop in source)
-//                 setProperty(target, prop, source[prop]);
-//         }
-//
-//         for (let prop of Object.keys(target)) {
-//             if (targetTypeMeta.get(prop)) {
-//                 // nothing
-//             }
-//             else if (isSimpleType(getValueType(target[prop]))) {
-//                 if (!isPrimitive(source) && prop in source && source[prop] !== undefined) {
-//                     const targetType = getValueType(target[prop]);
-//                     const mappedValue = simpleTypeMapper[targetType](source[prop]);
-//                     if (targetType != 'number' || !isNaN(mappedValue))
-//                         target[prop] = mappedValue;
-//                 }
-//             }
-//             else if (target[prop]) {
-//                 if (Array.isArray(target[prop])) { // unannotated arrays
-//                     if (source[prop] !== undefined)
-//                         target[prop] = Array.isArray(source[prop]) ? source[prop] : [];
-//                 }
-//                 else {
-//                     extract(target[prop], source[prop]);
-//                 }
-//             }
-//             else {
-//                 console.error(`serialization: property skipped due to unknown type -> ${target.constructor.name}.${prop}`);
-//             }
-//         }
-//         return target;
-//     }
-//
-//     /**
-//      * Extract Array value using given element type.
-//      */
-//     export function extractArray<T extends AnyClass>(ElementType: Constructor<T>, source: any[]): T[] {
-//         if (!Array.isArray(source))
-//             return [];
-//         return source.map<T>(item => extract(new ElementType(), item));
-//     }
-//
-//     /**
-//      * ArrayElementType annotation handler
-//      */
-//     export function ArrayElementType<T extends AnyClass>(ElementClass: Constructor<T>): Function {
-//         return (target: T, prop: string) => {
-//             addPropertySetterFor(target.constructor, prop, getSetterForArray(ElementClass));
-//         };
-//     }
-//
-//     /**
-//      * PropertyType annotation handler
-//      */
-//     export function PropertyType<T>(PropertyType: Function): Function {
-//         return (target: object, prop: string) => {
-//             addPropertySetterFor(target.constructor, prop, getSetterForType(PropertyType));
-//         };
-//     }
-//
-//     const metadataRegistry = new Map<Function, ClassMeta<any>>();
-//     const simpleTypeMapper = {
-//         'string': src => src != null ? src.toString() : '',
-//         'number': src => Number(src),
-//         'boolean': src => src != null && !(src == 'false' || src == '' || src == '0'),
-//         'date': src => new Date(src),
-//         'asis': src => src
-//     };
-//
-//     function getSetterForArray<T extends AnyClass>(ElementType: Function): PropertySetter<T> {
-//         let valueBuilder = isSimpleType(getTypeName(ElementType))
-//             ? src => simpleTypeMapper[getTypeName(ElementType)](src)
-//             : src => extract(new (ElementType as Constructor<T>)(), src);
-//
-//         return (target: T, prop: string, value: any) => {
-//             if (value === undefined)
-//                 return;
-//
-//             if (!Array.isArray(value)) {
-//                 // property is present, but could not be converted to array
-//                 if (target.hasOwnProperty(prop))
-//                     target[prop] = undefined;
-//                 return;
-//             }
-//
-//             target[prop] = [];
-//
-//             for (let item of value) {
-//                 target[prop].push(valueBuilder(item));
-//             }
-//         };
-//     }
-//
-//
-//     function getSetterForType<T>(PropertyType: Function): PropertySetter<T> {
-//         return isSimpleType(getTypeName(PropertyType))
-//             ? (target: T, prop: string, value: object) => {
-//                 if (value !== undefined)
-//                     target[prop] = simpleTypeMapper[getTypeName(PropertyType)](value);
-//             }
-//             : (target: T, prop: string, value: object) => {
-//                 if (value === undefined)
-//                     return;
-//
-//                 if (!target[prop] || target[prop].constructor != PropertyType)
-//                     target[prop] = new (PropertyType as Constructor<T>)();
-//
-//                 extract(target[prop], value);
-//             };
-//     }
-//
-//
-//     function getValueType(v: any): any {
-//         return typeof v === 'object' && v !== null ? getTypeName(v.constructor) : typeof v;
-//     }
-//
-//
-//     function getTypeName<T>(Type: Function | string): string {
-//         return typeof Type === 'string' ? Type.toLowerCase() : Type.name.toLowerCase();
-//     }
-//
-//
-//     function isSimpleType(typeName: string) {
-//         return typeName in simpleTypeMapper;
-//     }
-//
-//
-//     function addPropertySetterFor<T>(Type: Function, prop: string, setter: PropertySetter<T>) {
-//         let classMeta = metadataRegistry.get(Type);
-//         if (!classMeta)
-//             classMeta = new Map<string, PropertySetter<T>>();
-//
-//         classMeta.set(prop, setter);
-//         metadataRegistry.set(Type, classMeta);
-//     }
-//
-//
-//     /**
-//      * Since getTypeMetadata() can merge results from all the class inheritance
-//      * chain, we cache it's results for speed optimization
-//      */
-//     const typeMetadataCache = new Map<Function, ClassMeta<any>>();
-//
-//     function getTypeMetadata<T>(Type: Function): ClassMeta<T> {
-//         const cached = typeMetadataCache.get(Type);
-//         if (cached)
-//             return cached;
-//
-//         let fullMeta = new Map<string, PropertySetter<T>>();
-//         for (let t = Type; t; t = Object.getPrototypeOf(t)) {
-//             let meta = metadataRegistry.get(t);
-//             if (meta) {
-//                 for (let [key, value] of meta) {
-//                     fullMeta.set(key, value);
-//                 }
-//             }
-//         }
-//
-//         if (Type.name != 'Object') // no sense in caching raw objects
-//             typeMetadataCache.set(Type, fullMeta);
-//
-//         return fullMeta;
-//     }
-// }
+import { isPrimitive } from './is_primitive';
+
+export namespace serialization {
+    enum AbstractEnum {}  // Trick to get "typeof enum"
+
+    type PropertyName = string;
+    type ClassInjectionMap = Map<PropertyName, PropertyInjector>;
+    type PropertyInjector = (source: object, target: object, propertyName: string) => void;
+    type Constructor<T extends {} = {}> = new (...args: any[]) => T;
+    type EnumType = typeof AbstractEnum;
+    type MapFunction = (src: any) => any;
+
+    /**
+     * Special Property type marker.
+     * Use it with @PropertyType() property decorator to pass
+     * source value "as is".
+     */
+    export class AsIs extends Object {
+    }
+
+    export function ExtractArray(elementType: Constructor) {
+        return (target: any, prop: string) => {
+            getInjectionMap(target.constructor).set(prop, getTypedArrayPropertyInjector(elementType));
+        }
+    }
+
+    export function ExtractEnum(type: EnumType) {
+        return (target: any, prop: string) => {
+            getInjectionMap(target.constructor).set(prop, getEnumPropertyInjector(type));
+        }
+    }
+
+    export function ExtractType(type: Constructor) {
+        return (target: any, prop: string) => {
+            getInjectionMap(target.constructor).set(prop, getPropertyTypeInjector(type));
+        }
+    }
+
+    function getInjectionMap(type: Constructor) {
+        let injectionMap = classInjection.get(type);
+        if (!injectionMap) {
+            injectionMap = new Map<PropertyName, PropertyInjector>();
+            classInjection.set(type, injectionMap);
+        }
+        return injectionMap;
+    }
+
+
+    /**
+     * Classes metadata store
+     */
+    const classInjection = new Map<Constructor, ClassInjectionMap>();
+
+    const stringMapper = (src: any) => src != null ? src.toString() : '';
+    const booleanMapper = (src: any) => src != null && !(src == 'false' || src == '' || src == '0');
+    const numberMapper = (src: any) => {
+        const value = Number(src);
+        return isNaN(value) ? undefined : value;
+    };
+    const dateMapper = (src: any) => {
+        const value = new Date(src);
+        return isNaN(value.getTime()) ? undefined : value;
+    };
+    const asisMapper = (src: any) => src;
+
+    const primitiveTypeMapper = new Map<Constructor | string, MapFunction>([
+        [String, stringMapper],
+        [Number, numberMapper],
+        [Boolean, booleanMapper],
+        [Date, dateMapper],
+        [AsIs, asisMapper],
+        ['string', stringMapper],
+        ['number', numberMapper],
+        ['boolean', booleanMapper]
+    ]);
+
+    function untypedArrayMapper(source: any[], target: any[]): any {
+        if (Array.isArray(source))
+            return source;
+        // Implement simple element type assumption?
+    }
+
+    function getPropertyTypeInjector(type: Constructor) {
+        // TODO: cache here
+        return (source: object, target: object, propertyName: string) =>
+            typedPropertyInjector(source, target, propertyName, type);
+    }
+
+    function getEnumPropertyInjector(type: EnumType) {
+        // TODO: cache here
+        return (source: object, target: object, propertyName: string) =>
+            enumPropertyInjector(source, target, propertyName, type);
+    }
+
+    function getTypedArrayPropertyInjector(type: Constructor) {
+        // TODO: cache here
+        return (source: object, target: object, propertyName: string) =>
+            typedArrayPropertyInjector(source, target, propertyName, type);
+    }
+
+    function typedPropertyInjector(source: object, target: object, prop: string, type: Constructor) {
+        if (!isPrimitive(source) && prop in source && !Array.isArray(source[prop])) {
+            const mapper = primitiveTypeMapper.get(type);
+            const value = mapper
+                ? mapper(source[prop])
+                : extract(target[prop] || new type(), source[prop]);
+
+            // Nullable properties are not supported yet.
+            // On the other hand, nullable property could be from the very beginning
+            // and in this case there is no issue here, but is object is extracted
+            // several times, it will be impossible to set null value again.
+            if (value !== undefined)
+                target[prop] = value;
+        }
+    }
+
+    function enumPropertyInjector(source: object, target: object, prop: string, type: EnumType) {
+        if (!isPrimitive(source) && prop in source && !Array.isArray(source[prop])) {
+            if (source[prop] in type)
+                target[prop] = source[prop];
+        }
+    }
+
+    function typedArrayPropertyInjector(source: object, target: object, prop: string, type: Constructor) {
+        const mapper = primitiveTypeMapper.get(type);
+        const sourceValue = source[prop];
+        if (!isPrimitive(source) && prop in source && Array.isArray(sourceValue)) {
+            // Consider filtering undefined values as an option
+            mapper
+                ? target[prop] = sourceValue.map(mapper).filter(value => value !== undefined)
+                : target[prop] = extractArray(type, sourceValue);
+        }
+    }
+
+    export function extract<T extends object, S extends object>(target: T, source: S): T {
+        if (isPrimitive(source))
+            return target;
+
+        const constructor = target.constructor as Constructor;
+        const staticInjectionMap = classInjection.get(constructor);
+        let sourceKeys = Object.keys(source).filter(key => typeof source[key] !== 'function');
+        let targetKeys = Object.keys(target).filter(key => typeof target[key] !== 'function');
+
+        if (staticInjectionMap) {
+            for (const [prop, injector] of staticInjectionMap) {
+                injector(source, target, prop);
+            }
+
+            // This might be optimized to single filtering pass
+            targetKeys = targetKeys.filter(key => !staticInjectionMap.has(key));
+            sourceKeys = sourceKeys.filter(key => !staticInjectionMap.has(key));
+        }
+
+        if (targetKeys.length < sourceKeys.length) {
+            extractRawProperties(source, target, targetKeys)
+        }
+        else {
+            extractRawProperties(source, target, sourceKeys);
+        }
+
+        return target;
+    }
+
+    function extractRawProperties(source: object, target: object, properties: string[]) {
+        for (const prop of properties) {
+            // Detect property types by target property type.
+            // If target property is null or undefined it is impossible get its type.
+            if (target[prop] == null)
+                continue;
+
+            let targetValue: any;
+
+            if (isPrimitive(target[prop])) {
+                const mapper = primitiveTypeMapper.get(typeof target[prop]);
+                assertMapper(mapper, source[prop], target[prop]);
+                targetValue = mapper(source[prop]);
+            }
+            // Special case for Date
+            else if (target[prop] instanceof Date) {
+                const mapper = primitiveTypeMapper.get(Date);
+                assertMapper(mapper, source[prop], target[prop]);
+                targetValue = mapper(source[prop])
+            }
+            // Special case for Arrays
+            else if (Array.isArray(target[prop])) {
+                targetValue = untypedArrayMapper(source[prop], target[prop]);
+            }
+            else {
+                targetValue = extract(target[prop], source[prop]);
+            }
+
+            if (targetValue != null)
+                target[prop] = targetValue;
+        }
+    }
+
+    function assertMapper(mapper: any, sourceValue: any, targetValue: any): asserts mapper {
+        if (!mapper)
+            throw Error(`Unable to map primitive value: ${sourceValue} -> ${targetValue}`);
+    }
+
+    export function extractArray(targetType: Constructor, source: object[]) {
+        return source.map(item => extract(new targetType(), item));
+    }
+}
