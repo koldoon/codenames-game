@@ -1,9 +1,9 @@
-<div class="container" #container>
+<div class="container">
     <mat-toolbar>
-<!--        <button mat-icon-button (click)="onCodenamesClick()">-->
-<!--            <span class="material-icons">close</span>-->
-<!--            <span class="material-icons">keyboard_backspace</span>-->
-<!--        </button>-->
+        <!--        <button mat-icon-button (click)="onCodenamesClick()">-->
+        <!--            <span class="material-icons">close</span>-->
+        <!--            <span class="material-icons">keyboard_backspace</span>-->
+        <!--        </button>-->
 
         <button mat-button color="primary" (click)="onCopyGameLinkClick()">Ссылка на игру</button>
         <button mat-button color="accent" (click)="onNewGameClick()">Новая игра</button>
@@ -35,20 +35,22 @@
         <mat-progress-bar mode="indeterminate" *ngIf="loadingInProgress || uncoveringInProgress.size"></mat-progress-bar>
     </div>
 
-    <mat-grid-list cols="5" rowHeight="2:0.9" gutterSize="0.5rem">
-        <mat-grid-tile *ngFor="let agent of game.board; let i = index; trackBy: agentId">
-            <div class="agent-wrapper">
-                <app-agent-card
-                    [name]="agent.name"
-                    [side]="agent.side"
-                    [uncovered]="agent.uncovered"
-                    [uncoveringInProgress]="uncoveringInProgress.has(i)"
-                    [fontSize]="cardFontSize"
-                    (click)="uncoverAgent(i)">
-                </app-agent-card>
-            </div>
-        </mat-grid-tile>
-    </mat-grid-list>
+    <div class="grid-container" #container>
+        <mat-grid-list cols="5" rowHeight="2:0.9" gutterSize="0.5rem">
+            <mat-grid-tile *ngFor="let agent of game.board; let i = index; trackBy: agentId">
+                <div class="agent-wrapper">
+                    <app-agent-card
+                        [name]="agent.name"
+                        [side]="agent.side"
+                        [uncovered]="agent.uncovered"
+                        [uncoveringInProgress]="uncoveringInProgress.has(i)"
+                        [fontSize]="cardFontSize"
+                        (click)="uncoverAgent(i)">
+                    </app-agent-card>
+                </div>
+            </mat-grid-tile>
+        </mat-grid-list>
+    </div>
 
     <app-game-flow-panel
         [gameFlowLog$]="gameFlowLog$"

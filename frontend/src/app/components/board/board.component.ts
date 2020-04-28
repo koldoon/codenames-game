@@ -4,8 +4,8 @@ import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, E
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { delay, finalize, retryWhen } from 'rxjs/operators';
+import { BehaviorSubject, ReplaySubject, Subject } from 'rxjs';
+import { delay, finalize, retryWhen, takeUntil } from 'rxjs/operators';
 import { webSocket } from 'rxjs/webSocket';
 import { GameStatus } from '../../../../../server/src/api/game_status';
 import { GameStatusResponse } from '../../../../../server/src/api/http/game_status_response';
@@ -53,6 +53,7 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
     loadingInProgress = false;
     uncoveringInProgress = new Set<number>();
 
+    destroy$ = new ReplaySubject(1);
     connected$ = new Subject<Event>();
     gameStream$ = webSocket<Message>({
         url: getWebSocketUrl('/api/stream'),
@@ -63,10 +64,13 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
         let connected = false;
 
         this.gameStream$
-            .pipe(retryWhen(errors => {
-                this.updateGameStatus();
-                return errors.pipe(delay(2000));
-            }))
+            .pipe(
+                takeUntil(this.destroy$),
+                retryWhen(errors => {
+                    this.updateGameStatus();
+                    return errors.pipe(delay(2000));
+                })
+            )
             .subscribe(msg => this.onGameStreamMessage(msg));
 
         this.activatedRoute.paramMap.subscribe(value => {
@@ -122,7 +126,6 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.game.isFinished = true;
             }
 
-            console.log(log);
             this.gameFlowLog$.next(log);
             this.game.blueLeft = msg.blueLeft;
             this.game.redLeft = msg.redLeft;
@@ -137,7 +140,7 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     ngOnDestroy(): void {
-        this.gameStream$.unsubscribe();
+        this.destroy$.next();
     }
 
     agentId(index: number, agent: Agent) {
