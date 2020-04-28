@@ -4,6 +4,7 @@ import * as WebSocket from 'ws';
 import { GameEventMessage, JoinGameMessage, Message, MessageKind, PlayersChangeMessage } from '../api/ws/game_messages';
 import { asyncDelay } from '../core/async_delay';
 import { bindClass } from '../core/bind_class';
+import { Logecom } from '../core/logecom/logecom';
 import { OnApplicationInit } from '../core/on_application_init';
 import { GamesService } from './games_service';
 
@@ -14,6 +15,8 @@ const t_10seconds = 1000 * 10;
  * WebSocket gateway for games events
  */
 export class GamesGateway implements OnApplicationInit {
+    private logger = Logecom.createLogger(GamesGateway.name);
+
     constructor(
         private app: Application,
         private gamesService: GamesService) {
@@ -66,8 +69,8 @@ export class GamesGateway implements OnApplicationInit {
 
     private onClientConnected(ws: WebSocket, req: Request) {
         req.headers['x-forwarded-for'] && typeof req.headers['x-forwarded-for'] == 'string'
-            ? console.log('Client connected: ' + req.headers['x-forwarded-for'].split(/\s*,\s*/)[0])
-            : console.log('Client connected: ' + req.connection.remoteAddress);
+            ? this.logger.log('Client connected:', req.headers['x-forwarded-for'].split(/\s*,\s*/)[0])
+            : this.logger.log('Client connected:', req.connection.remoteAddress);
 
         ws.on('close', (code, reason) => {
             this.onClientDisconnected(ws);
@@ -105,7 +108,7 @@ export class GamesGateway implements OnApplicationInit {
             return;
 
         this.playerGame.delete(ws);
-        if(gameId) {
+        if (gameId) {
             const players = this.gamePlayers.get(gameId);
 
             if (players) {

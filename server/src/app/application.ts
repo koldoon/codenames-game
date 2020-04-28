@@ -1,6 +1,7 @@
 import * as express from 'express';
 import * as express_ws from 'express-ws';
 import { initModules } from '../core/init_modules';
+import { Logecom } from '../core/logecom/logecom';
 import { ErrorsController } from './errors_controller';
 import { FrontendController } from './frontend_controller';
 import { GamesController } from './games_controller';
@@ -10,14 +11,17 @@ import * as helmet from 'helmet';
 import * as compression from 'compression';
 
 export class Application {
+    private logger = Logecom.createLogger(Application.name);
+
     constructor(private port: number | string) {
         this.bootstrap().then(() => {
-            console.warn('Application started');
-            console.warn(`Listening on port: ${port}`);
+            this.logger.info('Application started' + (process.env.NODE_ENV === 'production' ? ' in PRODUCTION mode' : ''));
+            this.logger.info(`Listening on port: ${port}`);
         });
     }
 
     private async bootstrap() {
+        // Build application context respecting dependencies
         const app = express();
         const ws = express_ws(app);
 
@@ -27,6 +31,7 @@ export class Application {
         const frontendController = new FrontendController(app);
         const errorsController = new ErrorsController(app);
 
+        // Init services and middleware
         app
             .use(helmet())
             .use(compression());

@@ -1,120 +1,42 @@
-export enum LogLevel {
-    Fatal = 'fatal',
-    Error = 'error',
-    Warn = 'warn',
-    Info = 'info',
-    Debug = 'debug'
-}
+import { LogEntry } from './log_entry';
+import { LogTranslator } from './log_translator';
+import { Logger } from './logger';
 
-export type LogMessage = string | string[] | any;
+export class Logecom {
+    private static instance = new Logecom();
 
-export interface ILogEntry {
-    level: LogLevel;
-    msgs: LogMessage[];
-    category: string;
-}
-
-type LoggerGeneralizedMethod = (level: LogLevel, ...msgs: LogMessage[]) => ILogger;
-type LoggerMethod = (...msgs: LogMessage[]) => ILogger;
-
-export interface ILogger {
-    log: LoggerGeneralizedMethod;
-    debug: LoggerMethod;
-    info: LoggerMethod;
-    warn: LoggerMethod;
-    error: LoggerMethod;
-    fatal: LoggerMethod;
-}
-
-export interface ILoggerFactory {
-    createLogger(category: string): ILogger;
-}
-
-export interface ILogecomTranslator {
-    translate(entry: ILogEntry): ILogEntry | undefined;
-
-    /**
-     * Simplify dynamic logging targets switching
-     */
-    isEnabled(): boolean;
-}
-
-export interface ILogecom extends ILoggerFactory, ILogecomTranslator {
-    use(translator?: ILogecomTranslator): ILogecom;
-}
-
-
-class Logger implements ILogger {
-    constructor(
-        private readonly category: string,
-        private readonly logecom: ILogecomTranslator) {
+    static createLogger(category: string): Logger {
+        return new Logger(category, this.instance);
     }
 
-    log(level: LogLevel, ...msgs: LogMessage[]) {
-        this.logecom.translate({
-            category: this.category,
-            level: level,
-            msgs: msgs
-        });
+    static getInstance() {
+        return this.instance;
+    }
+
+    private pipe: LogTranslator[] = [];
+
+    use(translator: LogTranslator) {
+        this.pipe.push(translator);
         return this;
     }
 
-    debug(...msgs: LogMessage[]) {
-        this.log(LogLevel.Debug, ...msgs);
-        return this;
+    translate(entry: LogEntry) {
+        if (!this.pipe.length)
+            return;
+
+        this.getNextFunction(0)(entry);
     }
 
-    error(...msgs: LogMessage[]) {
-        this.log(LogLevel.Error, ...msgs);
-        return this;
-    }
+    private getNextFunction(i: number) {
+        return (entry?: LogEntry) => {
+            if (entry == null)
+                return;
 
-    fatal(...msgs: LogMessage[]) {
-        this.log(LogLevel.Fatal, ...msgs);
-        return this;
-    }
+            while (i < this.pipe.length && !this.pipe[i].isEnabled())
+                i++;
 
-    info(...msgs: LogMessage[]) {
-        this.log(LogLevel.Info, ...msgs);
-        return this;
-    }
-
-    warn(...msgs: LogMessage[]) {
-        this.log(LogLevel.Warn, ...msgs);
-        return this;
-    }
-}
-
-
-/**
- * ILogecom interface default implementation
- */
-export class Logecom implements ILogecom {
-    pipe: ILogecomTranslator[] = [];
-
-    use(translator?: ILogecomTranslator): ILogecom {
-        if (translator)
-            this.pipe.push(translator);
-        return this;
-    }
-
-    createLogger(category: string): ILogger {
-        return new Logger(category, this);
-    }
-
-    translate(entry: ILogEntry) {
-        let pipedEntry: ILogEntry | undefined = entry;
-        for (let t of this.pipe) {
-            if (pipedEntry && t.isEnabled())
-                pipedEntry = t.translate(pipedEntry);
-
-            if (!pipedEntry)
-                break;
+            if (i < this.pipe.length && this.pipe[i].isEnabled())
+                this.pipe[i].translate(entry, this.getNextFunction(i + 1));
         }
-        return entry;
-    }
-
-    isEnabled(): boolean {
-        return true;
     }
 }

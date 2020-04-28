@@ -62,6 +62,7 @@ export namespace serialization {
             }
 
             keysFilter = (obj: object) => (key: string) => {
+                // Extend filter function to skip statically described properties
                 return typeof obj[key] !== 'function' && !staticInjectionMap.has(key);
             };
         }
@@ -141,7 +142,6 @@ export namespace serialization {
             classInjection.set(type, new Map<PropertyName, PropertyInjector>());
         return classInjection.get(type)!;
     }
-
 
     function getPropertyTypeInjector(type: Constructor): PropertyInjector {
         if (valueInjector.get(type) == undefined)

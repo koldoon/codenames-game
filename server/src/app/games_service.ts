@@ -3,6 +3,7 @@ import { GameStatus } from '../api/game_status';
 import { PlayerType } from '../api/player_type';
 import { asyncDelay } from '../core/async_delay';
 import { httpAssertFound, httpAssertRange, httpAssertValue } from '../core/http_asserts';
+import { Logecom } from '../core/logecom/logecom';
 import { OnApplicationInit } from '../core/on_application_init';
 import { Agent } from '../model/agent';
 import { Side } from '../model/agent_side';
@@ -21,11 +22,12 @@ export class GamesService implements OnApplicationInit {
     readonly gameEvents$ = new Subject<{ game: GameModel, event: GameEvent }>();
     readonly gamesChain$ = new Subject<{ prevGameId: string, nextGameId: string }>();
 
+    private readonly logger = Logecom.createLogger(GamesService.name);
     private readonly dictionary: Dictionary = new DeNullDictionary();
     private games = new Map<GameId, GameModel>();
 
     async init() {
-        console.debug('Using games dictionary: ' + this.dictionary.constructor.name);
+        this.logger.info('Using games dictionary:', this.dictionary.constructor.name);
         this.beginOldGamesRemovingCycle(t_1hour);
     }
 
@@ -199,7 +201,7 @@ export class GamesService implements OnApplicationInit {
             }
         }
 
-        console.log(`Old games clearing: ${oldGames.size}`);
+        this.logger.log(`Old games cleanup: ${oldGames.size}`);
         this.games = activeGames;
         this.beginOldGamesRemovingCycle(intervalMs);
     }
