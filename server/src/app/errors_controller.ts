@@ -6,7 +6,7 @@ import { OnApplicationInit } from '../core/on_application_init';
 import { serializeError } from 'serialize-error';
 
 export class ErrorsController implements OnApplicationInit {
-    private logger = Logecom.createLogger(ErrorsController.name);
+    private readonly logger = Logecom.createLogger(this.constructor.name);
 
     constructor(
         private app: Application) {

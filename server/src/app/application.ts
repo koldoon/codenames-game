@@ -12,7 +12,7 @@ import { GamesGateway } from './games_gateway';
 import { GamesService } from './games_service';
 
 export class Application {
-    private logger = Logecom.createLogger(Application.name);
+    private readonly logger = Logecom.createLogger(this.constructor.name);
 
     constructor(private port: number | string) {
         this.bootstrap().then(() => {

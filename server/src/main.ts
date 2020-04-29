@@ -1,6 +1,6 @@
 import { Application } from './app/application';
-import { ConsoleTransport } from './core/logecom/translators/console_transport';
 import { Logecom } from './core/logecom/logecom';
+import { ConsoleTransport } from './core/logecom/translators/console_transport';
 import { ErrorFormatter } from './core/logecom/translators/error_formatter';
 import { HttpFormatter } from './core/logecom/translators/http_formatter';
 import { ObjectFormatter } from './core/logecom/translators/object_formatter';

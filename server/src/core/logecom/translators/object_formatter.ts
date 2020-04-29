@@ -20,28 +20,29 @@ export class ObjectFormatter implements LogTranslator {
     translate(entry: LogEntry, next: NextFunction): void {
         for (let i = 0; i < entry.messages.length; i++) {
             const msg = entry.messages[i];
-            if (typeof msg === 'object' && !(msg instanceof Error)) {
-                let jsonString = JSON.stringify(msg, null, 2);
+            if (typeof msg !== 'object')
+                continue;
 
-                if (this.config.colorize) {
-                    jsonString = jsonString
-                        .split('\n')
-                        .map(line => line
-                            .replace(/(\d)/g, colors.yellow('$1'))
-                            .replace(/(error|exception)/g, colors.red('$1'))
-                            .replace(/(message|warning)/g, colors.green('$1'))
-                            .replace(/(true|false)/g, colors.magenta('$1'))
-                        )
-                        .join('\n'.padEnd(this.config.pad));
-                }
-                else {
-                    jsonString = jsonString
-                        .split('\n')
-                        .join('\n'.padEnd(this.config.pad));
-                }
+            let jsonString = JSON.stringify(msg, null, 2);
 
-                entry.messages[i] = '\n'.padEnd(this.config.pad) + jsonString + '\n';
+            if (this.config.colorize) {
+                jsonString = jsonString
+                    .split('\n')
+                    .map(line => line
+                        .replace(/(\d)/g, colors.yellow('$1'))
+                        .replace(/(error|exception)/g, colors.red('$1'))
+                        .replace(/(message|warning)/g, colors.green('$1'))
+                        .replace(/(true|false)/g, colors.magenta('$1'))
+                    )
+                    .join('\n'.padEnd(this.config.pad));
             }
+            else if (this.config.pad) {
+                jsonString = jsonString
+                    .split('\n')
+                    .join('\n'.padEnd(this.config.pad));
+            }
+
+            entry.messages[i] = '\n'.padEnd(this.config.pad) + jsonString + '\n';
         }
 
         next(entry);

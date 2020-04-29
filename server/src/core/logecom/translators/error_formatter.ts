@@ -29,7 +29,11 @@ export class ErrorFormatter implements LogTranslator {
                     : msg.stack + '\n';
             }
             else {
-                entry.messages.splice(i, 1, msg.message, serializeError(msg));
+                entry.messages.splice(
+                    i, 1,
+                    this.config.colorize ? colors.red(msg.message) : msg.message,
+                    serializeError(msg)
+                );
                 i++;
             }
         }

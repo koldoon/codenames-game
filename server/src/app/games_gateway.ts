@@ -15,6 +15,8 @@ const t_10seconds = 1000 * 10;
  * WebSocket gateway for games events
  */
 export class GamesGateway implements OnApplicationInit {
+    private readonly logger = Logecom.createLogger(this.constructor.name);
+
     constructor(
         private app: Application,
         private gamesService: GamesService) {
@@ -22,7 +24,6 @@ export class GamesGateway implements OnApplicationInit {
         bindClass(this);
     }
 
-    private logger = Logecom.createLogger(GamesGateway.name);
     private gamePlayers = new Map<GameId, Set<WebSocket>>();
     private playerGame = new Map<WebSocket, GameId>();
     private clientsCount = 0;
