@@ -10,7 +10,7 @@ import { LogTranslator, NextFunction } from '../log_translator';
 import { Logecom } from '../logecom';
 import { StringMapper } from './string_mapper';
 
-export function expressLoggerMiddleware() {
+export function expressLogMiddleware() {
     const logger = Logecom.createLogger('Express');
     return (req: IncomingMessage, res: ServerResponse, next: express.NextFunction) => {
         logger.log(req, res);
@@ -20,6 +20,8 @@ export function expressLoggerMiddleware() {
 
 export interface HttpFormatterConfig {
     colorize: boolean;
+    responsesOnly: boolean;
+    padRequestId: number;
 }
 
 /**
@@ -36,7 +38,9 @@ export class HttpFormatter implements LogTranslator {
     }
 
     private readonly config: HttpFormatterConfig = {
-        colorize: true
+        colorize: true,
+        responsesOnly: true,
+        padRequestId: 4
     };
 
     private readonly gp: StringMapper = colors.gray;      // "gray" painter
@@ -51,40 +55,56 @@ export class HttpFormatter implements LogTranslator {
     translate(entry: LogEntry, next: NextFunction): void {
         if (entry.messages.length == 2 && entry.messages[0] instanceof IncomingMessage && entry.messages[1] instanceof ServerResponse) {
             const [req, res] = entry.messages as [IncomingMessage, ServerResponse];
-            const requestId = this.requestId++;
+            const requestId = (this.requestId++).toString();
             const startedAt = performance.now();
+            const method = (req.method || '').padEnd(4);
             const url = req.url;
             const bytesWritten = req.socket.bytesWritten; // simple socket stats
             const ipAddr = String(req.headers['x-forwarded-for'] || '').split(',').pop() ||
                 req.connection.remoteAddress ||
                 req.socket.remoteAddress;
 
-            const line = [
-                this.gp('[') + this.reqp('→') + this.gp(']'),
-                this.gp(('[' + requestId + ']').padEnd(6)),
-                req.method, url,
-                this.gp('[' + ipAddr + ']')
-            ].join(' ');
+            if (!this.config.responsesOnly) {
+                const line = [
+                    this.gp('[') + this.reqp('→') + this.gp(']'),
+                    this.gp('[' + requestId.padEnd(this.config.padRequestId) + ']'),
+                    method, url,
+                    this.gp('[' + ipAddr + ']')
+                ].join(' ');
 
-            entry.messages = [line];
+                entry.messages = [line];
+            }
             entry.tags.push(String(req.headers['user-agent']));
 
             onFinished(res, () => {
                 const contentLength = bytes(req.socket.bytesWritten - bytesWritten);
+                const directionTag = !this.config.responsesOnly ? [this.gp('[') + this.resp('←') + this.gp(']')] : [];
+                const ipAddrTag = this.config.responsesOnly ? [this.gp('[' + ipAddr + ']')] : [];
+
                 const line = [
-                    this.gp('[') + this.resp('←') + this.gp(']'),
-                    this.gp(('[' + requestId + ']').padEnd(6)),
-                    req.method, url,
-                    this.gp('{' + bytes(req.socket.bytesRead) + '/' + contentLength + '}'),
+                    ...directionTag,
+                    this.gp('[' + requestId.padStart(this.config.padRequestId) + ']'),
+                    method, url, this.resp('→ ' + res.statusCode.toString()),
                     this.gp('[' + ms(performance.now() - startedAt) + ']'),
-                    this.gp('[') + this.resp(res.statusCode.toString()) + this.gp(']')
-                ].join(' ');
+                    ...ipAddrTag,
+                    this.gp('{' + bytes(req.socket.bytesRead) + '/' + contentLength + '}')
+                ];
 
-                next({ ...entry, messages: [line] });
+                if (this.config.responsesOnly) {
+                    entry.messages = [line.join(' ')];
+                    next(entry);
+                }
+                else {
+                    next({ ...entry, messages: [line.join(' ')] });
+                }
             });
-        }
 
-        next(entry);
+            if (!this.config.responsesOnly)
+                next(entry);
+        }
+        else {
+            next(entry);
+        }
     }
 
     isEnabled(): boolean {

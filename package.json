@@ -8,6 +8,6 @@
   "scripts": {
     "install": "cd ./server && npm i && cd ../frontend &&  npm i && cd ..",
     "build": "cd ./server && npm run build && cd ../frontend && npm run build && cd ..",
-    "start": "node ./dist/server/main.js"
+    "start": "env NODE_ENV=production node ./dist/server/main.js"
   }
 }

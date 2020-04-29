@@ -6,12 +6,13 @@ import { HttpFormatter } from './core/logecom/translators/http_formatter';
 import { ObjectFormatter } from './core/logecom/translators/object_formatter';
 
 // Configure logging middleware
+const config = { colorize: !process.env.NO_CONSOLE_COLORS };
 Logecom
     .getInstance()
-    .use(new ErrorFormatter())
-    .use(new HttpFormatter())
-    .use(new ObjectFormatter())
-    .use(new ConsoleTransport());
+    .use(new ErrorFormatter(config))
+    .use(new HttpFormatter(config))
+    .use(new ObjectFormatter(config))
+    .use(new ConsoleTransport(config));
 
 // ... and the World begins
 new Application(process.env.CODENAMES_HTTP_PORT || 8095);

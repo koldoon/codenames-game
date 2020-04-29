@@ -23,23 +23,27 @@ export class ObjectFormatter implements LogTranslator {
             if (typeof msg !== 'object')
                 continue;
 
-            let jsonString = JSON.stringify(msg, null, 2);
+            let jsonString = msg.constructor.name + ' ' + JSON.stringify(msg, null, 2);
 
             if (this.config.colorize) {
-                jsonString = jsonString
-                    .split('\n')
-                    .map(line => line
-                        .replace(/(\d)/g, colors.yellow('$1'))
-                        .replace(/(error|exception)/g, colors.red('$1'))
-                        .replace(/(message|warning)/g, colors.green('$1'))
-                        .replace(/(true|false)/g, colors.magenta('$1'))
-                    )
-                    .join('\n'.padEnd(this.config.pad));
+                let lines = jsonString.split('\n');
+                lines = lines.map((line, index) => {
+                    if (index == 0 || index == lines.length - 1) {
+                        line = colors.green(line);
+                    }
+                    else {
+                        line = line
+                            .replace(/(\d)/g, colors.yellow('$1'))
+                            .replace(/(error|exception)/g, colors.red('$1'))
+                            .replace(/(message|warning)/g, colors.green('$1'))
+                            .replace(/(true|false)/g, colors.magenta('$1'))
+                    }
+                    return line;
+                });
+                jsonString = lines.join('\n'.padEnd(this.config.pad));
             }
             else if (this.config.pad) {
-                jsonString = jsonString
-                    .split('\n')
-                    .join('\n'.padEnd(this.config.pad));
+                jsonString = jsonString.split('\n').join('\n'.padEnd(this.config.pad));
             }
 
             entry.messages[i] = '\n'.padEnd(this.config.pad) + jsonString + '\n';

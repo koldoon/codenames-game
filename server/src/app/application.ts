@@ -2,14 +2,16 @@ import * as compression from 'compression';
 import * as express from 'express';
 import * as express_ws from 'express-ws';
 import * as helmet from 'helmet';
+import * as path from 'path';
 import { initModules } from '../core/init_modules';
 import { Logecom } from '../core/logecom/logecom';
-import { expressLoggerMiddleware } from '../core/logecom/translators/http_formatter';
+import { expressLogMiddleware } from '../core/logecom/translators/http_formatter';
 import { ErrorsController } from './errors_controller';
 import { FrontendController } from './frontend_controller';
 import { GamesController } from './games_controller';
 import { GamesGateway } from './games_gateway';
 import { GamesService } from './games_service';
+import * as fs from 'fs';
 
 export class Application {
     private readonly logger = Logecom.createLogger(this.constructor.name);
@@ -22,6 +24,9 @@ export class Application {
     }
 
     private async bootstrap() {
+        this.logger.warn('Starting codenames-game server');
+        this.logger.info('Git commit [' + fs.readFileSync(path.join(__dirname, '../version')).toString().trim() + ']');
+
         // Build application context respecting dependencies
         const app = express();
         const ws = express_ws(app);
@@ -36,7 +41,7 @@ export class Application {
         app
             .use(helmet())
             .use(compression())
-            .use(expressLoggerMiddleware());
+            .use(expressLogMiddleware());
 
         await initModules(
             gamesService,

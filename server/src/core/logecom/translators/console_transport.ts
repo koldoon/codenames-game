@@ -11,18 +11,21 @@ export interface ConsoleTransportConfig {
     colorize: boolean;
     categoryDiffTime: boolean;
     padMessages: boolean;
+    initialPadValue: number;
 }
 
 export class ConsoleTransport implements LogTranslator {
     constructor(config?: Partial<ConsoleTransportConfig>) {
         this.config = { ...this.config, ...config };
         this.gp = this.config.colorize ? colors.gray : this.dummyPainter;
+        this.categoryMaxLength = this.config.initialPadValue || 0;
     }
 
     private readonly config: ConsoleTransportConfig = {
         colorize: true,
-        categoryDiffTime: true,
-        padMessages: true
+        categoryDiffTime: false,
+        padMessages: true,
+        initialPadValue: 12
     };
     private readonly categoryLastTime = new Map<string, number>();
     private readonly levelColor = new Map<LogLevel, Function>([
@@ -33,9 +36,19 @@ export class ConsoleTransport implements LogTranslator {
         [LogLevel.Debug, colors.dim.cyan],
         [LogLevel.Log, colors.dim.white]
     ]);
+    private readonly levelLabel = new Map<LogLevel, string>([
+        [LogLevel.Warn, 'WRN'],
+        [LogLevel.Info, 'INF'],
+        [LogLevel.Fatal, 'FAT'],
+        [LogLevel.Error, 'ERR'],
+        [LogLevel.Debug, 'DEB'],
+        [LogLevel.Log, 'LOG']
+    ]);
+
+
     private readonly dummyPainter: StringMapper = str => str;
     private readonly gp: StringMapper;
-    private categoryMaxLength = 20; // to reduce the number of "steps" in logs from the very beginning
+    private categoryMaxLength = 0;
 
     translate(entry: LogEntry, next: NextFunction) {
         const logLevelPainter = this.config.colorize
@@ -46,7 +59,7 @@ export class ConsoleTransport implements LogTranslator {
         const pid = '[' + process.pid + ']';
         const now = new Date();
         const dateTime = dateFormat(now, 'yyyy/mm/dd HH:MM:ss') + this.gp(dateFormat(now, '.l'));
-        const logLevel = '[' + logLevelPainter(LogLevel[entry.level].substr(0, 3).toUpperCase()) + ']';
+        const logLevel = this.gp('[') + logLevelPainter(this.levelLabel.get(entry.level)) + this.gp(']');
 
         let category = entry.category;
         if (this.config.categoryDiffTime) {
@@ -55,7 +68,7 @@ export class ConsoleTransport implements LogTranslator {
         }
         if (this.config.padMessages) {
             this.categoryMaxLength = Math.max(this.categoryMaxLength, category.length);
-            category = category.padEnd(this.categoryMaxLength);
+            category = (category).padEnd(this.categoryMaxLength);
         }
         category = this.gp(category);
 

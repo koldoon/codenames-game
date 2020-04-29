@@ -9,7 +9,8 @@
     "link-nm": "ln -sf ../../server/node_modules ../dist/server/node_modules",
     "prebuild": "rimraf ../dist/server",
     "build": "tsc && npx copy-node-modules ./ ../dist/server",
-    "start": "env NODE_ENV=production node ../dist/server/main.js",
+    "postbuild": "cd .. && git rev-parse --short HEAD > ./dist/server/version",
+    "start": "node ../dist/server/main.js",
     "start-dev": "env NODE_ENV=development node ../dist/server/main.js",
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "eslint \"{src,appns,libs,test}/**/*.ts\" --fix"
