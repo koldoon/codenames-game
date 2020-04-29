@@ -20,7 +20,7 @@ export namespace serialization {
      */
     export function ExtractType(type: Constructor) {
         return (target: any, prop: string) => {
-            getInjectionMap(target.constructor).set(prop, getPropertyTypeInjector(type));
+            getPrototypeInjectionMap(target.constructor).set(prop, getPropertyTypeInjector(type));
         }
     }
 
@@ -30,7 +30,7 @@ export namespace serialization {
      */
     export function ExtractArray(elementType: Constructor) {
         return (target: any, prop: string) => {
-            getInjectionMap(target.constructor).set(prop, getTypedArrayPropertyInjector(elementType));
+            getPrototypeInjectionMap(target.constructor).set(prop, getTypedArrayPropertyInjector(elementType));
         }
     }
 
@@ -40,7 +40,7 @@ export namespace serialization {
      */
     export function ExtractEnum(type: EnumType) {
         return (target: any, prop: string) => {
-            getInjectionMap(target.constructor).set(prop, getEnumPropertyInjector(type));
+            getPrototypeInjectionMap(target.constructor).set(prop, getEnumPropertyInjector(type));
         }
     }
 
@@ -52,8 +52,8 @@ export namespace serialization {
         if (isPrimitive(source))
             return target;
 
-        const constructor = target.constructor as Constructor;
-        const staticInjectionMap = classInjection.get(constructor);
+        const targetType = target.constructor as Constructor;
+        const staticInjectionMap = getClassInjectionMap(targetType);
         let keysFilter = (obj: object) => (key: string) => typeof obj[key] !== 'function';
 
         if (staticInjectionMap) {
@@ -62,7 +62,7 @@ export namespace serialization {
             }
 
             keysFilter = (obj: object) => (key: string) => {
-                // Extend filter function to skip statically described properties
+                // Extend filter function to skip already processed statically described properties
                 return typeof obj[key] !== 'function' && !staticInjectionMap.has(key);
             };
         }
@@ -96,12 +96,14 @@ export namespace serialization {
     type PropertyName = string;
     type Constructor<T extends {} = {}> = new (...args: any[]) => T;
     type PropertyInjector = (source: object, target: object, propertyName: string) => void;
-    type ClassInjectionMap = Map<PropertyName, PropertyInjector>;
+    type InjectionMap = Map<PropertyName, PropertyInjector>;
     type EnumType = typeof AbstractEnum;
     type MapFunction = (src: any) => any;
 
-    // Classes metadata store
-    const classInjection = new Map<Constructor, ClassInjectionMap>();
+    // Prototypes metadata store
+    const prototypeInjection = new Map<Constructor, InjectionMap>();
+    // Classes metadata store: respects classes inheritance.
+    const classInjection = new Map<Constructor, InjectionMap>();
 
     // Cached property injectors
     const enumInjector = new Map<EnumType, PropertyInjector>();
@@ -134,13 +136,38 @@ export namespace serialization {
     function untypedArrayMapper(source: any[], target: any[]): any {
         if (Array.isArray(source))
             return source;
-        // Implement simple element type assumption?
+
+        // todo [suggestion] Implement simple array element type assumption?
     }
 
-    function getInjectionMap(type: Constructor) {
-        if (classInjection.get(type) == undefined)
-            classInjection.set(type, new Map<PropertyName, PropertyInjector>());
-        return classInjection.get(type)!;
+    function getPrototypeInjectionMap(type: Constructor) {
+        if (prototypeInjection.get(type) == undefined)
+            prototypeInjection.set(type, new Map<PropertyName, PropertyInjector>());
+        return prototypeInjection.get(type)!;
+    }
+
+    /**
+     * Look through the class prototype chain,
+     * collect and cache all injection metadata.
+     */
+    function getClassInjectionMap(type: Constructor) {
+        const cached = classInjection.get(type);
+        if (cached)
+            return cached;
+
+        let injectionMap = new Map<PropertyName, PropertyInjector>();
+        for (let t = type; t != undefined; t = Object.getPrototypeOf(t)) {
+            let meta = prototypeInjection.get(t);
+            if (meta) {
+                for (let [key, value] of meta)
+                    injectionMap.set(key, value);
+            }
+        }
+
+        if (type.name != 'Object') // no sense in caching raw objects
+            classInjection.set(type, injectionMap);
+
+        return injectionMap;
     }
 
     function getPropertyTypeInjector(type: Constructor): PropertyInjector {
