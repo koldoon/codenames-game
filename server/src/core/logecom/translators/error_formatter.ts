@@ -20,15 +20,17 @@ export class ErrorFormatter implements LogTranslator {
     translate(entry: LogEntry, next: NextFunction): void {
         for (let i = 0; i < entry.messages.length; i++) {
             const msg = entry.messages[i];
-            if (msg instanceof Error) {
-                if (msg.stack) {
-                    entry.messages[i] = this.config.colorize
-                        ? colors.red(msg.stack) + '\n'
-                        : msg.stack + '\n';
-                }
-                else {
-                    entry.messages[i] = serializeError(msg);
-                }
+            if (!(msg instanceof Error))
+                continue;
+
+            if (msg.stack) {
+                entry.messages[i] = this.config.colorize
+                    ? colors.red(msg.stack) + '\n'
+                    : msg.stack + '\n';
+            }
+            else {
+                entry.messages.splice(i, 1, msg.message, serializeError(msg));
+                i++;
             }
         }
         next(entry);

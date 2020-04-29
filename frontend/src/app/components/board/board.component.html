@@ -1,9 +1,11 @@
 <div class="container">
     <mat-toolbar>
-        <!--        <button mat-icon-button (click)="onCodenamesClick()">-->
-        <!--            <span class="material-icons">close</span>-->
-        <!--            <span class="material-icons">keyboard_backspace</span>-->
-        <!--        </button>-->
+        <!--
+        <button mat-icon-button (click)="onCodenamesClick()">
+            <span class="material-icons">close</span>
+            <span class="material-icons">keyboard_backspace</span>
+        </button>
+        -->
 
         <button mat-button color="primary" (click)="onCopyGameLinkClick()">Ссылка на игру</button>
         <button mat-button color="accent" (click)="onNewGameClick()">Новая игра</button>
@@ -37,7 +39,7 @@
 
     <div class="grid-container" #container>
         <mat-grid-list cols="5" rowHeight="2:0.9" gutterSize="0.5rem">
-            <mat-grid-tile *ngFor="let agent of game.board; let i = index; trackBy: agentId">
+            <mat-grid-tile *ngFor="let agent of game.board, let i = index, trackBy: agentId">
                 <div class="agent-wrapper">
                     <app-agent-card
                         [name]="agent.name"

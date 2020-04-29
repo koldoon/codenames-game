@@ -2,7 +2,7 @@ import { Subject } from 'rxjs';
 import { GameStatus } from '../api/game_status';
 import { PlayerType } from '../api/player_type';
 import { asyncDelay } from '../core/async_delay';
-import { httpAssertFound, httpAssertRange, httpAssertValue } from '../core/http_asserts';
+import { httpAssert } from '../core/http_asserts';
 import { Logecom } from '../core/logecom/logecom';
 import { OnApplicationInit } from '../core/on_application_init';
 import { Agent } from '../model/agent';
@@ -10,6 +10,7 @@ import { Side } from '../model/agent_side';
 import { Dictionary } from '../model/dictionary';
 import { GameEvent } from '../model/game_log_item';
 import { GameModel } from '../model/game_model';
+import { GameMove } from '../model/game_move';
 import { DeNullDictionary } from '../model/impl/denull_dictionary';
 
 export type GameId = string;
@@ -67,12 +68,12 @@ export class GamesService implements OnApplicationInit {
         return newGame.id;
     }
 
-    async getGameStatus(gameId: GameId, playerType: PlayerType) {
+    async getGameStatus(gameId: GameId, playerType: PlayerType): Promise<GameStatus> {
         let game = this.games.get(gameId);
         while (game && game.nextGame)
             game = game.nextGame;
 
-        httpAssertFound(game, 'Game not found.');
+        httpAssert.found(game, 'Game not found.');
         let board: Agent[];
         if (playerType == PlayerType.Spymaster) {
             board = game.board.map(card => <Agent> {
@@ -88,27 +89,27 @@ export class GamesService implements OnApplicationInit {
             });
         }
 
-        return <GameStatus> {
+        return {
             id: game.id,
             redLeft: game.redLeft,
             blueLeft: game.blueLeft,
             move: game.move,
             isFinished: game.isFinished,
-            nextGameId: game.nextGameId,
+            nextGameId: game.getNextGameId(),
             gameInChain: game.gameInChain,
             log: game.events,
             board
         };
     }
 
-    async uncoverAgent(gameId: string, agentIndex: number) {
+    async uncoverAgent(gameId: string, agentIndex: number): Promise<Agent> {
         const game = this.games.get(gameId);
-        httpAssertFound(game, 'Game not found.');
-        httpAssertFound(game.board[agentIndex], 'Agent not found.');
+        httpAssert.found(game, 'Game not found.');
+        httpAssert.found(game.board[agentIndex], 'Agent not found.');
 
         const eventsBefore = game.events.length;
         const agent = game.uncoverAgent(agentIndex);
-        httpAssertValue(agent, 'Agent is already uncovered or game or move is finished or not yet inited.');
+        httpAssert.value(agent, 'Agent is already uncovered or game or move is finished or not yet inited.');
 
         for (let i = eventsBefore; i < game.events.length; i++)
             this.gameEvents$.next({ game, event: game.events[i] });
@@ -116,23 +117,17 @@ export class GamesService implements OnApplicationInit {
         return agent;
     }
 
-    async commitCode(gameId: string, message: string) {
+    async commitCode(gameId: string, message: string): Promise<GameMove> {
         const game = this.games.get(gameId);
-        //<editor-fold desc="asserts">
-        httpAssertFound(game, 'Game not found.');
-        //</editor-fold>
+        httpAssert.found(game, 'Game not found.');
 
         const [hint, count_s] = message.trim().split(/[\s,;]+/);
         const count = Number(count_s);
-        //<editor-fold desc="asserts">
-        httpAssertValue(hint != '', 'Invalid code word.');
-        httpAssertRange(count, [0, (game.boardSize - 1) / 3 + 1], 'Invalid code word match count.');
-        //</editor-fold>
+        httpAssert.value(hint != '', 'Invalid code word.');
+        httpAssert.range(count, [0, (game.boardSize - 1) / 3 + 1], 'Invalid code word match count.');
 
         const move = game.commitHint(hint, count);
-        //<editor-fold desc="asserts">
-        httpAssertValue(move, 'Game is finished.');
-        //</editor-fold>
+        httpAssert.value(move, 'Game is finished.');
 
         this.gameEvents$.next({ game, event: game.events[game.events.length - 1] });
         return move;

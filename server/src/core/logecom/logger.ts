@@ -11,7 +11,8 @@ export class Logger {
         this.logecom.translate({
             category: this.category,
             level: level,
-            messages: msgs
+            messages: msgs,
+            tags: []
         });
         return this;
     }

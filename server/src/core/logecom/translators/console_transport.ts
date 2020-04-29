@@ -5,23 +5,24 @@ import * as dateFormat from 'dateformat';
 import { LogEntry } from '../log_entry';
 import { LogLevel } from '../log_level';
 import { LogTranslator, NextFunction } from '../log_translator';
-
-type StringMapper = (value: string) => string;
+import { StringMapper } from './string_mapper';
 
 export interface ConsoleTransportConfig {
     colorize: boolean;
-    categoryPad: number;
+    categoryDiffTime: boolean;
+    padMessages: boolean;
 }
 
 export class ConsoleTransport implements LogTranslator {
     constructor(config?: Partial<ConsoleTransportConfig>) {
         this.config = { ...this.config, ...config };
-        this.dimmedPainter = this.config.colorize ? colors.gray : this.dummyPainter;
+        this.gp = this.config.colorize ? colors.gray : this.dummyPainter;
     }
 
     private readonly config: ConsoleTransportConfig = {
         colorize: true,
-        categoryPad: 0
+        categoryDiffTime: true,
+        padMessages: true
     };
     private readonly categoryLastTime = new Map<string, number>();
     private readonly levelColor = new Map<LogLevel, Function>([
@@ -32,8 +33,9 @@ export class ConsoleTransport implements LogTranslator {
         [LogLevel.Debug, colors.dim.cyan],
         [LogLevel.Log, colors.dim.white]
     ]);
-    private readonly dummyPainter: StringMapper = (value: string) => value;
-    private readonly dimmedPainter: StringMapper;
+    private readonly dummyPainter: StringMapper = str => str;
+    private readonly gp: StringMapper;
+    private categoryMaxLength = 20; // to reduce the number of "steps" in logs from the very beginning
 
     translate(entry: LogEntry, next: NextFunction) {
         const logLevelPainter = this.config.colorize
@@ -42,14 +44,25 @@ export class ConsoleTransport implements LogTranslator {
 
         // Prepare log line values
         const pid = '[' + process.pid + ']';
+        const now = new Date();
+        const dateTime = dateFormat(now, 'yyyy/mm/dd HH:MM:ss') + this.gp(dateFormat(now, '.l'));
         const logLevel = '[' + logLevelPainter(LogLevel[entry.level].substr(0, 3).toUpperCase()) + ']';
-        const lastTime = this.categoryLastTime.get(entry.category) || performance.now();
-        const categoryTimeDiff = ms(performance.now() - lastTime);
-        const category = this.dimmedPainter([entry.category, ' +', categoryTimeDiff].join('').padEnd(this.config.categoryPad));
-        const dateTime = dateFormat(new Date(), 'dd-mmm-yyyy HH:MM:ss.l');
+
+        let category = entry.category;
+        if (this.config.categoryDiffTime) {
+            const lastTime = this.categoryLastTime.get(entry.category) || performance.now();
+            category += ' +' + ms(performance.now() - lastTime);
+        }
+        if (this.config.padMessages) {
+            this.categoryMaxLength = Math.max(this.categoryMaxLength, category.length);
+            category = category.padEnd(this.categoryMaxLength);
+        }
+        category = this.gp(category);
 
         process.stdout.write([pid, dateTime, logLevel, category, ...entry.messages, '\n'].join(' '));
-        this.categoryLastTime.set(entry.category, performance.now());
+
+        if (this.config.categoryDiffTime)
+            this.categoryLastTime.set(entry.category, performance.now());
 
         next(entry);
     }

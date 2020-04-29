@@ -15,8 +15,6 @@ const t_10seconds = 1000 * 10;
  * WebSocket gateway for games events
  */
 export class GamesGateway implements OnApplicationInit {
-    private logger = Logecom.createLogger(GamesGateway.name);
-
     constructor(
         private app: Application,
         private gamesService: GamesService) {
@@ -24,8 +22,10 @@ export class GamesGateway implements OnApplicationInit {
         bindClass(this);
     }
 
+    private logger = Logecom.createLogger(GamesGateway.name);
     private gamePlayers = new Map<GameId, Set<WebSocket>>();
     private playerGame = new Map<WebSocket, GameId>();
+    private clientsCount = 0;
 
     async init() {
         this.app.ws('/api/stream', this.onClientConnected);
@@ -68,9 +68,11 @@ export class GamesGateway implements OnApplicationInit {
     }
 
     private onClientConnected(ws: WebSocket, req: Request) {
-        req.headers['x-forwarded-for'] && typeof req.headers['x-forwarded-for'] == 'string'
-            ? this.logger.log('Client connected:', req.headers['x-forwarded-for'].split(/\s*,\s*/)[0])
-            : this.logger.log('Client connected:', req.connection.remoteAddress);
+        this.clientsCount++;
+
+        req.headers['x-forwarded-for'] && typeof req.headers['x-forwarded-for'] === 'string'
+            ? this.logger.log('Client connected from', req.headers['x-forwarded-for'].split(/\s*,\s*/)[0], '| total', this.clientsCount)
+            : this.logger.log('Client connected from', req.connection.remoteAddress, '| total', this.clientsCount);
 
         ws.on('close', (code, reason) => {
             this.onClientDisconnected(ws);
@@ -93,7 +95,9 @@ export class GamesGateway implements OnApplicationInit {
     }
 
     private onClientDisconnected(ws: WebSocket) {
+        this.clientsCount--;
         this.movePlayerToGame(ws, null);
+        this.logger.log('Client disconnected | total', this.playerGame.size);
     }
 
     /**
