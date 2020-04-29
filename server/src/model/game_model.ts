@@ -11,7 +11,6 @@ export class GameModel {
     readonly boardSize = 25;
     readonly id = uuid.v4();
 
-    gameControl = true;    // If true model will restrict uncovering not in a turn
     board: Agent[] = [];
     move: GameMove = {
         hint: '',
@@ -35,7 +34,7 @@ export class GameModel {
         bindClass(this);
     }
 
-    get nextGameId(): string {
+    getNextGameId(): string {
         return this.nextGame?.id || '';
     }
 
@@ -68,12 +67,13 @@ export class GameModel {
 
     uncoverAgent(index: number) {
         const agent = this.board[index];
-        const moveAllowed = !this.gameControl || (this.move.isInited && !this.move.isFinished);
+        const moveAllowed = this.move.isInited && !this.move.isFinished;
 
         if (!agent || agent.uncovered || this.isFinished || !moveAllowed)
             return null;
 
         agent.uncovered = true;
+
         this.events.push({
             kind: GameEventKind.AgentUncovered,
             side: agent.side,
@@ -87,14 +87,11 @@ export class GameModel {
             this.redLeft -= 1;
         }
 
-        if (this.gameControl) {
-            this.move.count -= 1;
-
-            if (agent.side != this.move.side || this.move.count == 0)
-                this.move.isFinished = true;
-        }
-
+        this.move.count -= 1;
         this.lastModified = new Date();
+
+        if (agent.side != this.move.side || this.move.count == 0)
+            this.move.isFinished = true;
 
         if (!this.redLeft || !this.blueLeft || agent.side == Side.ASSASSIN) {
             this.move.isFinished = true;
