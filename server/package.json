@@ -33,7 +33,7 @@
     "rxjs": "^6.5.5",
     "serialize-error": "^6.0.0",
     "shuffle-array": "^1.0.1",
-    "uuid": "^7.0.3",
+    "uuid": "^8.0.0",
     "ws": "^7.2.5"
   },
   "devDependencies": {
