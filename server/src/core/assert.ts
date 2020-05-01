@@ -7,7 +7,7 @@ import * as httpErrors from 'http-errors';
  * In scope of Typescript these methods also implement type guards
  * to help in statical code analysis.
  */
-export namespace httpAssert {
+export namespace assert {
     export function found(value: any, message: string): asserts value {
         if (!value)
             throw new httpErrors.NotFound(message);

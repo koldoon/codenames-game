@@ -2,7 +2,7 @@ import { Subject } from 'rxjs';
 import { GameStatus } from '../api/game_status';
 import { PlayerType } from '../api/player_type';
 import { asyncDelay } from '../core/async_delay';
-import { httpAssert } from '../core/http_asserts';
+import { assert } from '../core/assert';
 import { Logecom } from '../core/logecom/logecom';
 import { OnApplicationInit } from '../core/on_application_init';
 import { Agent } from '../model/agent';
@@ -73,7 +73,7 @@ export class GamesService implements OnApplicationInit {
         while (game && game.nextGame)
             game = game.nextGame;
 
-        httpAssert.found(game, 'Game not found.');
+        assert.found(game, 'Game not found.');
         let board: Agent[];
         if (playerType == PlayerType.Spymaster) {
             board = game.board.map(card => <Agent> {
@@ -104,12 +104,12 @@ export class GamesService implements OnApplicationInit {
 
     async uncoverAgent(gameId: string, agentIndex: number): Promise<Agent> {
         const game = this.games.get(gameId);
-        httpAssert.found(game, 'Game not found.');
-        httpAssert.found(game.board[agentIndex], 'Agent not found.');
+        assert.found(game, 'Game not found.');
+        assert.found(game.board[agentIndex], 'Agent not found.');
 
         const eventsBefore = game.events.length;
         const agent = game.uncoverAgent(agentIndex);
-        httpAssert.value(agent, 'Agent is already uncovered or game or move is finished or not yet inited.');
+        assert.value(agent, 'Agent is already uncovered or game or move is finished or not yet inited.');
 
         for (let i = eventsBefore; i < game.events.length; i++)
             this.gameEvents$.next({ game, event: game.events[i] });
@@ -119,15 +119,15 @@ export class GamesService implements OnApplicationInit {
 
     async commitCode(gameId: string, message: string): Promise<GameMove> {
         const game = this.games.get(gameId);
-        httpAssert.found(game, 'Game not found.');
+        assert.found(game, 'Game not found.');
 
         const [hint, count_s] = message.trim().split(/[\s,;]+/);
         const count = Number(count_s);
-        httpAssert.value(hint != '', 'Invalid code word.');
-        httpAssert.range(count, [0, (game.boardSize - 1) / 3 + 1], 'Invalid code word match count.');
+        assert.value(hint != '', 'Invalid code word.');
+        assert.range(count, [0, (game.boardSize - 1) / 3 + 1], 'Invalid code word match count.');
 
         const move = game.commitHint(hint, count);
-        httpAssert.value(move, 'Game is finished.');
+        assert.value(move, 'Game is finished.');
 
         this.gameEvents$.next({ game, event: game.events[game.events.length - 1] });
         return move;
