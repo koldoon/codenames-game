@@ -1,5 +1,6 @@
 import { Application } from 'express';
 import * as express from 'express';
+import * as httpError from 'http-errors';
 import * as path from 'path';
 import { OnApplicationInit } from '../core/on_application_init';
 
@@ -12,7 +13,8 @@ export class FrontendController implements OnApplicationInit {
     init() {
         this.app
             .use(express.static(path.join(__dirname, '../../frontend')))
-            .use('/*', function (req, res, next) {
+            .use('/api/*', (req, res, next) => next(new httpError.NotFound()))
+            .use('/*', (req, res, next) => {
                 res.sendFile('index.html', {
                     root: path.join(__dirname, '../../frontend')
                 });

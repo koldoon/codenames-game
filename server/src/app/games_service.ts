@@ -20,6 +20,8 @@ const t_1hour = 1000 * 60 * 60;
  * Manages games lifecycle
  */
 export class GamesService implements OnApplicationInit {
+    totalGamesPlayed = 0;
+
     readonly gameEvents$ = new Subject<{ game: GameModel, event: GameEvent }>();
     readonly gamesChain$ = new Subject<{ prevGameId: string, nextGameId: string }>();
 
@@ -113,6 +115,9 @@ export class GamesService implements OnApplicationInit {
 
         for (let i = eventsBefore; i < game.events.length; i++)
             this.gameEvents$.next({ game, event: game.events[i] });
+
+        if (game.isFinished)
+            this.totalGamesPlayed += 1;
 
         return agent;
     }

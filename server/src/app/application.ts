@@ -12,6 +12,7 @@ import { GamesController } from './games_controller';
 import { GamesGateway } from './games_gateway';
 import { GamesService } from './games_service';
 import * as fs from 'fs';
+import { StatController } from './stat_controller';
 
 export class Application {
     private readonly logger = Logecom.createLogger(this.constructor.name);
@@ -34,6 +35,7 @@ export class Application {
         const gamesService = new GamesService();
         const gamesGateway = new GamesGateway(ws.app, gamesService);
         const gamesController = new GamesController(app, gamesService);
+        const statController = new StatController(app, gamesGateway, gamesService);
         const frontendController = new FrontendController(app);
         const errorsController = new ErrorsController(app);
 
@@ -47,6 +49,7 @@ export class Application {
             gamesService,
             gamesController,
             gamesGateway,
+            statController,
             frontendController,
             errorsController
         );

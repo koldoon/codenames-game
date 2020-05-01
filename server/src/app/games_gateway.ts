@@ -24,9 +24,10 @@ export class GamesGateway implements OnApplicationInit {
         bindClass(this);
     }
 
+    clientsCount = 0;
+
     private gamePlayers = new Map<GameId, Set<WebSocket>>();
     private playerGame = new Map<WebSocket, GameId>();
-    private clientsCount = 0;
 
     async init() {
         this.app.ws('/api/stream', this.onClientConnected);
