@@ -6,6 +6,10 @@ import * as fs from 'fs';
 export class LocalDictionaryImpl implements Dictionary {
     name = '';
     description = '';
+    /**
+     * Flag to pay attention to this dict (because of age restriction, explicit words, etc)
+     */
+    warning = false;
 
     private dictionary: string[] = [];
 
@@ -28,5 +32,6 @@ export class LocalDictionaryImpl implements Dictionary {
         this.dictionary = String(doc.words).split(/[\s]+/);
         this.name = String(doc.name);
         this.description = String(doc.description);
+        this.warning = Boolean(doc.warn);
     }
 }

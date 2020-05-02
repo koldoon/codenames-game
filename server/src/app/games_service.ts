@@ -41,6 +41,7 @@ export class GamesService implements OnApplicationInit {
         return this.dictionaries.map(dic => <DictionaryDescription> {
             name: dic.name,
             description: dic.description,
+            warning: dic.warning,
             words_example: dic.getRandomWords(5)
         });
     }
@@ -222,7 +223,7 @@ export class GamesService implements OnApplicationInit {
     private loadDictionaries() {
         this.logger.info('Loading dictionaries');
         const dataDir = path.join(__dirname, '../../data');
-        const files = fs.readdirSync(dataDir);
+        const files = fs.readdirSync(dataDir).sort();
 
         if (files.length == 0)
             this.logger.error('No dictionaries found in ' + dataDir);
