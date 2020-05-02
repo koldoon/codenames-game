@@ -29,7 +29,7 @@ export class LocalDictionaryImpl implements Dictionary {
 
     private loadFromFile(fileName: string) {
         const doc = yaml.safeLoad(fs.readFileSync(fileName, 'utf8'));
-        this.dictionary = String(doc.words).split(/[\s]+/);
+        this.dictionary = String(doc.words).split(/[\s]+/).map(w => w.trim()).filter(w => w != '');
         this.name = String(doc.name);
         this.description = String(doc.description);
         this.warning = Boolean(doc.warn);
