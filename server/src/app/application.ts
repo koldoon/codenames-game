@@ -6,6 +6,7 @@ import * as path from 'path';
 import { initModules } from '../core/init_modules';
 import { Logecom } from '../core/logecom/logecom';
 import { expressLogMiddleware } from '../core/logecom/translators/http_formatter';
+import { DictionariesController } from './dictionaries_controller';
 import { ErrorsController } from './errors_controller';
 import { FrontendController } from './frontend_controller';
 import { GamesController } from './games_controller';
@@ -35,6 +36,7 @@ export class Application {
         const gamesService = new GamesService();
         const gamesGateway = new GamesGateway(ws.app, gamesService);
         const gamesController = new GamesController(app, gamesService);
+        const dictionariesController = new DictionariesController(app, gamesService);
         const statController = new StatController(app, gamesGateway, gamesService);
         const frontendController = new FrontendController(app);
         const errorsController = new ErrorsController(app);
@@ -48,6 +50,7 @@ export class Application {
         await initModules(
             gamesService,
             gamesController,
+            dictionariesController,
             gamesGateway,
             statController,
             frontendController,

@@ -1,8 +1,10 @@
+import * as path from 'path';
 import { Subject } from 'rxjs';
+import { DictionaryDescription } from '../api/dictionary_description';
 import { GameStatus } from '../api/game_status';
 import { PlayerType } from '../api/player_type';
-import { asyncDelay } from '../core/async_delay';
 import { assert } from '../core/assert';
+import { asyncDelay } from '../core/async_delay';
 import { Logecom } from '../core/logecom/logecom';
 import { OnApplicationInit } from '../core/on_application_init';
 import { Agent } from '../model/agent';
@@ -11,7 +13,8 @@ import { Dictionary } from '../model/dictionary';
 import { GameEvent } from '../model/game_log_item';
 import { GameModel } from '../model/game_model';
 import { GameMove } from '../model/game_move';
-import { DeNullDictionary } from '../model/impl/denull_dictionary';
+import * as fs from 'fs';
+import { LocalDictionaryImpl } from '../model/local_dictionary_impl';
 
 export type GameId = string;
 const t_1hour = 1000 * 60 * 60;
@@ -26,15 +29,26 @@ export class GamesService implements OnApplicationInit {
     readonly gamesChain$ = new Subject<{ prevGameId: string, nextGameId: string }>();
 
     private readonly logger = Logecom.createLogger(GamesService.name);
-    private readonly dictionary: Dictionary = new DeNullDictionary();
+    private readonly dictionaries: Dictionary[] = [];
     private games = new Map<GameId, GameModel>();
 
     async init() {
-        this.logger.info('Using games dictionary:', this.dictionary.constructor.name);
+        this.loadDictionaries();
         this.beginOldGamesRemovingCycle(t_1hour);
     }
 
-    async createNewGame(prevGameId?: string) {
+    getDictionaries() {
+        return this.dictionaries.map(dic => <DictionaryDescription> {
+            name: dic.name,
+            description: dic.description,
+            words_example: dic.getRandomWords(5)
+        });
+    }
+
+    async createNewGame(dictionaryId: number = 0, prevGameId?: string) {
+        const dictionary = this.dictionaries[dictionaryId];
+        assert.found(dictionary, `Dictionary "${dictionaryId}" not found`);
+
         // look if new game has been already created by somebody
         if (prevGameId) {
             const prevGame = this.games.get(prevGameId);
@@ -52,8 +66,7 @@ export class GamesService implements OnApplicationInit {
         }
 
         const newGame = new GameModel();
-        const randomWords = await this.dictionary.getRandomWords(newGame.boardSize);
-        newGame.init(randomWords);
+        newGame.init(dictionary.getRandomWords(newGame.boardSize));
         this.games.set(newGame.id, newGame);
 
         if (prevGameId) {
@@ -204,5 +217,19 @@ export class GamesService implements OnApplicationInit {
         this.logger.log(`Old games cleanup: ${oldGames.size}`);
         this.games = activeGames;
         this.beginOldGamesRemovingCycle(intervalMs);
+    }
+
+    private loadDictionaries() {
+        this.logger.info('Loading dictionaries');
+        const dataDir = path.join(__dirname, '../../data');
+        const files = fs.readdirSync(dataDir);
+
+        if (files.length == 0)
+            this.logger.error('No dictionaries found in ' + dataDir);
+
+        for (const fileName of files) {
+            this.logger.info('  - ' + fileName);
+            this.dictionaries.push(new LocalDictionaryImpl(path.join(__dirname, '../../data', fileName)));
+        }
     }
 }

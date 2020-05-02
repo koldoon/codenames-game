@@ -1,4 +1,7 @@
 export interface Dictionary {
-    getWords(): Promise<string[]> | string[];
-    getRandomWords(count: number): Promise<string[]> | string[];
+    name: string;
+    description: string
+
+    getWords(): string[];
+    getRandomWords(count: number): string[];
 }

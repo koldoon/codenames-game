@@ -12,8 +12,8 @@ export class FrontendController implements OnApplicationInit {
 
     init() {
         this.app
-            .use(express.static(path.join(__dirname, '../../frontend')))
             .use('/api/*', (req, res, next) => next(new httpError.NotFound()))
+            .use(express.static(path.join(__dirname, '../../frontend')))
             .use('/*', (req, res, next) => {
                 res.sendFile('index.html', {
                     root: path.join(__dirname, '../../frontend')

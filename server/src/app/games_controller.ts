@@ -26,8 +26,8 @@ export class GamesController implements OnApplicationInit {
     }
 
     private async createGame(req: Request): Promise<NewGameResponse> {
-        const { from } = req.query;
-        return { gameId: await this.gamesService.createNewGame(String(from)) }
+        const { from, dict } = req.query;
+        return { gameId: await this.gamesService.createNewGame(Number(dict) || 0, String(from)) }
     }
 
     private async getGameStatus(req: Request): Promise<GameStatusResponse> {
