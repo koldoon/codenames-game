@@ -39,7 +39,7 @@ export class ConsoleTransport implements LogTranslator {
     private readonly levelLabel = new Map<LogLevel, string>([
         [LogLevel.Warn, 'WRN'],
         [LogLevel.Info, 'INF'],
-        [LogLevel.Fatal, 'FAT'],
+        [LogLevel.Fatal, 'FTL'],
         [LogLevel.Error, 'ERR'],
         [LogLevel.Debug, 'DEB'],
         [LogLevel.Log, 'LOG']

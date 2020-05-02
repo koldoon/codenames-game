@@ -55,9 +55,11 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
 
     destroy$ = new ReplaySubject(1);
     connected$ = new Subject<Event>();
+    disconnected$ = new Subject<Event>();
     gameStream$ = webSocket<Message>({
         url: getWebSocketUrl('/api/stream'),
-        openObserver: this.connected$
+        openObserver: this.connected$,
+        closeObserver: this.disconnected$
     });
 
     ngOnInit(): void {
@@ -66,26 +68,35 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
         this.gameStream$
             .pipe(
                 takeUntil(this.destroy$),
-                retryWhen(errors => {
-                    this.updateGameStatus();
-                    return errors.pipe(delay(2000));
-                })
+                retryWhen(errors => errors.pipe(delay(2000)))
             )
-            .subscribe(msg => this.onGameStreamMessage(msg));
+            .subscribe(msg => {
+                this.onGameStreamMessage(msg)
+            });
 
-        this.activatedRoute.paramMap.subscribe(value => {
-            this.gameId = value.get('gameId');
-            this.playerType = Number(value.get('playerType'));
-            this.updateGameStatus();
+        this.activatedRoute.paramMap
+            .subscribe(value => {
+                this.gameId = value.get('gameId');
+                this.playerType = Number(value.get('playerType'));
+                this.updateGameStatus();
 
-            if (connected) // not to send 'join' twice
+                if (connected) // not to send 'join' twice
+                    this.joinGameStream();
+            });
+
+        this.connected$
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(value => {
+                connected = true;
+                this.updateGameStatus();
                 this.joinGameStream();
-        });
+            });
 
-        this.connected$.subscribe(value => {
-            connected = true;
-            this.joinGameStream();
-        });
+        this.disconnected$
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(value => {
+                this.snackBar.open('Плохое соединение.', 'Твою ж мать!', { duration: 1500 })
+            });
     }
 
     joinGameStream() {
@@ -153,9 +164,6 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     updateGameStatus() {
-        if (this.loadingInProgress)
-            return;
-
         this.loadingInProgress = true;
         this.cd.markForCheck();
 
@@ -196,8 +204,14 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
                     }
                 },
                 error => {
-                    if (error instanceof HttpErrorResponse)
-                        this.navigation.toError(error.status);
+                    if (error instanceof HttpErrorResponse) {
+                        if (error.status === 404) {
+                            this.navigation.toError(404);
+                        }
+                        else {
+                            this.snackBar.open('Что-то пошло не так...', 'Тваю ж мать!');
+                        }
+                    }
                 }
             );
     }
@@ -219,8 +233,12 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
                 value => this.game.board[index] = { ...value.agent, uncovered: false },
                 error => {
                     if (error instanceof HttpErrorResponse) {
-                        if (error.status !== 400)
-                            this.snackBar.open('Что-то пошло не так... :(', 'Блять!', { duration: 5000 })
+                        if (error.status === 400){
+                            this.snackBar.open('Не время раскрывать!', 'Так и быть', { duration: 5000 })
+                        }
+                        else  {
+                            this.snackBar.open('Что-то пошло не так...', 'Тваю ж мать!', { duration: 5000 })
+                        }
                     }
 
                     return error;
