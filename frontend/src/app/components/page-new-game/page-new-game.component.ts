@@ -24,7 +24,7 @@ export class PageNewGameComponent implements OnInit {
         private location: Location,
         private activatedRoute: ActivatedRoute) {
 
-        this.inProgress$ = new BehaviorSubject(false);
+        this.inProgress$ = new BehaviorSubject(true);
         this.inProgress$.pipe(debounce(() => interval(1000)));
     }
 
