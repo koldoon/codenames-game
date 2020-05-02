@@ -1,0 +1,55 @@
+.container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    overflow: scroll;
+    padding: 1rem;
+}
+
+mat-card {
+    width: 100%;
+    max-width: 25rem;
+    margin: 0 auto;
+
+    > mat-card-title {
+        text-transform: uppercase;
+    }
+
+    > mat-card-content {
+        margin-top: 1rem;
+
+        .dictionary {
+            background-color: #f2f2f2;
+            padding: 1rem 1rem;
+            margin: 0.5rem -1rem;
+
+            > button {
+                //width: 8rem;
+                margin-left: 0;
+                margin-bottom: 0.8rem;
+            }
+
+            > p:last-child {
+                margin: 0;
+            }
+        }
+    }
+
+    > mat-card-actions {
+        > button {
+            text-transform: uppercase;
+        }
+    }
+}
+
+.words-example {
+    text-transform: lowercase;
+}
+
+mat-progress-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+}

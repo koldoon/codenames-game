@@ -22,12 +22,12 @@ import { NewGameConfirmPopupComponent } from '../new-game-confirm-popup/new-game
 import { LogItem } from '../game-flow-panel/game-flow-panel.component';
 
 @Component({
-    selector: 'app-board',
-    templateUrl: './board.component.html',
-    styleUrls: ['./board.component.scss'],
+    selector: 'app-page-board',
+    templateUrl: './page-board.component.html',
+    styleUrls: ['./page-board.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
+export class PageBoardComponent implements OnInit, OnDestroy, AfterViewInit {
     constructor(
         private httpClient: HttpClient,
         private navigation: AppRoutingNavigation,
@@ -233,10 +233,10 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
                 value => this.game.board[index] = { ...value.agent, uncovered: false },
                 error => {
                     if (error instanceof HttpErrorResponse) {
-                        if (error.status === 400){
+                        if (error.status === 400) {
                             this.snackBar.open('Не время раскрывать!', 'Так и быть', { duration: 5000 })
                         }
-                        else  {
+                        else {
                             this.snackBar.open('Что-то пошло не так...', 'Тваю ж мать!', { duration: 5000 })
                         }
                     }
@@ -272,9 +272,7 @@ export class BoardComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     async createNewLinkedGame() {
-        await this.httpClient
-            .get<NewGameResponse>(`/api/games/create?from=${this.gameId}`)
-            .toPromise();
+        await this.navigation.toNewGame(this.gameId);
     }
 
     onRefreshClick() {

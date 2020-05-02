@@ -24,25 +24,27 @@ import { AppComponent } from './app.component';
 import { AppRouting } from './app.routing';
 import { AppRoutingNavigation } from './app.routing.navigation';
 import { AgentCardComponent } from './components/agent-card/agent-card.component';
-import { BoardComponent } from './components/board/board.component';
+import { PageBoardComponent } from './components/page-board/page-board.component';
 import { NewGameConfirmPopupComponent } from './components/new-game-confirm-popup/new-game-confirm-popup.component';
-import { ErrorPageComponent } from './components/error-page/error-page.component';
+import { PageErrorComponent } from './components/page-error/page-error.component';
 import { GameFlowPanelComponent } from './components/game-flow-panel/game-flow-panel.component';
-import { JoinComponent } from './components/join/join.component';
-import { StartComponent } from './components/start/start.component';
+import { PageJoinComponent } from './components/page-join/page-join.component';
+import { PageStartComponent } from './components/page-start/page-start.component';
 import { LogItemComponent } from './components/log-item/log-item.component';
+import { PageNewGameComponent } from './components/page-new-game/page-new-game.component';
 
 @NgModule({
     declarations: [
         AppComponent,
-        StartComponent,
-        BoardComponent,
-        JoinComponent,
+        PageStartComponent,
+        PageBoardComponent,
+        PageJoinComponent,
         AgentCardComponent,
-        ErrorPageComponent,
+        PageErrorComponent,
         NewGameConfirmPopupComponent,
         GameFlowPanelComponent,
-        LogItemComponent
+        LogItemComponent,
+        PageNewGameComponent
     ],
     imports: [
         BrowserModule,

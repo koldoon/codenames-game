@@ -16,17 +16,10 @@
 
         <button mat-raised-button
             color="primary"
-            [disabled]="inProgress"
             (click)="onCreateGameClick()">
 
             Создать новую игру
         </button>
-
-        <div class="mat-error" *ngIf="error">
-            Oop-s... Connection Error!
-        </div>
-
-        <mat-progress-bar mode="indeterminate" *ngIf="inProgress"></mat-progress-bar>
     </mat-card>
 
 </div>

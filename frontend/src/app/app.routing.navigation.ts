@@ -14,6 +14,10 @@ export class AppRoutingNavigation {
         return this.router.navigate(['start']);
     }
 
+    toNewGame(previousGameId?: string) {
+        return this.router.navigate(['game/new'], { queryParams: { previousGameId } });
+    }
+
     toJoinGame(gameId: string) {
         return this.router.navigate(['game', gameId, 'join']);
     }

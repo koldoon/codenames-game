@@ -1,17 +1,19 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { BoardComponent } from './components/board/board.component';
-import { ErrorPageComponent } from './components/error-page/error-page.component';
-import { JoinComponent } from './components/join/join.component';
-import { StartComponent } from './components/start/start.component';
+import { PageBoardComponent } from './components/page-board/page-board.component';
+import { PageErrorComponent } from './components/page-error/page-error.component';
+import { PageJoinComponent } from './components/page-join/page-join.component';
+import { PageNewGameComponent } from './components/page-new-game/page-new-game.component';
+import { PageStartComponent } from './components/page-start/page-start.component';
 
 const routes: Routes = [
     { path: '', redirectTo: 'start', pathMatch: 'full' },
-    { path: 'start', component: StartComponent },
+    { path: 'start', component: PageStartComponent },
+    { path: 'game/new', component: PageNewGameComponent },
     { path: 'game/:gameId', redirectTo: 'game/:gameId/join', pathMatch: 'full' },
-    { path: 'game/:gameId/join', component: JoinComponent },
-    { path: 'game/:gameId/player/:playerType/board', component: BoardComponent },
-    { path: 'error/:code', component: ErrorPageComponent },
+    { path: 'game/:gameId/join', component: PageJoinComponent },
+    { path: 'game/:gameId/player/:playerType/board', component: PageBoardComponent },
+    { path: 'error/:code', component: PageErrorComponent },
     { path: '**', redirectTo: 'start' }
 ];
 

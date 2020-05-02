@@ -1,0 +1,40 @@
+<div class="container">
+    <mat-progress-bar mode="indeterminate" *ngIf="inProgress$|async"></mat-progress-bar>
+
+    <mat-card class="mat-elevation-z4">
+        <mat-card-title class="title">Codenames</mat-card-title>
+        <mat-card-subtitle>Начало новой игры</mat-card-subtitle>
+
+        <mat-card-content *ngIf="(inProgress$|async) && !dictionaries.length">
+            <p>
+                Секундочку...
+            </p>
+        </mat-card-content>
+
+        <mat-card-content *ngIf="dictionaries.length">
+            <p>
+                Выберите набор слов:
+            </p>
+
+            <div class="dictionary" *ngFor="let dict of dictionaries, let i = index">
+                <button mat-raised-button
+                    [color]="dict.warning ? 'warn' : 'primary'"
+                    (click)="onDictionarySelect(i)">
+
+                    {{dict.name}}
+                </button>
+                <p>
+                    {{dict.description}}
+                </p>
+                <p>
+                    <span class="b">Пример слов: </span><span class="words-example">{{dict.words_example.join(', ')}}</span>
+                </p>
+            </div>
+        </mat-card-content>
+
+        <mat-card-actions align="end">
+            <button mat-button (click)="onBackClick()">Назад</button>
+        </mat-card-actions>
+    </mat-card>
+
+</div>

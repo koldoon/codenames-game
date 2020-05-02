@@ -1,4 +1,5 @@
 import { Clipboard } from '@angular/cdk/clipboard';
+import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
@@ -6,15 +7,16 @@ import { PlayerType } from '../../../../../server/src/api/player_type';
 import { AppRoutingNavigation } from '../../app.routing.navigation';
 
 @Component({
-    selector: 'app-join',
-    templateUrl: './join.component.html',
-    styleUrls: ['./join.component.scss']
+    selector: 'app-page-join',
+    templateUrl: './page-join.component.html',
+    styleUrls: ['./page-join.component.scss']
 })
-export class JoinComponent implements OnInit {
+export class PageJoinComponent implements OnInit {
     constructor(
         private navigation: AppRoutingNavigation,
         private activatedRoute: ActivatedRoute,
         private snackBar: MatSnackBar,
+        private location: Location,
         private clipboard: Clipboard) { }
 
     gameId = '';
@@ -43,6 +45,6 @@ export class JoinComponent implements OnInit {
     }
 
     async onBackClick() {
-        await this.navigation.toStart();
+        this.location.back();
     }
 }
