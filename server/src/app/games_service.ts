@@ -1,4 +1,6 @@
 import * as path from 'path';
+import { performance } from 'perf_hooks';
+import * as ms from 'pretty-ms';
 import { Subject } from 'rxjs';
 import { DictionaryDescription } from '../api/dictionary_description';
 import { GameStatus } from '../api/game_status';
@@ -167,6 +169,7 @@ export class GamesService implements OnApplicationInit {
     private async beginOldGamesRemovingCycle(intervalMs: number) {
         await asyncDelay(intervalMs);
 
+        const perf_t = performance.now();
         const now = Date.now();
         const activeGames = new Map<GameId, GameModel>();
         const oldGames = new Map<GameId, GameModel>();
@@ -215,7 +218,7 @@ export class GamesService implements OnApplicationInit {
             }
         }
 
-        this.logger.log(`Old games cleanup: ${oldGames.size}`);
+        this.logger.log(`Old games cleanup: ${oldGames.size} (in ${ms(performance.now() - perf_t)})`);
         this.games = activeGames;
         this.beginOldGamesRemovingCycle(intervalMs);
     }
