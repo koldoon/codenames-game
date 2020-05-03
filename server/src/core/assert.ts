@@ -20,6 +20,6 @@ export namespace assert {
 
     export function range(value: any, range: [number, number], message: string): asserts value is number {
         if (typeof value !== 'number' || isNaN(value) || value < range[0] || value > range[1])
-            throw new httpErrors.BadRequest(message + ` Range expected: [${range[0]}-${range[1]}].`);
+            throw new httpErrors.BadRequest(message + ` Expected: [${range[0]}-${range[1]}], got ${value}`);
     }
 }
