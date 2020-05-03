@@ -229,8 +229,9 @@ export class GamesService implements OnApplicationInit {
             this.logger.error('No dictionaries found in ' + dataDir);
 
         for (const fileName of files) {
-            this.logger.info('  - ' + fileName);
-            this.dictionaries.push(new LocalDictionaryImpl(path.join(__dirname, '../../data', fileName)));
+            const dict = new LocalDictionaryImpl(path.join(__dirname, '../../data', fileName));
+            this.dictionaries.push(dict);
+            this.logger.info(`  - ${fileName}: ${dict.name} (${dict.dictionary.length})`);
         }
     }
 }
