@@ -6,14 +6,14 @@ import * as path from 'path';
 import { initModules } from '../core/init_modules';
 import { Logecom } from '../core/logecom/logecom';
 import { expressLogMiddleware } from '../core/logecom/translators/http_formatter';
-import { DictionariesController } from './dictionaries_controller';
-import { ErrorsController } from './errors_controller';
-import { FrontendController } from './frontend_controller';
-import { GamesController } from './games_controller';
-import { GamesGateway } from './games_gateway';
-import { GamesService } from './games_service';
+import { DictionariesController } from './controller/dictionaries_controller';
+import { ErrorsController } from './controller/errors_controller';
+import { FrontendController } from './controller/frontend_controller';
+import { GamesController } from './controller/games_controller';
+import { GamesGateway } from './service/games_gateway';
+import { GamesService } from './service/games_service';
 import * as fs from 'fs';
-import { StatController } from './stat_controller';
+import { StatController } from './controller/stat_controller';
 
 export class Application {
     private readonly logger = Logecom.createLogger(this.constructor.name);

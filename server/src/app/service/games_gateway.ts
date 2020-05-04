@@ -1,11 +1,11 @@
 import { Request } from 'express';
 import { Application } from 'express-ws';
 import * as WebSocket from 'ws';
-import { GameEventMessage, JoinGameMessage, Message, MessageKind, PlayersChangeMessage } from '../api/ws/game_messages';
-import { asyncDelay } from '../core/async_delay';
-import { bindClass } from '../core/bind_class';
-import { Logecom } from '../core/logecom/logecom';
-import { OnApplicationInit } from '../core/on_application_init';
+import { GameEventMessage, JoinGameMessage, Message, MessageKind, PlayersChangeMessage } from '../../api/ws/game_messages';
+import { asyncDelay } from '../../core/async_delay';
+import { bindClass } from '../../core/bind_class';
+import { Logecom } from '../../core/logecom/logecom';
+import { OnApplicationInit } from '../../core/on_application_init';
 import { GamesService } from './games_service';
 
 type GameId = string;

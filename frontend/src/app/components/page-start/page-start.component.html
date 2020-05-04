@@ -9,17 +9,19 @@
             опубликованная в 2015 году издательством Czech Games Edition.
         </mat-card-subtitle>
 
-        <div>
+        <p>
             Для того чтобы начать играть нажмите <span class="b">Создать новую игру</span>.
             Другие участники смогут присоединиться к игре после ее создания в любой момент.
-        </div>
+        </p>
 
-        <button mat-raised-button
-            color="primary"
-            (click)="onCreateGameClick()">
-
-            Создать новую игру
-        </button>
+        <mat-card-actions align="end">
+            <button mat-button (click)="onRulesClick()">
+                Правила
+            </button>
+            <button mat-raised-button color="primary" (click)="onCreateGameClick()">
+                Создать новую игру
+            </button>
+        </mat-card-actions>
     </mat-card>
 
 </div>

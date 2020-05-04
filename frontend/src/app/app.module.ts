@@ -32,6 +32,7 @@ import { PageJoinComponent } from './components/page-join/page-join.component';
 import { PageStartComponent } from './components/page-start/page-start.component';
 import { LogItemComponent } from './components/log-item/log-item.component';
 import { PageNewGameComponent } from './components/page-new-game/page-new-game.component';
+import { PageRulesComponent } from './components/page-rules/page-rules.component';
 
 @NgModule({
     declarations: [
@@ -44,7 +45,8 @@ import { PageNewGameComponent } from './components/page-new-game/page-new-game.c
         NewGameConfirmPopupComponent,
         GameFlowPanelComponent,
         LogItemComponent,
-        PageNewGameComponent
+        PageNewGameComponent,
+        PageRulesComponent
     ],
     imports: [
         BrowserModule,

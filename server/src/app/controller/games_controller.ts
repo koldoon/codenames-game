@@ -1,13 +1,13 @@
 import { Application, json, Request, Router } from 'express';
-import { CommitCodeRequest } from '../api/http/commit_code_request';
-import { CommitCodeResponse } from '../api/http/commit_code_response';
-import { GameStatusResponse } from '../api/http/game_status_response';
-import { NewGameResponse } from '../api/http/new_game_response';
-import { UncoverAgentResponse } from '../api/http/uncover_agent_response';
-import { bindClass } from '../core/bind_class';
-import { async } from '../core/express_async';
-import { OnApplicationInit } from '../core/on_application_init';
-import { GamesService } from './games_service';
+import { CommitCodeRequest } from '../../api/http/commit_code_request';
+import { CommitCodeResponse } from '../../api/http/commit_code_response';
+import { GameStatusResponse } from '../../api/http/game_status_response';
+import { NewGameResponse } from '../../api/http/new_game_response';
+import { UncoverAgentResponse } from '../../api/http/uncover_agent_response';
+import { bindClass } from '../../core/bind_class';
+import { async } from '../../core/express_async';
+import { OnApplicationInit } from '../../core/on_application_init';
+import { GamesService } from '../service/games_service';
 
 export class GamesController implements OnApplicationInit {
     constructor(

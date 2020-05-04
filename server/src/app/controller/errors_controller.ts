@@ -1,8 +1,8 @@
 import { Application, NextFunction, Request, Response } from 'express';
 import * as httpErrors from 'http-errors';
-import { bindClass } from '../core/bind_class';
-import { Logecom } from '../core/logecom/logecom';
-import { OnApplicationInit } from '../core/on_application_init';
+import { bindClass } from '../../core/bind_class';
+import { Logecom } from '../../core/logecom/logecom';
+import { OnApplicationInit } from '../../core/on_application_init';
 import { serializeError } from 'serialize-error';
 
 export class ErrorsController implements OnApplicationInit {

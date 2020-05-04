@@ -1,9 +1,9 @@
 import { Application, Router } from 'express';
-import { DictionariesIndexResponse } from '../api/http/dictionaries_index_response';
-import { bindClass } from '../core/bind_class';
-import { async } from '../core/express_async';
-import { OnApplicationInit } from '../core/on_application_init';
-import { GamesService } from './games_service';
+import { DictionariesIndexResponse } from '../../api/http/dictionaries_index_response';
+import { bindClass } from '../../core/bind_class';
+import { async } from '../../core/express_async';
+import { OnApplicationInit } from '../../core/on_application_init';
+import { GamesService } from '../service/games_service';
 
 export class DictionariesController implements OnApplicationInit {
     constructor(

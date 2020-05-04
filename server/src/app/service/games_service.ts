@@ -2,23 +2,23 @@ import * as path from 'path';
 import { performance } from 'perf_hooks';
 import * as ms from 'pretty-ms';
 import { Subject } from 'rxjs';
-import { DictionaryDescription } from '../api/dictionary_description';
-import { GameStatus } from '../api/game_status';
-import { PlayerType } from '../api/player_type';
-import { assert } from '../core/assert';
-import { asyncDelay } from '../core/async_delay';
-import { bindClass } from '../core/bind_class';
-import { Logecom } from '../core/logecom/logecom';
-import { OnApplicationInit } from '../core/on_application_init';
-import { serialization } from '../core/serialization';
-import { Agent } from '../model/agent';
-import { Side } from '../model/agent_side';
-import { Dictionary } from '../model/dictionary';
-import { GameEvent } from '../model/game_log_item';
-import { GameModel } from '../model/game_model';
-import { GameMove } from '../model/game_move';
+import { DictionaryDescription } from '../../api/dictionary_description';
+import { GameStatus } from '../../api/game_status';
+import { PlayerType } from '../../api/player_type';
+import { assert } from '../../core/assert';
+import { asyncDelay } from '../../core/async_delay';
+import { bindClass } from '../../core/bind_class';
+import { Logecom } from '../../core/logecom/logecom';
+import { OnApplicationInit } from '../../core/on_application_init';
+import { serialization } from '../../core/serialization';
+import { Agent } from '../../model/agent';
+import { Side } from '../../model/agent_side';
+import { Dictionary } from '../../model/dictionary';
+import { GameEvent } from '../../model/game_log_item';
+import { GameModel } from '../../model/game_model';
+import { GameMove } from '../../model/game_move';
 import * as fs from 'fs';
-import { LocalDictionaryImpl } from '../model/local_dictionary_impl';
+import { LocalDictionaryImpl } from '../../model/local_dictionary_impl';
 import extract = serialization.extract;
 
 export type GameId = string;
@@ -268,27 +268,28 @@ export class GamesService implements OnApplicationInit {
 
     private loadGames() {
         this.logger.warn('Looking for games to restore');
-        if (fs.existsSync('games.json')) {
-            try {
-                const jsonString = fs.readFileSync('games.json').toString('utf8');
-                const gamesData = JSON.parse(jsonString) as { id: string, prevGame: any, nextGame: any }[];
+        if (!fs.existsSync('games.json'))
+            return;
+        
+        try {
+            const jsonString = fs.readFileSync('games.json').toString('utf8');
+            const gamesData = JSON.parse(jsonString) as { id: string, prevGame: any, nextGame: any }[];
 
-                for (const gameObj of gamesData)
-                    this.games.set(gameObj.id, extract(new GameModel(), gameObj));
+            for (const gameObj of gamesData)
+                this.games.set(gameObj.id, extract(new GameModel(), gameObj));
 
-                for (const gameObj of gamesData) {
-                    if (gameObj.prevGame)
-                        this.games.get(gameObj.id)!.prevGame = this.games.get(gameObj.prevGame);
+            for (const gameObj of gamesData) {
+                if (gameObj.prevGame)
+                    this.games.get(gameObj.id)!.prevGame = this.games.get(gameObj.prevGame);
 
-                    if (gameObj.nextGame)
-                        this.games.get(gameObj.id)!.nextGame = this.games.get(gameObj.nextGame);
-                }
-
-                this.logger.warn('  - games.json: Restored', this.games.size, 'game(s)');
+                if (gameObj.nextGame)
+                    this.games.get(gameObj.id)!.nextGame = this.games.get(gameObj.nextGame);
             }
-            catch (e) {
-                this.logger.warn('Unable to restore games data.', e);
-            }
+
+            this.logger.warn('  - games.json: Restored', this.games.size, 'game(s)');
+        }
+        catch (e) {
+            this.logger.warn('Unable to restore games data.', e);
         }
     }
 }

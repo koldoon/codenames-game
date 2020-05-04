@@ -13,4 +13,8 @@ export class PageStartComponent {
     async onCreateGameClick() {
         await this.navigation.toNewGame();
     }
+
+    onRulesClick() {
+        this.navigation.toRules();
+    }
 }

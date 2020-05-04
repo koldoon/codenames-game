@@ -15,12 +15,17 @@ const postJson = bent('POST', 'json');
 let gameId = '';
 let game: GameStatus;
 
+async function updateCaptainsBoard() {
+    const res = <GameStatusResponse> await getJson(
+        `${serverUrl}/api/games/${gameId}/status?player=${PlayerType.Spymaster}`
+    );
+    game = res.game;
+}
 
 test('New game', async () => {
     const res = <NewGameResponse> await getJson(
         `${serverUrl}/api/games/create`
     );
-
     gameId = res.gameId;
     expect(gameId).toBeDefined();
     expect(typeof gameId).toBe('string');
@@ -28,17 +33,15 @@ test('New game', async () => {
 
 
 test('Get captains board', async () => {
-    const res = <GameStatusResponse> await getJson(
-        `${serverUrl}/api/games/${gameId}/status?player=${PlayerType.Spymaster}`
-    );
-
-    game = res.game;
+    await updateCaptainsBoard();
     expect(game).toBeDefined();
 });
 
 test('Board configuration', () => {
     const sidesCount = new Map<Side, number>();
     for (const agent of game.board) {
+        expect(agent.name).toBeTruthy();
+        expect(agent.name.length >= 2).toBeTruthy();
         sidesCount.set(agent.side, (sidesCount.get(agent.side) || 0) + 1);
     }
 
