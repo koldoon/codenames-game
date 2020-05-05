@@ -1,7 +1,7 @@
 # CODENAMES Board Game Server and Frontend
 
 This is a simple implementation of the famous board game - Codenames (by Vlaada Chvátil) -
-using __Node.js__ and __Angular__. No any database is used, all the games are kept in runtime memory for
+using __Node.js__, __Angular__ and __Google Material UI__. No any database is used, all the games are kept in runtime memory for
 one hour of inactivity. 
 
 The Game is implemented with Russian interface and includes Russian words dictionary (so far).
