@@ -1,3 +1,4 @@
+import * as bytes from 'bytes';
 import * as path from 'path';
 import { performance } from 'perf_hooks';
 import * as ms from 'pretty-ms';
@@ -45,8 +46,8 @@ export class GamesService implements OnApplicationInit {
         process.on('SIGINT', this.storeGames);
         process.on('SIGTERM', this.storeGames);
 
-        this.loadGames();
         this.loadDictionaries();
+        this.loadGames();
         this.beginOldGamesRemovingCycle(t_1hour);
     }
 
@@ -178,8 +179,6 @@ export class GamesService implements OnApplicationInit {
      * @returns {Promise<void>}
      */
     private async beginOldGamesRemovingCycle(intervalMs: number) {
-        await asyncDelay(intervalMs);
-
         const perf_t = performance.now();
         const now = Date.now();
         const activeGames = new Map<GameId, GameModel>();
@@ -229,21 +228,24 @@ export class GamesService implements OnApplicationInit {
             }
         }
 
-        this.logger.log(`Old games cleanup: ${oldGames.size} (in ${ms(performance.now() - perf_t)})`);
+        const memUsage = bytes(process.memoryUsage().heapUsed);
+        this.logger.log(`Cleanup [games: ${oldGames.size}, duration: ${ms(performance.now() - perf_t)}, mem_usage: ${memUsage}]`);
         this.games = activeGames;
+
+        await asyncDelay(intervalMs);
         this.beginOldGamesRemovingCycle(intervalMs);
     }
 
     private loadDictionaries() {
-        this.logger.info('Loading dictionaries');
-        const dataDir = path.join(__dirname, '../../data');
+        const dataDir = path.join(__dirname, '../../../data');
         const files = fs.readdirSync(dataDir).sort();
+        this.logger.info('Loading dictionaries from ' + dataDir);
 
         if (files.length == 0)
             this.logger.error('No dictionaries found in ' + dataDir);
 
         for (const fileName of files) {
-            const dict = new LocalDictionaryImpl(path.join(__dirname, '../../data', fileName));
+            const dict = new LocalDictionaryImpl(path.join(dataDir, fileName));
             this.dictionaries.push(dict);
             this.logger.info(`  - ${fileName}: ${dict.name} (${dict.dictionary.length})`);
         }
@@ -270,7 +272,7 @@ export class GamesService implements OnApplicationInit {
         this.logger.warn('Looking for games to restore');
         if (!fs.existsSync('games.json'))
             return;
-        
+
         try {
             const jsonString = fs.readFileSync('games.json').toString('utf8');
             const gamesData = JSON.parse(jsonString) as { id: string, prevGame: any, nextGame: any }[];
