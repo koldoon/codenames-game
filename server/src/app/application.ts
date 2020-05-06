@@ -6,6 +6,7 @@ import * as path from 'path';
 import { initModules } from '../core/init_modules';
 import { Logecom } from '../core/logecom/logecom';
 import { expressLogMiddleware } from '../core/logecom/translators/http_formatter';
+import { appRoot } from '../root';
 import { DictionariesController } from './controller/dictionaries_controller';
 import { ErrorsController } from './controller/errors_controller';
 import { FrontendController } from './controller/frontend_controller';
@@ -27,7 +28,7 @@ export class Application {
 
     private async bootstrap() {
         this.logger.warn('Starting codenames-game server');
-        this.logger.info('Git commit [' + fs.readFileSync(path.join(__dirname, '../version')).toString().trim() + ']');
+        this.logger.info('Git commit [' + fs.readFileSync(path.join(appRoot, 'version')).toString().trim() + ']');
 
         // Build application context respecting dependencies
         const app = express();

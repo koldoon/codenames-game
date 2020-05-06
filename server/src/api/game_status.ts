@@ -13,7 +13,5 @@ export interface GameStatus {
     blueLeft: number;
     isFinished: boolean;
     log: GameEvent[];
-
-    nextGameId: string;
     gameInChain: number;
 }

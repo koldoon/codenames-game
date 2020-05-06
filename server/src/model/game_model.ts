@@ -26,16 +26,36 @@ export class GameModel {
     isFinished = false;
     lastModified = new Date();
 
-    prevGame?: GameModel;  // Previous game in chain
-    nextGame?: GameModel;  // Next game in chain
-    gameInChain = 1;       // Counter of games in chain
+    /**
+     * If this game is chained from another,
+     * this will be a link to root game
+     */
+    rootGame?: GameModel;
+
+    /**
+     * In case of root game model (when this is root)
+     * "lastGame" holds a link to currently playing
+     * descendant game
+     */
+    lastGame?: GameModel;
+
+    /**
+     * Counter of games in chain
+     * @type {number}
+     */
+    gameInChain = 1;
 
     constructor() {
         bindClass(this);
+        this.rootGame = this;
     }
 
-    getNextGameId(): string {
-        return this.nextGame?.id || '';
+    getActiveGame(): GameModel {
+        return this.rootGame?.lastGame || this.lastGame || this;
+    }
+
+    getMainGame(): GameModel {
+        return this.rootGame || this;
     }
 
     init(names: string[]) {
@@ -88,7 +108,7 @@ export class GameModel {
         }
 
         this.move.count -= 1;
-        this.lastModified = new Date();
+        this.getMainGame().lastModified = new Date();
 
         if (agent.side != this.move.side || this.move.count == 0)
             this.move.isFinished = true;

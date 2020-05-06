@@ -20,8 +20,13 @@ import { GameModel } from '../../model/game_model';
 import { GameMove } from '../../model/game_move';
 import * as fs from 'fs';
 import { LocalDictionaryImpl } from '../../model/local_dictionary_impl';
+import { appRoot } from '../../root';
 import extract = serialization.extract;
 
+type JSONStringifyReplacer = (this: any, key: string, value: any) => any;
+type Serialized<T, K extends keyof T> = {
+    [prop in K]: string
+}
 export type GameId = string;
 const t_1hour = 1000 * 60 * 60;
 
@@ -60,24 +65,15 @@ export class GamesService implements OnApplicationInit {
         });
     }
 
-    async createNewGame(dictionaryId: number = 0, prevGameId?: string) {
+    async createNewGame(dictionaryId: number = 0, prevGameId?: string): Promise<GameId> {
         const dictionary = this.dictionaries[dictionaryId];
         assert.found(dictionary, `Dictionary "${dictionaryId}" not found`);
 
         // look if new game has been already created by somebody
         if (prevGameId) {
             const prevGame = this.games.get(prevGameId);
-
-            if (prevGame && prevGame.nextGame) {
-                let newGame: GameModel | undefined = prevGame;
-
-                // find the newest game in chain
-                while (newGame && newGame.nextGame)
-                    newGame = newGame.nextGame;
-
-                if (newGame && newGame.id != prevGame.id)
-                    return newGame.id;
-            }
+            if (prevGame && prevGame != prevGame.getActiveGame())
+                return prevGame.getActiveGame().id;
         }
 
         const newGame = new GameModel();
@@ -86,10 +82,9 @@ export class GamesService implements OnApplicationInit {
 
         if (prevGameId) {
             const prevGame = this.games.get(prevGameId);
-
             if (prevGame) {
-                prevGame.nextGame = newGame;
-                newGame.prevGame = prevGame;
+                newGame.rootGame = prevGame.getMainGame();
+                newGame.rootGame.lastGame = newGame;
                 newGame.gameInChain = prevGame.gameInChain + 1;
                 this.gamesChain$.next({ prevGameId: prevGame.id, nextGameId: newGame.id });
             }
@@ -100,10 +95,9 @@ export class GamesService implements OnApplicationInit {
 
     async getGameStatus(gameId: GameId, playerType: PlayerType): Promise<GameStatus> {
         let game = this.games.get(gameId);
-        while (game && game.nextGame)
-            game = game.nextGame;
-
         assert.found(game, 'Game not found.');
+        game = game.getActiveGame();
+
         let board: Agent[];
         if (playerType == PlayerType.Spymaster) {
             board = game.board.map(card => <Agent> {
@@ -125,7 +119,6 @@ export class GamesService implements OnApplicationInit {
             blueLeft: game.blueLeft,
             move: game.move,
             isFinished: game.isFinished,
-            nextGameId: game.getNextGameId(),
             gameInChain: game.gameInChain,
             log: game.events,
             board
@@ -181,63 +174,22 @@ export class GamesService implements OnApplicationInit {
     private async beginOldGamesRemovingCycle(intervalMs: number) {
         const perf_t = performance.now();
         const now = Date.now();
-        const activeGames = new Map<GameId, GameModel>();
-        const oldGames = new Map<GameId, GameModel>();
+        const gamesRemoved = 0;
 
         for (const [gameId, game] of this.games) {
-            if (activeGames.has(gameId) || oldGames.has(gameId))
-                continue;
-
-            let linkedGame: GameModel | undefined;
-            if (now - game.lastModified.getTime() < intervalMs) {
-                activeGames.set(game.id, game);
-
-                linkedGame = game;
-                while (linkedGame.nextGame) {
-                    linkedGame = linkedGame.nextGame;
-                    activeGames.set(linkedGame.id, linkedGame);
-                }
-
-                linkedGame = game;
-                while (linkedGame.prevGame) {
-                    linkedGame = linkedGame.prevGame;
-                    activeGames.set(linkedGame.id, linkedGame);
-                }
-            }
-            else {
-                const unknownChain: GameModel[] = [game];
-                let isActive = false;
-
-                linkedGame = game;
-                while (linkedGame.nextGame) {
-                    linkedGame = linkedGame.nextGame;
-                    unknownChain.push(linkedGame);
-                    isActive = isActive || now - linkedGame.lastModified.getTime() < intervalMs;
-                }
-
-                linkedGame = game;
-                while (linkedGame.prevGame) {
-                    linkedGame = linkedGame.prevGame;
-                    unknownChain.push(linkedGame);
-                    isActive = isActive || now - linkedGame.lastModified.getTime() < intervalMs;
-                }
-
-                isActive
-                    ? unknownChain.forEach(game => activeGames.set(game.id, game))
-                    : unknownChain.forEach(game => oldGames.set(game.id, game));
-            }
+            if (now - game.getActiveGame().lastModified.getTime() < intervalMs)
+                this.games.delete(gameId);
         }
 
         const memUsage = bytes(process.memoryUsage().heapUsed);
-        this.logger.log(`Cleanup [games: ${oldGames.size}, duration: ${ms(performance.now() - perf_t)}, mem_usage: ${memUsage}]`);
-        this.games = activeGames;
+        this.logger.log(`Cleanup [games_removed: ${gamesRemoved}, duration: ${ms(performance.now() - perf_t)}, mem_usage: ${memUsage}]`);
 
         await asyncDelay(intervalMs);
         this.beginOldGamesRemovingCycle(intervalMs);
     }
 
     private loadDictionaries() {
-        const dataDir = path.join(__dirname, '../../../data');
+        const dataDir = path.join(appRoot, '../data');
         const files = fs.readdirSync(dataDir).sort();
         this.logger.info('Loading dictionaries from ' + dataDir);
 
@@ -255,11 +207,9 @@ export class GamesService implements OnApplicationInit {
         this.logger.warn('Storing games state:', this.games.size, 'games -> games.json');
         try {
             const gamesList = [...this.games.values()];
-            const jsonString = JSON.stringify(gamesList, (key, value) =>
-                key == 'prevGame' || key == 'nextGame' && value
-                    ? (value as GameModel).id
-                    : value
-            );
+            const replacer = (key: keyof GameModel, value: GameModel) =>
+                key == 'lastGame' || key == 'rootGame' && value ? value.id : value;
+            const jsonString = JSON.stringify(gamesList, replacer as JSONStringifyReplacer);
             fs.writeFileSync('games.json', jsonString);
         }
         catch (e) {
@@ -275,17 +225,17 @@ export class GamesService implements OnApplicationInit {
 
         try {
             const jsonString = fs.readFileSync('games.json').toString('utf8');
-            const gamesData = JSON.parse(jsonString) as { id: string, prevGame: any, nextGame: any }[];
+            const gamesData = <Serialized<GameModel, 'lastGame' | 'rootGame' | 'id'>[]> JSON.parse(jsonString);
 
             for (const gameObj of gamesData)
                 this.games.set(gameObj.id, extract(new GameModel(), gameObj));
 
             for (const gameObj of gamesData) {
-                if (gameObj.prevGame)
-                    this.games.get(gameObj.id)!.prevGame = this.games.get(gameObj.prevGame);
+                if (gameObj.rootGame)
+                    this.games.get(gameObj.id)!.rootGame = this.games.get(gameObj.rootGame);
 
-                if (gameObj.nextGame)
-                    this.games.get(gameObj.id)!.nextGame = this.games.get(gameObj.nextGame);
+                if (gameObj.lastGame)
+                    this.games.get(gameObj.id)!.lastGame = this.games.get(gameObj.lastGame);
             }
 
             this.logger.warn('  - games.json: Restored', this.games.size, 'game(s)');
