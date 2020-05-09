@@ -27,7 +27,7 @@ type JSONStringifyReplacer = (this: any, key: string, value: any) => any;
 type Serialized<T, K extends keyof T> = {
     [prop in K]: string
 }
-export type GameId = string;
+type GameId = string;
 const t_1hour = 1000 * 60 * 60;
 
 /**
@@ -191,7 +191,7 @@ export class GamesService implements OnApplicationInit {
     }
 
     private loadDictionaries() {
-        const files = fs.readdirSync(this.dataDir).filter(value => value != this.lastGamesFile).sort();
+        const files = fs.readdirSync(this.dataDir).filter(value => value.split('.').pop() == 'yaml').sort();
         this.logger.info('Loading dictionaries from ' + this.dataDir);
 
         if (files.length == 0)

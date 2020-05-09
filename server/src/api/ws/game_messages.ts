@@ -1,4 +1,5 @@
 import { GameEvent } from '../../model/game_log_item';
+import { GameMove } from '../../model/game_move';
 
 export type Message =
     | PingMessage
@@ -40,6 +41,7 @@ export interface JoinGameMessage extends AbstractGameMessage {
 export interface GameEventMessage extends AbstractGameMessage {
     kind: MessageKind.GameEvent;
     event: GameEvent;
+    move: GameMove;
     redLeft: number;
     blueLeft: number;
 }

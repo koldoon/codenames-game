@@ -19,7 +19,7 @@ export interface SpymasterHint {
     kind: GameEventKind.SpymasterHint,
     side: PlayerSide;
     hint: string;
-    matchCount: number;
+    count: number;
 }
 
 export interface GameFinished {

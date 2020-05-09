@@ -150,7 +150,7 @@ export class GameModel {
             kind: GameEventKind.SpymasterHint,
             hint,
             side,
-            matchCount
+            count: matchCount
         });
 
         return this.move;

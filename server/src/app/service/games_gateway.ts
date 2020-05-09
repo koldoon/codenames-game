@@ -43,7 +43,8 @@ export class GamesGateway implements OnApplicationInit {
                 gameId: value.game.id,
                 blueLeft: value.game.blueLeft,
                 redLeft: value.game.redLeft,
-                event: value.event
+                event: value.event,
+                move: value.game.move
             });
         });
 

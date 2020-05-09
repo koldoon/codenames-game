@@ -24,7 +24,7 @@ export class GamesController implements OnApplicationInit {
         this.app.use('/api/games', Router()
             .get('/create', async(this.createGame))
             .get('/:gameId/status', async(this.getGameStatus))
-            .post('/:gameId/agents/:agentId/uncover', async(this.uncoverAgent))
+            .get('/:gameId/agents/:agentId/uncover', async(this.uncoverAgent))
             .post('/:gameId/commit-code', json(), async(this.commitCode))
         );
     }

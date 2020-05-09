@@ -1,40 +1,33 @@
-<div class="container">
+<div class="container" *ngIf="gameService.game|async as game">
     <mat-toolbar>
-        <!--
-        <button mat-icon-button (click)="onCodenamesClick()">
-            <span class="material-icons">close</span>
-            <span class="material-icons">keyboard_backspace</span>
-        </button>
-        -->
-
         <button mat-button color="primary" (click)="onCopyGameLinkClick()">Ссылка на игру</button>
         <button mat-button color="accent" (click)="onNewGameClick()">Новая игра</button>
 
         <div class="delimiter"></div>
 
         <div class="stat">
-            <div class="games-played" *ngIf="game?.gameInChain > 1">{{game?.gameInChain - 1}} сыграно</div>
+            <div class="games-played" *ngIf="game.gameInChain > 1">{{game.gameInChain - 1}} сыграно</div>
             <div class="players-online" *ngIf="playersCount > 1">{{playersCount}} он-лайн</div>
-            <div class="wait-for-players" *ngIf="playersCount <= 1"> Ждем игроков...</div>
+            <div class="wait-for-players" *ngIf="playersCount <= 1"> Ждем подключения игроков...</div>
         </div>
 
         <div><!-- spacer --></div>
 
-        <button class="refresh" mat-icon-button (click)="onRefreshClick()">
-            <span class="material-icons">refresh</span>
+        <button class="refresh" mat-icon-button (click)="onHelpClick()">
+            <span class="material-icons">help_outline</span>
         </button>
 
         <div class="score score-blues">
-            <span class="mat-h1"><strong>{{game?.blueLeft}}</strong></span>
+            <span class="mat-h1"><strong>{{game.blueLeft}}</strong></span>
         </div>
 
         <div class="score score-reds">
-            <span class="mat-h1"><strong>{{game?.redLeft}}</strong></span>
+            <span class="mat-h1"><strong>{{game.redLeft}}</strong></span>
         </div>
     </mat-toolbar>
 
     <div class="progress">
-        <mat-progress-bar mode="indeterminate" *ngIf="loadingInProgress || uncoveringInProgress.size"></mat-progress-bar>
+<!--                <mat-progress-bar mode="indeterminate" *ngIf="loadingInProgress || uncoveringInProgress.size"></mat-progress-bar>-->
     </div>
 
     <div class="grid-container" #container>
@@ -45,9 +38,9 @@
                         [name]="agent.name"
                         [side]="agent.side"
                         [uncovered]="agent.uncovered"
-                        [uncoveringInProgress]="uncoveringInProgress.has(i)"
+                        [uncoveringInProgress]="false"
                         [fontSize]="cardFontSize"
-                        (click)="uncoverAgent(i)">
+                        (click)="onUncoverClick(i)">
                     </app-agent-card>
                 </div>
             </mat-grid-tile>
@@ -55,8 +48,8 @@
     </div>
 
     <app-game-flow-panel
-        [gameFlowLog$]="gameFlowLog$"
-        [gameId]="gameId"
+        [game]="game"
         [playerType]="playerType"
-        [moveSide]="game.move?.isInited ? getOppositeSide(game.move?.side) : game.move?.side"></app-game-flow-panel>
+        (sendHint)="onSendHintClick($event)">
+    </app-game-flow-panel>
 </div>

@@ -3,30 +3,31 @@
         <div class="mat-h3">Вести из Центра</div>
 
         <div class="messages-area">
-            <div class="muted" *ngIf="(gameFlowLog$|async).length == 0">
-                Центр сохраняет молчание
+            <div class="muted" *ngIf="log.length == 0">
+                Центр сохраняет молчание.<br>
+                <small>Чтобы начать раскрывать агентов нужна шифровка из Центра.</small>
             </div>
 
-            <div *ngFor="let turn of (gameFlowLog$|async)" class="turn">
+            <div *ngFor="let turn of log" class="turn">
                 <app-log-item *ngFor="let item of turn, let i=index, trackBy: logItemText" [logItem]="item" [isHint]="i==0"></app-log-item>
             </div>
         </div>
     </div>
 
-    <div class="spymaster-controls" [formGroup]="form" *ngIf="playerType == SPYMASTER">
-        <div class="mat-h3">Связь с агентами</div>
+    <div class="spymaster-controls" *ngIf="playerType == SPYMASTER">
+        <div class="mat-h3">Отправить шифровку</div>
 
         <mat-form-field class="hint-input" appearance="legacy" floatLabel="always"
-            [color]="moveSide == BLUE ? 'primary' : 'accent'">
+            [color]="nextHintSide == BLUE ? 'primary' : 'accent'">
 
             <mat-label>Шифровка из Центра (слово и цифра)</mat-label>
-            <input matInput formControlName="message" autocomplete="off" (keydown.enter)="onSendClick()">
+            <input matInput [formControl]="messageControl" autocomplete="off" (keydown.enter)="onSendClick()">
         </mat-form-field>
 
         <button mat-raised-button type="submit"
             (click)="onSendClick()"
-            [class.send-button-blue]="moveSide == BLUE"
-            [class.send-button-red]="moveSide == RED">
+            [class.send-button-blue]="nextHintSide == BLUE"
+            [class.send-button-red]="nextHintSide == RED">
 
             Отправить
         </button>

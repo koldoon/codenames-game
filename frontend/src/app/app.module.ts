@@ -35,7 +35,7 @@ import { PageNewGameComponent } from './components/page-new-game/page-new-game.c
 import { PageRulesComponent } from './components/page-rules/page-rules.component';
 import { DictionariesResolve } from './services/dictionaries.resolve';
 import { DictionariesService } from './services/dictionaries.service';
-import { GamesService } from './services/games.service';
+import { GameService } from './services/game.service';
 
 @NgModule({
     declarations: [
@@ -77,7 +77,7 @@ import { GamesService } from './services/games.service';
     providers: [
         DictionariesResolve,
         DictionariesService,
-        GamesService,
+        GameService,
         AppRoutingNavigation
     ],
     bootstrap: [AppComponent]
