@@ -33,6 +33,9 @@ import { PageStartComponent } from './components/page-start/page-start.component
 import { LogItemComponent } from './components/log-item/log-item.component';
 import { PageNewGameComponent } from './components/page-new-game/page-new-game.component';
 import { PageRulesComponent } from './components/page-rules/page-rules.component';
+import { DictionariesResolve } from './services/dictionaries.resolve';
+import { DictionariesService } from './services/dictionaries.service';
+import { GamesService } from './services/games.service';
 
 @NgModule({
     declarations: [
@@ -71,7 +74,12 @@ import { PageRulesComponent } from './components/page-rules/page-rules.component
         MatInputModule,
         ReactiveFormsModule
     ],
-    providers: [AppRoutingNavigation],
+    providers: [
+        DictionariesResolve,
+        DictionariesService,
+        GamesService,
+        AppRoutingNavigation
+    ],
     bootstrap: [AppComponent]
 })
 export class AppModule {}

@@ -8,10 +8,11 @@ import { AppRoutingNavigation } from '../../app.routing.navigation';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PageStartComponent {
-    constructor(private navigation: AppRoutingNavigation) { }
+    constructor(
+        private navigation: AppRoutingNavigation) { }
 
-    async onCreateGameClick() {
-        await this.navigation.toNewGame();
+    onCreateGameClick() {
+        this.navigation.toNewGame();
     }
 
     onRulesClick() {

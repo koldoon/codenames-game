@@ -1,17 +1,11 @@
 <div class="container">
-    <mat-progress-bar mode="indeterminate" *ngIf="inProgress$|async"></mat-progress-bar>
+<!--    <mat-progress-bar mode="indeterminate" *ngIf="inProgress|async"></mat-progress-bar>-->
 
     <mat-card class="mat-elevation-z4">
         <mat-card-title class="title">Codenames</mat-card-title>
         <mat-card-subtitle>Начало новой игры</mat-card-subtitle>
 
-        <mat-card-content *ngIf="(inProgress$|async) && !dictionaries.length">
-            <p>
-                Секундочку...
-            </p>
-        </mat-card-content>
-
-        <mat-card-content *ngIf="dictionaries.length">
+        <mat-card-content>
             <p>
                 Выберите набор слов:
             </p>

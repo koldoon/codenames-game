@@ -3,12 +3,10 @@ import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
-import { BehaviorSubject, interval } from 'rxjs';
-import { debounce, finalize } from 'rxjs/operators';
 import { DictionaryDescription } from '../../../../../server/src/api/dictionary_description';
-import { DictionariesIndexResponse } from '../../../../../server/src/api/http/dictionaries_index_response';
-import { NewGameResponse } from '../../../../../server/src/api/http/new_game_response';
 import { AppRoutingNavigation } from '../../app.routing.navigation';
+import { DictionariesService } from '../../services/dictionaries.service';
+import { GamesService } from '../../services/games.service';
 
 @Component({
     selector: 'app-page-dictionaries',
@@ -17,18 +15,16 @@ import { AppRoutingNavigation } from '../../app.routing.navigation';
 })
 export class PageNewGameComponent implements OnInit {
     constructor(
+        private dictionariesService: DictionariesService,
         private httpClient: HttpClient,
         private cd: ChangeDetectorRef,
         private snackBar: MatSnackBar,
         private navigation: AppRoutingNavigation,
         private location: Location,
+        private gamesService: GamesService,
         private activatedRoute: ActivatedRoute) {
-
-        this.inProgress$ = new BehaviorSubject(true);
-        this.inProgress$.pipe(debounce(() => interval(1000)));
     }
 
-    inProgress$: BehaviorSubject<boolean>;
     dictionaries: DictionaryDescription[] = [];
     previousGameId = '';
 
@@ -37,25 +33,14 @@ export class PageNewGameComponent implements OnInit {
             this.previousGameId = value.get('previousGameId');
         });
 
-        this.inProgress$.next(true);
-        this.httpClient
-            .get<DictionariesIndexResponse>('/api/dictionaries/index')
-            .pipe(finalize(() => this.inProgress$.next(false)))
-            .subscribe(value => {
-                this.dictionaries = value.dictionaries;
-                this.cd.markForCheck();
-            });
+        this.dictionaries = this.dictionariesService.dictionaries;
     }
 
     onDictionarySelect(index: number) {
-        this.inProgress$.next(true);
-        this.httpClient
-            .get<NewGameResponse>(`/api/games/create?dict=${index}&from=${this.previousGameId}`)
-            .pipe(finalize(() => this.inProgress$.next(false)))
-            .subscribe(
-                value => this.navigation.toJoinGame(value.gameId),
-                error => this.snackBar.open('Что-то пошло не так...', 'Тваю ж мать!', { duration: 5000 })
-            );
+        this.gamesService.createNewGame(index, this.previousGameId).subscribe(
+            value => this.navigation.toJoinGame(value.gameId),
+            error => this.snackBar.open('Что-то пошло не так...', 'Тваю ж мать!', { duration: 5000 })
+        );
     }
 
     onBackClick() {

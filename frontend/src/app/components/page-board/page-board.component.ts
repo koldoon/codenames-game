@@ -17,7 +17,7 @@ import { Agent } from '../../../../../server/src/model/agent';
 import { Side } from '../../../../../server/src/model/agent_side';
 import { GameEventKind } from '../../../../../server/src/model/game_log_item';
 import { AppRoutingNavigation } from '../../app.routing.navigation';
-import { getWebSocketUrl } from '../../utils/get_web_socket_url';
+import { getWebSocketUrl } from '../../utils/get-web-socket-url';
 import { NewGameConfirmPopupComponent } from '../new-game-confirm-popup/new-game-confirm-popup.component';
 import { LogItem } from '../game-flow-panel/game-flow-panel.component';
 
