@@ -9,6 +9,10 @@ import { async } from '../../core/express_async';
 import { OnApplicationInit } from '../../core/on_application_init';
 import { GamesService } from '../service/games_service';
 
+/**
+ * Controller ("Games" in this case) is responsible for the configuration
+ * and mapping REST API input to internal application logic.
+ */
 export class GamesController implements OnApplicationInit {
     constructor(
         private app: Application,
@@ -27,23 +31,31 @@ export class GamesController implements OnApplicationInit {
 
     private async createGame(req: Request): Promise<NewGameResponse> {
         const { from, dict } = req.query;
-        return { gameId: await this.gamesService.createNewGame(Number(dict) || 0, String(from)) }
+        return {
+            gameId: await this.gamesService.createNewGame(Number(dict) || 0, String(from))
+        }
     }
 
     private async getGameStatus(req: Request): Promise<GameStatusResponse> {
         const { gameId } = req.params;
         const { player } = req.query;
-        return { game: await this.gamesService.getGameStatus(gameId, Number(player)) }
+        return {
+            game: await this.gamesService.getGameStatus(gameId, Number(player))
+        }
     }
 
     private async uncoverAgent(req: Request): Promise<UncoverAgentResponse> {
         const { gameId, agentId } = req.params;
-        return { agent: await this.gamesService.uncoverAgent(gameId, Number(agentId)) }
+        return {
+            agent: await this.gamesService.uncoverAgent(gameId, Number(agentId))
+        }
     }
 
     private async commitCode(req: Request): Promise<CommitCodeResponse> {
         const { gameId } = req.params;
         const { message } = req.body as CommitCodeRequest;
-        return { move: await this.gamesService.commitCode(gameId, message) }
+        return {
+            move: await this.gamesService.commitCode(gameId, message)
+        }
     }
 }

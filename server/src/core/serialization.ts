@@ -10,7 +10,7 @@ export namespace serialization {
      * Use it with @ExtractType() property decorator to pass
      * source value "as is".
      */
-    export class AsIs extends Object {
+    export class AsIs {
     }
 
     /**
