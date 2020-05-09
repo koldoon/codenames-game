@@ -1,6 +1,5 @@
 import { Location } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import { DictionaryDescription } from '../../../../../server/src/api/dictionary_description';
@@ -16,8 +15,6 @@ import { GamesService } from '../../services/games.service';
 export class PageNewGameComponent implements OnInit {
     constructor(
         private dictionariesService: DictionariesService,
-        private httpClient: HttpClient,
-        private cd: ChangeDetectorRef,
         private snackBar: MatSnackBar,
         private navigation: AppRoutingNavigation,
         private location: Location,

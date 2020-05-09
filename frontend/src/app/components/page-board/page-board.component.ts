@@ -9,7 +9,6 @@ import { delay, finalize, retryWhen, takeUntil } from 'rxjs/operators';
 import { webSocket } from 'rxjs/webSocket';
 import { GameStatus } from '../../../../../server/src/api/game_status';
 import { GameStatusResponse } from '../../../../../server/src/api/http/game_status_response';
-import { NewGameResponse } from '../../../../../server/src/api/http/new_game_response';
 import { UncoverAgentResponse } from '../../../../../server/src/api/http/uncover_agent_response';
 import { PlayerType } from '../../../../../server/src/api/player_type';
 import { JoinGameMessage, Message, MessageKind, PingMessage } from '../../../../../server/src/api/ws/game_messages';
@@ -18,8 +17,8 @@ import { Side } from '../../../../../server/src/model/agent_side';
 import { GameEventKind } from '../../../../../server/src/model/game_log_item';
 import { AppRoutingNavigation } from '../../app.routing.navigation';
 import { getWebSocketUrl } from '../../utils/get-web-socket-url';
-import { NewGameConfirmPopupComponent } from '../new-game-confirm-popup/new-game-confirm-popup.component';
 import { LogItem } from '../game-flow-panel/game-flow-panel.component';
+import { NewGameConfirmPopupComponent } from '../new-game-confirm-popup/new-game-confirm-popup.component';
 
 @Component({
     selector: 'app-page-board',

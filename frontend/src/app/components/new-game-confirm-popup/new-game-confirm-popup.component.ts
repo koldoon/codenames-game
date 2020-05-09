@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
     selector: 'app-new-game-confirm-popup',
@@ -7,9 +6,4 @@ import { MatDialogRef } from '@angular/material/dialog';
     styleUrls: ['./new-game-confirm-popup.component.scss']
 })
 export class NewGameConfirmPopupComponent {
-    constructor(public dialogRef: MatDialogRef<NewGameConfirmPopupComponent>) {}
-
-    onCancelClick() {
-        this.dialogRef.close();
-    }
 }
