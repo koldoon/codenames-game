@@ -1,4 +1,4 @@
-<div class="container" *ngIf="gameService.game|async as game">
+<div class="container" [hidden]="!game">
     <mat-toolbar>
         <button mat-button color="primary" (click)="onCopyGameLinkClick()">Ссылка на игру</button>
         <button mat-button color="accent" (click)="onNewGameClick()">Новая игра</button>
@@ -27,7 +27,7 @@
     </mat-toolbar>
 
     <div class="progress">
-<!--                <mat-progress-bar mode="indeterminate" *ngIf="loadingInProgress || uncoveringInProgress.size"></mat-progress-bar>-->
+        <!--                <mat-progress-bar mode="indeterminate" *ngIf="loadingInProgress || uncoveringInProgress.size"></mat-progress-bar>-->
     </div>
 
     <div class="grid-container" #container>

@@ -4,7 +4,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { filter, takeUntil } from 'rxjs/operators';
+import { GameStatus } from '../../../../../server/src/api/game_status';
 import { PlayerType } from '../../../../../server/src/api/player_type';
 import { bindClass } from '../../../../../server/src/core/bind_class';
 import { Agent } from '../../../../../server/src/model/agent';
@@ -34,6 +35,13 @@ export class PageBoardComponent implements OnInit, OnDestroy, AfterViewInit {
     boardView: ElementRef<HTMLDivElement>;
     cardFontSize = 0;
 
+    game = <GameStatus> {
+        blueLeft: 0,
+        redLeft: 0,
+        gameInChain: 0,
+        log: [],
+        move: {}
+    };
     playersCount = 0;
     playerType = PlayerType.Regular;
     destroy$ = new Subject();
@@ -47,9 +55,12 @@ export class PageBoardComponent implements OnInit, OnDestroy, AfterViewInit {
             });
 
         this.gameService.game
-            .pipe(takeUntil(this.destroy$))
+            .pipe(
+                takeUntil(this.destroy$),
+                filter(value => value != null))
             .subscribe(value => {
-                setTimeout(this.onBoardResized, 100)
+                this.game = value;
+                this.cd.markForCheck();
             });
 
         this.gameService.playersCount
@@ -66,7 +77,7 @@ export class PageBoardComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     agentId(index: number, agent: Agent) {
-        return `${index}-${agent.name}`;
+        return agent.name;
     }
 
     onCopyGameLinkClick() {
