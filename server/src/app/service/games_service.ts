@@ -39,6 +39,8 @@ export class GamesService implements OnApplicationInit {
     readonly gameEvents$ = new Subject<{ game: GameModel, event: GameEvent }>();
     readonly gamesChain$ = new Subject<{ prevGameId: string, nextGameId: string }>();
 
+    private readonly dataDir = path.join(appRoot, '../data');
+    private readonly lastGamesFile = path.join(this.dataDir, 'games.json');
     private readonly logger = Logecom.createLogger(GamesService.name);
     private readonly dictionaries: Dictionary[] = [];
     private games = new Map<GameId, GameModel>();
@@ -189,28 +191,27 @@ export class GamesService implements OnApplicationInit {
     }
 
     private loadDictionaries() {
-        const dataDir = path.join(appRoot, '../data');
-        const files = fs.readdirSync(dataDir).sort();
-        this.logger.info('Loading dictionaries from ' + dataDir);
+        const files = fs.readdirSync(this.dataDir).filter(value => value != this.lastGamesFile).sort();
+        this.logger.info('Loading dictionaries from ' + this.dataDir);
 
         if (files.length == 0)
-            this.logger.error('No dictionaries found in ' + dataDir);
+            this.logger.error('No dictionaries found in ' + this.dataDir);
 
         for (const fileName of files) {
-            const dict = new LocalDictionaryImpl(path.join(dataDir, fileName));
+            const dict = new LocalDictionaryImpl(path.join(this.dataDir, fileName));
             this.dictionaries.push(dict);
             this.logger.info(`  - ${fileName}: ${dict.name} (${dict.dictionary.length})`);
         }
     }
 
     private storeGames() {
-        this.logger.warn('Storing games state:', this.games.size, 'games -> games.json');
+        this.logger.warn('Storing games state:', this.games.size, 'games ->', this.lastGamesFile);
         try {
             const gamesList = [...this.games.values()];
             const replacer = (key: keyof GameModel, value: GameModel) =>
                 key == 'lastGame' || key == 'rootGame' && value ? value.id : value;
             const jsonString = JSON.stringify(gamesList, replacer as JSONStringifyReplacer);
-            fs.writeFileSync('games.json', jsonString);
+            fs.writeFileSync(this.lastGamesFile, jsonString);
         }
         catch (e) {
             this.logger.error('Unable to store games data', e);
@@ -219,12 +220,12 @@ export class GamesService implements OnApplicationInit {
     }
 
     private loadGames() {
-        this.logger.warn('Looking for games to restore');
-        if (!fs.existsSync('games.json'))
+        this.logger.warn('Looking for games to restore in', this.lastGamesFile);
+        if (!fs.existsSync(this.lastGamesFile))
             return;
 
         try {
-            const jsonString = fs.readFileSync('games.json').toString('utf8');
+            const jsonString = fs.readFileSync(this.lastGamesFile).toString('utf8');
             const gamesData = <Serialized<GameModel, 'lastGame' | 'rootGame' | 'id'>[]> JSON.parse(jsonString);
 
             for (const gameObj of gamesData)
