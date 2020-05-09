@@ -11,6 +11,7 @@ import { bindClass } from '../../../../../server/src/core/bind_class';
 import { Agent } from '../../../../../server/src/model/agent';
 import { AppRoutingNavigation } from '../../app.routing.navigation';
 import { GameService } from '../../services/game.service';
+import { HttpLoadingStatusService } from '../../services/http-loading-status.service';
 import { NewGameConfirmPopupComponent } from '../new-game-confirm-popup/new-game-confirm-popup.component';
 
 @Component({
@@ -21,6 +22,7 @@ import { NewGameConfirmPopupComponent } from '../new-game-confirm-popup/new-game
 })
 export class PageBoardComponent implements OnInit, OnDestroy, AfterViewInit {
     constructor(
+        public httpLoadingStatusService: HttpLoadingStatusService,
         public gameService: GameService,
         private navigation: AppRoutingNavigation,
         private activatedRoute: ActivatedRoute,

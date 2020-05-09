@@ -1,5 +1,5 @@
 import { ClipboardModule } from '@angular/cdk/clipboard';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatBadgeModule } from '@angular/material/badge';
@@ -36,6 +36,8 @@ import { PageRulesComponent } from './components/page-rules/page-rules.component
 import { DictionariesResolve } from './services/dictionaries.resolve';
 import { DictionariesService } from './services/dictionaries.service';
 import { GameService } from './services/game.service';
+import { HttpLoadingStatusInterceptor } from './services/http-loading-status.interceptor';
+import { HttpLoadingStatusService } from './services/http-loading-status.service';
 
 @NgModule({
     declarations: [
@@ -75,9 +77,11 @@ import { GameService } from './services/game.service';
         ReactiveFormsModule
     ],
     providers: [
+        { provide: HTTP_INTERCEPTORS, multi: true, useClass: HttpLoadingStatusInterceptor },
         DictionariesResolve,
         DictionariesService,
         GameService,
+        HttpLoadingStatusService,
         AppRoutingNavigation
     ],
     bootstrap: [AppComponent]

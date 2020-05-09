@@ -27,7 +27,7 @@
     </mat-toolbar>
 
     <div class="progress">
-        <!--                <mat-progress-bar mode="indeterminate" *ngIf="loadingInProgress || uncoveringInProgress.size"></mat-progress-bar>-->
+        <mat-progress-bar mode="indeterminate" *ngIf="httpLoadingStatusService.isLoading|async"></mat-progress-bar>
     </div>
 
     <div class="grid-container" #container>
