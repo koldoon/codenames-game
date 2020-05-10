@@ -5,7 +5,8 @@ using __Node.js__, __Angular__ and __Google Material UI__. No any database is us
 one hour of inactivity. 
 
 The Game is implemented with Russian interface and includes Russian words dictionary (so far).
-You can create your own dictionary by implementing `DictionaryModel` interface (see `GamesService` for usage).
+You can create your own dictionary by implementing `DictionaryModel` interface (see `GamesService` for usage) or simply
+put extra yaml files in `dist/data` directory respecting the same structure as in others.
 
 ## Steps to run
  - Install [Node.js](https://nodejs.org/en/)
@@ -18,6 +19,7 @@ You can create your own dictionary by implementing `DictionaryModel` interface (
 
 ## Build Docker image 
  - Install [Node.js](https://nodejs.org/en/)
+ - Install [Docker](https://www.docker.com/)
  - `$ git clone https://github.com/koldoon/codenames-game.git` - clone this repo
  - `$ cd codenames-game`
  - `$ npm i` - install dependencies
