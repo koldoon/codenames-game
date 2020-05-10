@@ -11,7 +11,7 @@ export class AgentCardComponent {
     @Input() name = '';
     @Input() side = Side.UNKNOWN;
     @Input() uncovered = false;
-    @Input() uncoveringInProgress = false;
+    @Input() uncoveringInProgress: number | boolean = false;
     @Input() fontSize = 0;
 
     BLUE = Side.BLUE;

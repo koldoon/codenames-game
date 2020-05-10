@@ -1,55 +1,53 @@
-<div class="container" [hidden]="!game">
-    <mat-toolbar>
-        <button mat-button color="primary" (click)="onCopyGameLinkClick()">Ссылка на игру</button>
-        <button mat-button color="accent" (click)="onNewGameClick()">Новая игра</button>
+<mat-toolbar>
+    <button mat-button color="primary" (click)="onCopyGameLinkClick()">Ссылка на игру</button>
+    <button mat-button color="accent" (click)="onNewGameClick()">Новая игра</button>
 
-        <div class="delimiter"></div>
+    <div class="delimiter"></div>
 
-        <div class="stat">
-            <div class="games-played" *ngIf="game.gameInChain > 1">{{game.gameInChain - 1}} сыграно</div>
-            <div class="players-online" *ngIf="playersCount > 1">{{playersCount}} он-лайн</div>
-            <div class="wait-for-players" *ngIf="playersCount <= 1"> Ждем подключения игроков...</div>
-        </div>
-
-        <div><!-- spacer --></div>
-
-        <button class="refresh" mat-icon-button (click)="onHelpClick()">
-            <span class="material-icons">help_outline</span>
-        </button>
-
-        <div class="score score-blues">
-            <span class="mat-h1"><strong>{{game.blueLeft}}</strong></span>
-        </div>
-
-        <div class="score score-reds">
-            <span class="mat-h1"><strong>{{game.redLeft}}</strong></span>
-        </div>
-    </mat-toolbar>
-
-    <div class="progress">
-        <mat-progress-bar mode="indeterminate" *ngIf="httpLoadingStatusService.isLoading|async"></mat-progress-bar>
+    <div class="stat">
+        <div class="games-played" *ngIf="game.gameInChain > 1">{{game.gameInChain - 1}} сыграно</div>
+        <div class="players-online" *ngIf="playersCount > 1">{{playersCount}} он-лайн</div>
+        <div class="wait-for-players" *ngIf="playersCount <= 1"> Ждем подключения игроков...</div>
     </div>
 
-    <div class="grid-container" #container>
-        <mat-grid-list cols="5" rowHeight="2:0.9" gutterSize="0.5rem">
-            <mat-grid-tile *ngFor="let agent of game.board, let i = index, trackBy: agentId">
-                <div class="agent-wrapper">
-                    <app-agent-card
-                        [name]="agent.name"
-                        [side]="agent.side"
-                        [uncovered]="agent.uncovered"
-                        [uncoveringInProgress]="httpLoadingStatusService.isLoading"
-                        [fontSize]="cardFontSize"
-                        (click)="onUncoverClick(i)">
-                    </app-agent-card>
-                </div>
-            </mat-grid-tile>
-        </mat-grid-list>
+    <div><!-- spacer --></div>
+
+    <button class="refresh" mat-icon-button (click)="onHelpClick()">
+        <span class="material-icons">help_outline</span>
+    </button>
+
+    <div class="score score-blues">
+        <span class="mat-h1"><strong>{{game.blueLeft}}</strong></span>
     </div>
 
-    <app-game-flow-panel
-        [game]="game"
-        [playerType]="playerType"
-        (sendHint)="onSendHintClick($event)">
-    </app-game-flow-panel>
+    <div class="score score-reds">
+        <span class="mat-h1"><strong>{{game.redLeft}}</strong></span>
+    </div>
+</mat-toolbar>
+
+<div class="progress">
+    <mat-progress-bar mode="indeterminate" *ngIf="httpLoadingStatusService.isLoading|async"></mat-progress-bar>
 </div>
+
+<div class="grid-container" #container>
+    <mat-grid-list class="grid-list" cols="5" rowHeight="2:0.9" gutterSize="0.5rem">
+        <mat-grid-tile *ngFor="let agent of game.board, let i = index, trackBy: agentId">
+            <div class="agent-wrapper">
+                <app-agent-card
+                    [name]="agent.name"
+                    [side]="agent.side"
+                    [uncovered]="agent.uncovered"
+                    [uncoveringInProgress]="httpLoadingStatusService.isLoading|async"
+                    [fontSize]="cardFontSize"
+                    (click)="onUncoverClick(i)">
+                </app-agent-card>
+            </div>
+        </mat-grid-tile>
+    </mat-grid-list>
+</div>
+
+<app-game-flow-panel
+    [game]="game"
+    [playerType]="playerType"
+    (sendHint)="onSendHintClick($event)">
+</app-game-flow-panel>
