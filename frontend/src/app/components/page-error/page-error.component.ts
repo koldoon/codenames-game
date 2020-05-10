@@ -20,7 +20,7 @@ export class PageErrorComponent implements OnInit {
 
     ngOnInit(): void {
         this.activatedRoute.paramMap.subscribe(value => {
-            this.code = Number(value.get('code'));
+            this.code = Number(value.get('code')) || 500;
             this.cd.markForCheck();
         });
     }

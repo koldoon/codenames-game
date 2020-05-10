@@ -1,47 +1,45 @@
-<div class="container">
-    <mat-card class="mat-elevation-z4">
-        <mat-card-title class="title">Codenames</mat-card-title>
-        <mat-card-subtitle>Игра создана</mat-card-subtitle>
+<mat-card class="mat-elevation-z4">
+    <mat-card-title class="title">Codenames</mat-card-title>
+    <mat-card-subtitle>Игра создана</mat-card-subtitle>
 
-        <mat-card-content>
+    <mat-card-content>
+        <p>
+            Присоединиться как:
+        </p>
+
+        <div class="team-role">
+            <button mat-raised-button
+                color="warn"
+                (click)="onJoinAsCaptainClick()">
+
+                Капитан
+            </button>
+
             <p>
-                Присоединиться как:
+                Капитаны видят принадлежность всех <span class="b">агентов</span> на доске.
+                Передают короткие <span class="b">шифровки</span> командам, чтобы
+                они могли найти <span class="b">своих</span>.
             </p>
+        </div>
 
-            <div class="team-role">
-                <button mat-raised-button
-                    color="warn"
-                    (click)="onJoinAsCaptainClick()">
+        <div class="team-role">
+            <button mat-raised-button
+                color="primary"
+                (click)="onJoinAsTeammateClick()">
 
-                    Капитан
-                </button>
+                Игрок
+            </button>
 
-                <p>
-                    Капитаны видят принадлежность всех <span class="b">агентов</span> на доске.
-                    Передают короткие <span class="b">шифровки</span> командам, чтобы
-                    они могли найти <span class="b">своих</span>.
-                </p>
-            </div>
+            <p>
+                Игроки видят принадлежность только раскрытых агентов. Вместе
+                пытаются разгадать <span class="b">шифровки</span> и определить
+                <span class="b">своих агентов</span>.
+            </p>
+        </div>
+    </mat-card-content>
 
-            <div class="team-role">
-                <button mat-raised-button
-                    color="primary"
-                    (click)="onJoinAsTeammateClick()">
-
-                    Игрок
-                </button>
-
-                <p>
-                    Игроки видят принадлежность только раскрытых агентов. Вместе
-                    пытаются разгадать <span class="b">шифровки</span> и определить
-                    <span class="b">своих агентов</span>.
-                </p>
-            </div>
-        </mat-card-content>
-
-        <mat-card-actions align="end">
-            <button mat-button (click)="onBackClick()">Назад</button>
-            <button mat-button (click)="onCopyLinkClick($event)">Ссылка на игру</button>
-        </mat-card-actions>
-    </mat-card>
-</div>
+    <mat-card-actions align="end">
+        <button mat-button (click)="onBackClick()">Назад</button>
+        <button mat-button (click)="onCopyLinkClick($event)">Ссылка на игру</button>
+    </mat-card-actions>
+</mat-card>
