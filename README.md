@@ -9,14 +9,25 @@ You can create your own dictionary by implementing `DictionaryModel` interface (
 
 ## Steps to run
  - Install [Node.js](https://nodejs.org/en/)
- - Clone this repo: `$ git clone https://github.com/koldoon/codenames-game.git`
+ - `$ git clone https://github.com/koldoon/codenames-game.git` - clone this repo
  - `$ cd codenames-game`
  - `$ npm i` - install dependencies
  - `$ npm run build` - build sources into `./dist`
  - `$ npm run start` - start game server serving API and frontend
  - Open `http://localhost:8095/` and have a fun
 
-Default http port (8095) can be changed via `CODENAMES_HTTP_PORT` environment variable.
+## Build Docker image 
+ - Install [Node.js](https://nodejs.org/en/)
+ - `$ git clone https://github.com/koldoon/codenames-game.git` - clone this repo
+ - `$ cd codenames-game`
+ - `$ npm i` - install dependencies
+ - `$ npm run build-docker`
+ 
+Result image will be tagged as `codenames-game`.
+
+## ENV Options
+ - Default http port (8095) can be changed via `CODENAMES_HTTP_PORT`
+ - `NO_CONSOLE_COLORS=1` to disable colorful console output 
 
 ## How to play
 See [Wikipedia](https://en.wikipedia.org/wiki/Codenames_(board_game)) for the rules and details.
