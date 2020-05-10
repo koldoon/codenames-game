@@ -38,7 +38,7 @@
                         [name]="agent.name"
                         [side]="agent.side"
                         [uncovered]="agent.uncovered"
-                        [uncoveringInProgress]="false"
+                        [uncoveringInProgress]="httpLoadingStatusService.isLoading"
                         [fontSize]="cardFontSize"
                         (click)="onUncoverClick(i)">
                     </app-agent-card>

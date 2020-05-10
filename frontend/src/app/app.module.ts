@@ -38,6 +38,7 @@ import { DictionariesService } from './services/dictionaries.service';
 import { GameService } from './services/game.service';
 import { HttpLoadingStatusInterceptor } from './services/http-loading-status.interceptor';
 import { HttpLoadingStatusService } from './services/http-loading-status.service';
+import { SpymasterHintInput } from './components/spymaster-form-field/spymaster-hint-input.component';
 
 @NgModule({
     declarations: [
@@ -51,7 +52,9 @@ import { HttpLoadingStatusService } from './services/http-loading-status.service
         GameFlowPanelComponent,
         LogItemComponent,
         PageNewGameComponent,
-        PageRulesComponent
+        PageRulesComponent,
+        SpymasterHintInput,
+        SpymasterHintInput
     ],
     imports: [
         BrowserModule,

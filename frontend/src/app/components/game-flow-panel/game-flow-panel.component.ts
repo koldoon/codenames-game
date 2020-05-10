@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { GameStatus } from '../../../../../server/src/api/game_status';
 import { PlayerType } from '../../../../../server/src/api/player_type';

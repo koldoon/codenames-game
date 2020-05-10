@@ -17,18 +17,16 @@
     <div class="spymaster-controls" *ngIf="playerType == SPYMASTER">
         <div class="mat-h3">Отправить шифровку</div>
 
-        <mat-form-field class="hint-input" appearance="legacy" floatLabel="always"
-            [color]="nextHintSide == BLUE ? 'primary' : 'accent'">
-
-            <mat-label>Шифровка из Центра (слово и цифра)</mat-label>
-            <input matInput [formControl]="messageControl" autocomplete="off" (keydown.enter)="onSendClick()">
-        </mat-form-field>
+        <app-spymaster-hint-input class="hint-input"
+            [side]="nextHintSide"
+            [messageControl]="messageControl"
+            (enter)="onSendClick()">
+        </app-spymaster-hint-input>
 
         <button mat-raised-button type="submit"
             (click)="onSendClick()"
             [class.send-button-blue]="nextHintSide == BLUE"
             [class.send-button-red]="nextHintSide == RED">
-
             Отправить
         </button>
     </div>

@@ -1,0 +1,32 @@
+.hint-input {
+    display: block;
+    width: 100%;
+}
+
+.form-field-blue {
+    &.mat-focused {
+        .mat-form-field-label {
+            color: #5185cb;
+        }
+
+        .mat-form-field-underline {
+            span {
+                background-color: #6197d4;
+            }
+        }
+    }
+}
+
+.form-field-red {
+    &.mat-focused {
+        .mat-form-field-label {
+            color: #c55450;
+        }
+
+        .mat-form-field-underline {
+            span {
+                background-color: #cd5b5f;
+            }
+        }
+    }
+}
