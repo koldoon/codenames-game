@@ -17,7 +17,7 @@ put extra yaml files in `dist/data` directory respecting the same structure as i
  - `$ npm run start` - start game server serving API and frontend
  - Open `http://localhost:8095/` and have a fun
 
-## Build Docker image 
+## Build Docker image from local sources build
  - Install [Node.js](https://nodejs.org/en/)
  - Install [Docker](https://www.docker.com/)
  - `$ git clone https://github.com/koldoon/codenames-game.git` - clone this repo
@@ -25,7 +25,12 @@ put extra yaml files in `dist/data` directory respecting the same structure as i
  - `$ npm i` - install dependencies
  - `$ npm run build-docker`
  
-Result image will be tagged as `codenames-game`.
+Result image will be tagged as `codenames-game:latest`.
+
+## Build Docker image only (using staged build)
+ - Install [Docker](https://www.docker.com/)
+ - `$ curl https://raw.githubusercontent.com/koldoon/codenames-game/master/docker/Dockerfile -o Dockerfile`
+ - `$ docker build -t codenames-game .`
 
 ## ENV Options
  - Default http port (8095) can be changed via `CODENAMES_HTTP_PORT`
