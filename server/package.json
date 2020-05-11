@@ -32,10 +32,10 @@
     "pretty-ms": "^7.0.0",
     "rimraf": "^3.0.2",
     "rxjs": "^6.5.5",
-    "serialize-error": "^6.0.0",
+    "serialize-error": "^7.0.0",
     "shuffle-array": "^1.0.1",
     "uuid": "^8.0.0",
-    "ws": "^7.2.5"
+    "ws": "^7.3.0"
   },
   "devDependencies": {
     "@types/bent": "^7.0.2",
@@ -55,16 +55,16 @@
     "@types/ws": "^7.2.4",
     "@typescript-eslint/eslint-plugin": "^2.31.0",
     "@typescript-eslint/parser": "^2.31.0",
-    "acorn": "^7.1.1",
+    "acorn": "^7.2.0",
     "bent": "^7.3.0",
     "copy-node-modules": "^1.1.1",
-    "eslint": "^6.8.0",
+    "eslint": "^7.0.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-import": "^2.20.2",
     "jest": "^26.0.1",
     "pm2": "^4.4.0",
     "prettier": "^2.0.5",
-    "ts-jest": "^25.4.0",
+    "ts-jest": "^25.5.1",
     "tsconfig-paths": "^3.9.0",
     "typescript": "^3.8.3"
   }

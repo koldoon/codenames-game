@@ -1,11 +1,10 @@
-## Build docker image from the latest sorces
+## Build Codenames docker image from the latest sources from the git repo
 
-FROM node:12 as builder
+FROM node:12 AS builder
 WORKDIR /data
 RUN git clone --depth=1 https://github.com/koldoon/codenames-game.git
 WORKDIR /data/codenames-game
-RUN npm run install
-RUN npm run build
+RUN npm run install && npm run build
 
 FROM mhart/alpine-node:slim-12
 WORKDIR /svc/codenames

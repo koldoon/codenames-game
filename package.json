@@ -4,9 +4,9 @@
   "description": "Codenames online game implementation",
   "author": "koldoon",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "GPL 3.0",
   "scripts": {
-    "install": "cd ./server && npm i && cd ../frontend &&  npm i && cd ..",
+    "install": "cd ./server && npm i && cd ../frontend && npm i && cd ..",
     "build": "cd ./server && npm run build && cd ../frontend && npm run build && cd ..",
     "docker": "env DOCKER_BUILDKIT=1 docker build -t codenames-game .",
     "build-docker": "npm run build && npm run docker",
