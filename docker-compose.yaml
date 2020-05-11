@@ -1,0 +1,10 @@
+version: '3.2'
+
+services:
+  codenames-game:
+    build:
+      context: .
+      dockerfile: dockerfile
+
+    ports:
+      - 3000:8095
