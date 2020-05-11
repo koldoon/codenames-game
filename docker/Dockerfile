@@ -1,0 +1,14 @@
+## Build docker image from the latest sorces
+
+FROM node:12 as builder
+WORKDIR /data
+RUN git clone --depth=1 https://github.com/koldoon/codenames-game.git
+WORKDIR /data/codenames-game
+RUN npm run install
+RUN npm run build
+
+FROM mhart/alpine-node:slim-12
+WORKDIR /svc/codenames
+COPY --from=builder /data/codenames-game/dist ./
+ENTRYPOINT node ./server/main.js
+EXPOSE 8095
