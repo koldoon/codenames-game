@@ -29,7 +29,7 @@ Result image will be tagged as `codenames-game:latest`.
 
 ## Build Docker image only (using staged build)
  - Install [Docker](https://www.docker.com/)
- - `$ curl https://raw.githubusercontent.com/koldoon/codenames-game/master/docker/Dockerfile -o Dockerfile`
+ - `$ curl https://raw.githubusercontent.com/koldoon/codenames-game/master/Dockerfile.master -o Dockerfile`
  - `$ docker build -t codenames-game .`
 
 ## ENV Options
