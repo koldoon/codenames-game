@@ -30,14 +30,14 @@ export class GameModel {
      * If this game is chained from another,
      * this will be a link to root game
      */
-    rootGame?: GameModel;
+    rootGame: GameModel;
 
     /**
      * In case of root game model (when this is root)
      * "lastGame" holds a link to currently playing
      * descendant game
      */
-    lastGame?: GameModel;
+    lastGame: GameModel;
 
     /**
      * Counter of games in chain
@@ -47,15 +47,15 @@ export class GameModel {
 
     constructor() {
         bindClass(this);
-        this.rootGame = this;
+        this.rootGame = this.lastGame = this;
     }
 
     getActiveGame(): GameModel {
-        return this.rootGame?.lastGame || this.lastGame || this;
+        return this.rootGame.lastGame;
     }
 
     getMainGame(): GameModel {
-        return this.rootGame || this;
+        return this.rootGame;
     }
 
     init(names: string[]) {

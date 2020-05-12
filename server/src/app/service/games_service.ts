@@ -179,7 +179,7 @@ export class GamesService implements OnApplicationInit {
         const gamesRemoved = 0;
 
         for (const [gameId, game] of this.games) {
-            if (now - game.getActiveGame().lastModified.getTime() < intervalMs)
+            if (now - game.getActiveGame().lastModified.getTime() > intervalMs)
                 this.games.delete(gameId);
         }
 
@@ -232,11 +232,15 @@ export class GamesService implements OnApplicationInit {
                 this.games.set(gameObj.id, extract(new GameModel(), gameObj));
 
             for (const gameObj of gamesData) {
-                if (gameObj.rootGame)
-                    this.games.get(gameObj.id)!.rootGame = this.games.get(gameObj.rootGame);
+                const gameModel = this.games.get(gameObj.id);
+                const rootGame = this.games.get(gameObj.rootGame);
+                const lastGame = this.games.get(gameObj.lastGame);
 
-                if (gameObj.lastGame)
-                    this.games.get(gameObj.id)!.lastGame = this.games.get(gameObj.lastGame);
+                if (gameModel && rootGame)
+                    gameModel.rootGame = rootGame;
+
+                if (gameModel && lastGame)
+                    gameModel.lastGame = lastGame;
             }
 
             this.logger.warn('  - games.json: Restored', this.games.size, 'game(s)');
