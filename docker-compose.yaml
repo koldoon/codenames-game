@@ -5,10 +5,10 @@ services:
     build:
       context: .
       dockerfile: dockerfile
-
     ports:
       - 3000:8095
-
     environment:
       - NO_CONSOLE_COLORS=1
       - CODENAMES_HTTP_PORT=8095
+    volumes:
+      - ./dist/data:/svc/codenames/data:rw
