@@ -93,6 +93,8 @@ export class GameModel {
             return null;
 
         agent.uncovered = true;
+        this.move.count -= 1;
+        this.lastModified = new Date();
 
         this.events.push({
             kind: GameEventKind.AgentUncovered,
@@ -106,9 +108,6 @@ export class GameModel {
         else if (agent.side == Side.RED) {
             this.redLeft -= 1;
         }
-
-        this.move.count -= 1;
-        this.getMainGame().lastModified = new Date();
 
         if (agent.side != this.move.side || this.move.count == 0)
             this.move.isFinished = true;
