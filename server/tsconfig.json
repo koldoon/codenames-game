@@ -8,6 +8,7 @@
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
+    "preserveConstEnums": true,
     "experimentalDecorators": true,
     "downlevelIteration": true,
     "target": "es2017",
@@ -15,8 +16,7 @@
     "incremental": true,
     "suppressImplicitAnyIndexErrors": true,
     "lib": [
-      "es2016",
-      "dom"
+      "es2017"
     ],
     "typeRoots": [
       "./node_modules/@types"

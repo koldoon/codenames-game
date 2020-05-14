@@ -1,14 +1,17 @@
 import * as bytes from 'bytes';
+import * as fs from 'fs';
 import * as path from 'path';
 import { performance } from 'perf_hooks';
 import * as ms from 'pretty-ms';
 import { Subject } from 'rxjs';
+import { ErrorCode } from '../../api/api_error';
 import { DictionaryDescription } from '../../api/dictionary_description';
 import { GameStatus } from '../../api/game_status';
 import { PlayerType } from '../../api/player_type';
 import { assert } from '../../core/assert';
 import { asyncDelay } from '../../core/async_delay';
 import { bindClass } from '../../core/bind_class';
+import { createGameError } from '../../core/create_game_error';
 import { Logecom } from '../../core/logecom/logecom';
 import { OnApplicationInit } from '../../core/on_application_init';
 import { serialization } from '../../core/serialization';
@@ -18,7 +21,6 @@ import { Dictionary } from '../../model/dictionary';
 import { GameEvent } from '../../model/game_log_item';
 import { GameModel } from '../../model/game_model';
 import { GameMove } from '../../model/game_move';
-import * as fs from 'fs';
 import { LocalDictionaryImpl } from '../../model/local_dictionary_impl';
 import { appRoot } from '../../root';
 import extract = serialization.extract;
@@ -69,7 +71,7 @@ export class GamesService implements OnApplicationInit {
 
     async createNewGame(dictionaryId: number = 0, prevGameId?: string): Promise<GameId> {
         const dictionary = this.dictionaries[dictionaryId];
-        assert.found(dictionary, `Dictionary "${dictionaryId}" not found`);
+        assert.found(dictionary, createGameError(ErrorCode.DictionaryNotFound));
 
         // look if new game has been already created by somebody
         if (prevGameId) {
@@ -97,7 +99,7 @@ export class GamesService implements OnApplicationInit {
 
     async getGameStatus(gameId: GameId, playerType: PlayerType): Promise<GameStatus> {
         let game = this.games.get(gameId);
-        assert.found(game, 'Game not found.');
+        assert.found(game, createGameError(ErrorCode.GameNotFound));
         game = game.getActiveGame();
 
         let board: Agent[];
@@ -129,12 +131,12 @@ export class GamesService implements OnApplicationInit {
 
     async uncoverAgent(gameId: string, agentIndex: number): Promise<Agent> {
         const game = this.games.get(gameId);
-        assert.found(game, 'Game not found.');
-        assert.found(game.board[agentIndex], 'Agent not found.');
+        assert.found(game, createGameError(ErrorCode.GameNotFound));
+        assert.found(game.board[agentIndex], createGameError(ErrorCode.AgentNotFound));
 
         const eventsBefore = game.events.length;
         const agent = game.uncoverAgent(agentIndex);
-        assert.value(agent, 'Agent is already uncovered or game or move is finished or not yet inited.');
+        assert.value(agent, createGameError(ErrorCode.UncoverNotAllowed));
 
         for (let i = eventsBefore; i < game.events.length; i++)
             this.gameEvents$.next({ game, event: game.events[i] });
@@ -147,15 +149,15 @@ export class GamesService implements OnApplicationInit {
 
     async commitCode(gameId: string, message: string): Promise<GameMove> {
         const game = this.games.get(gameId);
-        assert.found(game, 'Game not found.');
+        assert.found(game, createGameError(ErrorCode.GameNotFound));
 
         const [hint, count_s] = message.trim().split(/[\s,;]+/);
         const count = Number(count_s);
-        assert.value(hint != '', 'Invalid code word.');
-        assert.range(count, [0, (game.boardSize - 1) / 3 + 1], 'Invalid code word match count.');
+        assert.value(hint != '', createGameError(ErrorCode.WrongSpymasterHint));
+        assert.range(count, [0, (game.boardSize - 1) / 3 + 1], 'Invalid code word match count');
 
         const move = game.commitHint(hint, count);
-        assert.value(move, 'Game is finished.');
+        assert.value(move, createGameError(ErrorCode.GameIsFinished));
 
         this.gameEvents$.next({ game, event: game.events[game.events.length - 1] });
         return move;

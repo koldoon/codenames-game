@@ -1,5 +1,5 @@
 import * as colors from 'colors';
-import { serializeError } from 'serialize-error';
+import { serializeError } from '../../serialize_error';
 import { LogEntry } from '../log_entry';
 import { LogTranslator, NextFunction } from '../log_translator';
 

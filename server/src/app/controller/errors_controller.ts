@@ -3,7 +3,7 @@ import * as httpErrors from 'http-errors';
 import { bindClass } from '../../core/bind_class';
 import { Logecom } from '../../core/logecom/logecom';
 import { OnApplicationInit } from '../../core/on_application_init';
-import { serializeError } from 'serialize-error';
+import { serializeError } from '../../core/serialize_error';
 
 export class ErrorsController implements OnApplicationInit {
     private readonly logger = Logecom.createLogger(this.constructor.name);
