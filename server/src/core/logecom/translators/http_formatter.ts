@@ -10,18 +10,22 @@ import { LogTranslator, NextFunction } from '../log_translator';
 import { Logecom } from '../logecom';
 import { StringMapper } from './string_mapper';
 
-export function expressLogMiddleware() {
-    const logger = Logecom.createLogger('Express');
-    return (req: IncomingMessage, res: ServerResponse, next: express.NextFunction) => {
-        logger.log(req, res);
-        next();
-    }
+export interface RequestIdResolver {
+    (req: IncomingMessage): string
 }
 
 export interface HttpFormatterConfig {
     colorize: boolean;
     responsesOnly: boolean;
     padRequestId: number;
+}
+
+export function expressLogMiddleware(requestId?: RequestIdResolver) {
+    const logger = Logecom.createLogger('Express');
+    return (req: IncomingMessage, res: ServerResponse, next: express.NextFunction) => {
+        logger.log(req, res, requestId);
+        next();
+    }
 }
 
 /**
@@ -53,58 +57,56 @@ export class HttpFormatter implements LogTranslator {
     private requestId = 1;
 
     translate(entry: LogEntry, next: NextFunction): void {
-        if (entry.messages.length == 2 && entry.messages[0] instanceof IncomingMessage && entry.messages[1] instanceof ServerResponse) {
-            const [req, res] = entry.messages as [IncomingMessage, ServerResponse];
-            const requestId = (this.requestId++).toString();
-            const startedAt = performance.now();
-            const method = (req.method || '').padEnd(4);
-            const url = req.url;
-            const bytesWritten = req.socket.bytesWritten; // simple socket stats
-            const ipAddr = String(req.headers['x-forwarded-for'] || '').split(',').pop() ||
-                req.connection.remoteAddress ||
-                req.socket.remoteAddress;
+        if (!(entry.messages[0] instanceof IncomingMessage && entry.messages[1] instanceof ServerResponse))
+            return next(entry);
 
-            if (!this.config.responsesOnly) {
-                const line = [
-                    this.gp('[') + this.reqp('→') + this.gp(']'),
-                    this.gp('[' + requestId.padEnd(this.config.padRequestId) + ']'),
-                    method, url,
-                    this.gp('[' + ipAddr + ']')
-                ].join(' ');
+        const [req, res, idResolver] = entry.messages as [IncomingMessage, ServerResponse, RequestIdResolver?];
+        const requestId = idResolver ? idResolver(req) : (this.requestId++).toString();
+        const startedAt = performance.now();
+        const method = (req.method || '').padEnd(4);
+        const url = req.url;
+        const bytesWritten = req.socket.bytesWritten; // simple socket stats
+        const ipAddr = String(req.headers['x-forwarded-for'] || '').split(',').pop() ||
+            req.connection.remoteAddress ||
+            req.socket.remoteAddress;
 
-                entry.messages = [line];
-            }
-            entry.tags.push(String(req.headers['user-agent']));
+        if (!this.config.responsesOnly) {
+            const line = [
+                this.gp('[') + this.reqp('→') + this.gp(']'),
+                this.gp('[' + requestId.padEnd(this.config.padRequestId) + ']'),
+                method, url,
+                this.gp('[' + ipAddr + ']')
+            ].join(' ');
 
-            onFinished(res, () => {
-                const contentLength = bytes(req.socket.bytesWritten - bytesWritten);
-                const directionTag = !this.config.responsesOnly ? [this.gp('[') + this.resp('←') + this.gp(']')] : [];
-                const ipAddrTag = this.config.responsesOnly ? [this.gp('[' + ipAddr + ']')] : [];
+            entry.messages = [line];
+        }
+        entry.tags.push(String(req.headers['user-agent']));
 
-                const line = [
-                    ...directionTag,
-                    this.gp('[' + requestId.padStart(this.config.padRequestId) + ']'),
-                    method, url, this.resp('→ ' + res.statusCode.toString()),
-                    this.gp('[' + ms(performance.now() - startedAt) + ']'),
-                    ...ipAddrTag,
-                    this.gp('{' + bytes(req.socket.bytesRead) + '/' + contentLength + '}')
-                ];
+        onFinished(res, () => {
+            const contentLength = bytes(req.socket.bytesWritten - bytesWritten);
+            const directionTag = !this.config.responsesOnly ? [this.gp('[') + this.resp('←') + this.gp(']')] : [];
+            const ipAddrTag = this.config.responsesOnly ? [this.gp('[' + ipAddr + ']')] : [];
 
-                if (this.config.responsesOnly) {
-                    entry.messages = [line.join(' ')];
-                    next(entry);
-                }
-                else {
-                    next({ ...entry, messages: [line.join(' ')] });
-                }
-            });
+            const line = [
+                ...directionTag,
+                this.gp('[' + requestId.padStart(this.config.padRequestId) + ']'),
+                method, url, this.resp('→ ' + res.statusCode.toString()),
+                this.gp('[' + ms(performance.now() - startedAt) + ']'),
+                ...ipAddrTag,
+                this.gp('{' + bytes(req.socket.bytesRead) + '/' + contentLength + '}')
+            ];
 
-            if (!this.config.responsesOnly)
+            if (this.config.responsesOnly) {
+                entry.messages = [line.join(' ')];
                 next(entry);
-        }
-        else {
+            }
+            else {
+                next({ ...entry, messages: [line.join(' ')] });
+            }
+        });
+
+        if (!this.config.responsesOnly)
             next(entry);
-        }
     }
 
     isEnabled(): boolean {

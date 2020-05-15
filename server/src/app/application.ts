@@ -1,8 +1,12 @@
 import * as compression from 'compression';
 import * as express from 'express';
 import * as express_ws from 'express-ws';
+import * as fs from 'fs';
 import * as helmet from 'helmet';
 import * as path from 'path';
+import { ExpressRequestContext } from '../core/express/context/express_request_context';
+import { RequestContextData } from '../core/express/context/request_context_data';
+import { request_id_middleware } from '../core/express/context/request_id_middleware';
 import { initModules } from '../core/init_modules';
 import { Logecom } from '../core/logecom/logecom';
 import { expressLogMiddleware } from '../core/logecom/translators/http_formatter';
@@ -11,10 +15,10 @@ import { DictionariesController } from './controller/dictionaries_controller';
 import { ErrorsController } from './controller/errors_controller';
 import { FrontendController } from './controller/frontend_controller';
 import { GamesController } from './controller/games_controller';
+import { StatController } from './controller/stat_controller';
 import { GamesGateway } from './service/games_gateway';
 import { GamesService } from './service/games_service';
-import * as fs from 'fs';
-import { StatController } from './controller/stat_controller';
+import expressRequestIdMiddleware = request_id_middleware.expressRequestIdMiddleware;
 
 export class Application {
     private readonly logger = Logecom.createLogger(this.constructor.name);
@@ -34,6 +38,7 @@ export class Application {
         const app = express();
         const ws = express_ws(app);
 
+        const context = new ExpressRequestContext<RequestContextData>();
         const gamesService = new GamesService();
         const gamesGateway = new GamesGateway(ws.app, gamesService);
         const gamesController = new GamesController(app, gamesService);
@@ -46,7 +51,9 @@ export class Application {
         app
             .use(helmet())
             .use(compression())
-            .use(expressLogMiddleware());
+            .use(context.expressMiddleware())
+            .use(expressRequestIdMiddleware(context))
+            .use(expressLogMiddleware(req => context.get(req).uid.substr(24)));
 
         await initModules(
             gamesService,

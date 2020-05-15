@@ -1,5 +1,5 @@
-import { Application } from 'express';
 import * as express from 'express';
+import { Application } from 'express';
 import * as httpError from 'http-errors';
 import * as path from 'path';
 import { OnApplicationInit } from '../../core/on_application_init';
