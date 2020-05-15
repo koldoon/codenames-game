@@ -82,7 +82,7 @@ test('Commit code in general', async () => {
 
 test('Uncover the agent', async () => {
     const index = Number((Math.random() * 24).toFixed(0));
-    const res = <UncoverAgentResponse> await postJson(
+    const res = <UncoverAgentResponse> await getJson(
         `${serverUrl}/api/games/${gameId}/agents/${index}/uncover`
     );
 
