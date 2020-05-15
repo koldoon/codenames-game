@@ -4,15 +4,15 @@ import { ConsoleTransport } from './core/logecom/translators/console_transport';
 import { ErrorFormatter } from './core/logecom/translators/error_formatter';
 import { HttpFormatter } from './core/logecom/translators/http_formatter';
 import { ObjectFormatter } from './core/logecom/translators/object_formatter';
-import { env } from './env';
+import { config } from './config';
 
 // Configure basic logging middleware
 Logecom
     .getInstance()
-    .use(new ErrorFormatter(env))
-    .use(new HttpFormatter(env))
-    .use(new ObjectFormatter(env))
-    .use(new ConsoleTransport(env));
+    .use(new ErrorFormatter(config))
+    .use(new HttpFormatter(config))
+    .use(new ObjectFormatter(config))
+    .use(new ConsoleTransport(config));
 
 // ... and the World begins
-new Application(env.httpPort);
+new Application(config.httpPort);
