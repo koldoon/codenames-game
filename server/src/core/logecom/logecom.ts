@@ -28,10 +28,18 @@ import { Logger } from './logger';
  * use another logger! - anything you want inside this pipeline.<br>
  * So, by using this interface from the very beginning, you save
  * your time in future if you would need to migrate or change logging
- * library
+ * library.
+ *
+ * Implementing LogTranslator by Logecom itself makes it possible to
+ * create complex logs translation logic when one logger can be applied
+ * upto another if needed ;)
  */
-export class Logecom {
+export class Logecom implements LogTranslator {
     private static instance = new Logecom();
+
+    constructor(isEnabledResolver?: () => boolean) {
+        this.isEnabledResolver = isEnabledResolver || (() => true);
+    }
 
     /**
      * Create Logger instance for specified category.
@@ -55,7 +63,8 @@ export class Logecom {
         return this.instance;
     }
 
-    private pipe: LogTranslator[] = [];
+    private readonly pipe: LogTranslator[] = [];
+    private readonly isEnabledResolver: () => boolean;
 
     use(translator: LogTranslator) {
         this.pipe.push(translator);
@@ -67,6 +76,10 @@ export class Logecom {
             return;
 
         this.getNextFunction(0)(entry);
+    }
+
+    isEnabled(): boolean {
+        return this.isEnabledResolver();
     }
 
     private getNextFunction(i: number) {
