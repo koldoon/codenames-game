@@ -8,24 +8,26 @@ import { UncoverAgentResponse } from '../src/api/http/uncover_agent_response';
 import { PlayerType } from '../src/api/player_type';
 import { Side } from '../src/model/agent_side';
 
-const serverUrl = 'http://localhost:3000';
-const getJson = bent('json');
-const postJson = bent('POST', 'json');
+const serverUrl = process.env.TEST_URL || 'http://localhost:3000';
+const getJson = bent('json', serverUrl);
+const postJson = bent('POST', 'json', serverUrl);
 
 let gameId = '';
 let game: GameStatus;
 
+test('Stat ' + serverUrl, async () => {
+    console.info(await getJson('/api/stat/info'));
+});
+
 async function updateCaptainsBoard() {
     const res = <GameStatusResponse> await getJson(
-        `${serverUrl}/api/games/${gameId}/status?player=${PlayerType.Spymaster}`
+        `/api/games/${gameId}/status?player=${PlayerType.Spymaster}`
     );
     game = res.game;
 }
 
 test('New game', async () => {
-    const res = <NewGameResponse> await getJson(
-        `${serverUrl}/api/games/create`
-    );
+    const res = <NewGameResponse> await getJson(`/api/games/create`);
     gameId = res.gameId;
     expect(gameId).toBeDefined();
     expect(typeof gameId).toBe('string');
@@ -61,7 +63,7 @@ test('Board configuration', () => {
 
 test('Commit code in general', async () => {
     const res = <CommitCodeResponse> await postJson(
-        `${serverUrl}/api/games/${gameId}/commit-code`,
+        `/api/games/${gameId}/commit-code`,
         <CommitCodeRequest> {
             message: 'Allegra 8'
         }
@@ -83,7 +85,7 @@ test('Commit code in general', async () => {
 test('Uncover the agent', async () => {
     const index = Number((Math.random() * 24).toFixed(0));
     const res = <UncoverAgentResponse> await getJson(
-        `${serverUrl}/api/games/${gameId}/agents/${index}/uncover`
+        `/api/games/${gameId}/agents/${index}/uncover`
     );
 
     expect(res).toMatchObject(<UncoverAgentResponse> {
@@ -98,7 +100,7 @@ test('Uncover the agent', async () => {
 
 test('Commit code zero', async () => {
     const res = <CommitCodeResponse> await postJson(
-        `${serverUrl}/api/games/${gameId}/commit-code`,
+        `/api/games/${gameId}/commit-code`,
         <CommitCodeRequest> {
             message: 'Joy 0'
         }
