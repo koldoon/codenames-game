@@ -51,8 +51,4 @@ export class ObjectFormatter implements LogTranslator {
 
         next(entry);
     }
-
-    isEnabled(): boolean {
-        return true;
-    }
 }

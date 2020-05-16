@@ -5,6 +5,5 @@ export interface NextFunction {
 }
 
 export interface LogTranslator {
-    isEnabled(): boolean;
     translate(entry: LogEntry, next: NextFunction): void;
 }

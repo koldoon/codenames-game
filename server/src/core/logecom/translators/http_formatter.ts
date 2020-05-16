@@ -108,9 +108,4 @@ export class HttpFormatter implements LogTranslator {
         if (!this.config.responsesOnly)
             next(entry);
     }
-
-    isEnabled(): boolean {
-        return true;
-    }
-
 }

@@ -39,8 +39,4 @@ export class ErrorFormatter implements LogTranslator {
         }
         next(entry);
     }
-
-    isEnabled(): boolean {
-        return true;
-    }
 }

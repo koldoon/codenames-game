@@ -79,8 +79,4 @@ export class ConsoleTransport implements LogTranslator {
 
         next(entry);
     }
-
-    isEnabled(): boolean {
-        return true;
-    }
 }

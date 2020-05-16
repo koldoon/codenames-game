@@ -37,10 +37,6 @@ import { Logger } from './logger';
 export class Logecom implements LogTranslator {
     private static instance = new Logecom();
 
-    constructor(isEnabledResolver?: () => boolean) {
-        this.isEnabledResolver = isEnabledResolver || (() => true);
-    }
-
     /**
      * Create Logger instance for specified category.
      * Common pattern is to use class name as a category specifier:
@@ -64,7 +60,6 @@ export class Logecom implements LogTranslator {
     }
 
     private readonly pipe: LogTranslator[] = [];
-    private readonly isEnabledResolver: () => boolean;
 
     use(translator: LogTranslator) {
         this.pipe.push(translator);
@@ -78,20 +73,12 @@ export class Logecom implements LogTranslator {
         this.getNextFunction(0)(entry);
     }
 
-    isEnabled(): boolean {
-        return this.isEnabledResolver();
-    }
-
     private getNextFunction(i: number) {
         return (entry?: LogEntry) => {
-            if (entry == null)
+            if (entry == null || i >= this.pipe.length)
                 return;
 
-            while (i < this.pipe.length && !this.pipe[i].isEnabled())
-                i++;
-
-            if (i < this.pipe.length && this.pipe[i].isEnabled())
-                this.pipe[i].translate(entry, this.getNextFunction(i + 1));
+            this.pipe[i].translate(entry, this.getNextFunction(i + 1));
         }
     }
 }
