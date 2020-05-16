@@ -53,7 +53,7 @@ export class Application {
             .use(compression())
             .use(context.expressMiddleware())
             .use(expressRequestIdMiddleware(context))
-            .use(expressLogMiddleware(req => context.get(req).uid.substr(24)));
+            .use(expressLogMiddleware(req => context.get(req).uid));
 
         await initModules(
             gamesService,

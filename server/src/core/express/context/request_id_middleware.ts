@@ -1,7 +1,8 @@
 import * as express from 'express';
 import { IncomingMessage, ServerResponse } from 'http';
-import * as uuid from 'uuid';
+import { generate_id } from '../../generate_id';
 import { Context } from './request_context_data';
+import generateId = generate_id.generateId;
 
 export module request_id_middleware {
     let requestId = 1;
@@ -13,7 +14,9 @@ export module request_id_middleware {
         return (req: IncomingMessage, res: ServerResponse, next: express.NextFunction) => {
             const ctx = context.get(req);
             ctx.id = String(requestId++);
-            ctx.uid = uuid.v4();
+            // 4 chars - quite enough to distinguish some request in a
+            // reasonable time window
+            ctx.uid = generateId(4);
             next();
         }
     }

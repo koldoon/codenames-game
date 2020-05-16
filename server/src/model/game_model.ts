@@ -1,15 +1,16 @@
 import { bindClass } from '../core/bind_class';
+import { generate_id } from '../core/generate_id';
 import { Agent } from './agent';
 import { Side } from './agent_side';
 import { GameEvent, GameEventKind } from './game_log_item';
 import { GameMove } from './game_move';
 import { PlayerSide } from './player_side';
 import shuffle = require('shuffle-array');
-import uuid = require('uuid');
+import generateId = generate_id.generateId;
 
 export class GameModel {
     readonly boardSize = 25;
-    readonly id = uuid.v4();
+    readonly id = generateId(8);
 
     board: Agent[] = [];
     move: GameMove = {
