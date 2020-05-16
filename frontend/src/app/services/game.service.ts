@@ -26,7 +26,7 @@ export class GameService {
 
         this.connected$
             .pipe(tap(() => this.isConnected = true))
-            .subscribe(value => {
+            .subscribe(async value => {
                 this.getGameStatus();
                 this.joinGameStream();
             });
@@ -65,14 +65,13 @@ export class GameService {
     /**
      * Create new game and get its ID.
      */
-    createNewGame(dictionaryIndex: number) {
-        return this.httpClient
-            .get<NewGameResponse>('/api/games/create', {
-                params: cleanHttpParams({
-                    from: this.gameId,
-                    dict: dictionaryIndex.toString()
-                })
-            });
+    async createNewGame(dictionaryIndex: number) {
+        return this.httpClient.get<NewGameResponse>('/api/games/create', {
+            params: cleanHttpParams({
+                from: this.gameId,
+                dict: dictionaryIndex.toString()
+            })
+        }).toPromise();
     }
 
     joinGame(gameId: string, playerType: PlayerType) {
@@ -83,43 +82,66 @@ export class GameService {
         this.joinGameStream();
     }
 
-    sendHint(hint: string) {
+    async sendHint(hint: string) {
         if (!this.gameId)
             return;
 
-        this.httpClient
-            .post(`/api/games/${this.gameId}/commit-code`, <CommitCodeRequest> {
-                message: hint
-            })
-            .subscribe();
+        try {
+            await this.httpClient
+                .post(`/api/games/${this.gameId}/commit-code`, <CommitCodeRequest> { message: hint })
+                .toPromise();
+            this.snackBar.dismiss();
+        }
+        catch (error) {
+            this.onSendHintError(error);
+            throw error;
+        }
     }
 
-    uncoverAgent(index: number) {
+    private onSendHintError(error: any) {
+        if (error instanceof HttpErrorResponse && error.status === 400) {
+            this.snackBar.open(
+                'Вы что-то не то ввели, коллега! \nПроверьте: нужно ровно ОДНО СЛОВО и через ПРОБЕЛ ЦИФРА от 0 до 9',
+                'Спасибо', {
+                    duration: 6000,
+                    horizontalPosition: 'start'
+                });
+        }
+        else {
+            this.onUnknownGameError();
+        }
+    }
+
+    async uncoverAgent(index: number) {
         const game = this.game.value;
 
         if (!game || game.board[index].side !== Side.UNKNOWN)
             return;
 
-        this.httpClient
-            .get<UncoverAgentResponse>(`/api/games/${this.gameId}/agents/${index}/uncover`)
-            .subscribe(
-                value => {
-                    game.board[index] = { ...value.agent, uncovered: false };
-                    this.game.next(game);
-                },
-                error => {
-                    if (error instanceof HttpErrorResponse) {
-                        if (error.status === 400) {
-                            this.snackBar.open('Не время раскрывать, ждем шифровку из Центра!', 'Так и быть', { duration: 5000 })
-                        }
-                        else {
-                            this.snackBar.open('Ошибка: Что-то пошло не так', 'Тваю ж мать!')
-                        }
-                    }
+        try {
+            const value = await this.httpClient
+                .get<UncoverAgentResponse>(`/api/games/${this.gameId}/agents/${index}/uncover`)
+                .toPromise();
 
-                    return error;
-                }
-            );
+            game.board[index] = { ...value.agent, uncovered: false };
+            this.game.next(game);
+        }
+        catch (error) {
+            this.onUncoverAgentError(error);
+        }
+    }
+
+    private onUncoverAgentError(error: any) {
+        if (error instanceof HttpErrorResponse && error.status === 400) {
+            this.snackBar.open(
+                'Не время раскрывать, ждем шифровку из Центра!',
+                'Так и быть', {
+                    duration: 5000
+                });
+        }
+        else {
+            this.onUnknownGameError();
+        }
     }
 
     private joinGameStream() {
@@ -167,37 +189,47 @@ export class GameService {
         }
     }
 
-    private getGameStatus() {
+    private async getGameStatus() {
         if (!this.gameId)
             return;
 
-        this.httpClient
-            .get<GameStatusResponse>(`/api/games/${this.gameId}/status?player=${this.playerType}`)
-            .subscribe(
-                value => {
-                    this.game.next(value.game);
-                    if (value.game.id !== this.gameId) // in case of games chain may differ
-                        this.joinGame(value.game.id, this.playerType);
+        try {
+            const value = await this.httpClient
+                .get<GameStatusResponse>(`/api/games/${this.gameId}/status?player=${this.playerType}`)
+                .toPromise();
 
-                    if (value.game.isFinished)
-                        this.onGameFinished();
-                },
-                error => {
-                    if (error instanceof HttpErrorResponse) {
-                        if (error.status === 404) {
-                            this.navigation.toError(404);
-                        }
-                        else {
-                            this.snackBar.open('Ошибка: Что-то пошло не так', 'Тваю ж мать!');
-                        }
-                    }
-                }
-            );
+            this.game.next(value.game);
+
+            if (value.game.id !== this.gameId) // in case of games chain may differ
+                this.joinGame(value.game.id, this.playerType);
+
+            if (value.game.isFinished)
+                this.onGameFinished();
+        }
+        catch (error) {
+            this.onGetGameStatusError(error);
+        }
     }
 
+    private onGetGameStatusError(error: any) {
+        if (error instanceof HttpErrorResponse && error.status === 404) {
+            return this.navigation.toError(error.status);
+        }
+        else {
+            this.onUnknownGameError();
+        }
+    }
 
     private onGameFinished() {
-        this.snackBar.open('Игра завершена. Нажмите \'Новая игра\' чтобы продолжить в той же компании!', 'Супер!');
+        this.snackBar.open(
+            'Игра завершена. Нажмите \'Новая игра\' чтобы продолжить в той же компании!',
+            'Супер!');
+    }
+
+    private onUnknownGameError() {
+        this.snackBar.open(
+            'Ошибка: Что-то пошло не так',
+            'Тваю ж мать!');
     }
 }
 

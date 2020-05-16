@@ -124,8 +124,4 @@ export class PageBoardComponent implements OnInit, OnDestroy, AfterViewInit {
     onHelpClick() {
         this.navigation.toRules();
     }
-
-    onSendHintClick($event: string) {
-        this.gameService.sendHint($event);
-    }
 }

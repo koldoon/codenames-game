@@ -1,11 +1,11 @@
-import { HttpClient } from '@angular/common/http';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { GameStatus } from '../../../../../server/src/api/game_status';
 import { PlayerType } from '../../../../../server/src/api/player_type';
 import { Side } from '../../../../../server/src/model/agent_side';
 import { GameEventKind } from '../../../../../server/src/model/game_log_item';
 import { PlayerSide } from '../../../../../server/src/model/player_side';
+import { GameService } from '../../services/game.service';
 
 export interface LogItem {
     text: string;
@@ -21,7 +21,7 @@ export interface LogItem {
 })
 export class GameFlowPanelComponent {
     constructor(
-        private httpClient: HttpClient,
+        private gameService: GameService,
         private cd: ChangeDetectorRef) {
     }
 
@@ -44,14 +44,13 @@ export class GameFlowPanelComponent {
 
     @Input() playerType = PlayerType.Regular;
 
-    @Output() sendHint = new EventEmitter<string>();
-
     logItemText(item: LogItem) {
         return item.text;
     }
 
-    onSendClick() {
-        this.sendHint.emit(this.messageControl.value);
+    async onSendClick() {
+        await this.gameService.sendHint(this.messageControl.value);
+
         this.messageControl.patchValue('');
         this.cd.markForCheck();
     }

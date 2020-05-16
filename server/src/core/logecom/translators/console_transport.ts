@@ -41,7 +41,7 @@ export class ConsoleTransport implements LogTranslator {
         [LogLevel.Info, 'INF'],
         [LogLevel.Fatal, 'FTL'],
         [LogLevel.Error, 'ERR'],
-        [LogLevel.Debug, 'DEB'],
+        [LogLevel.Debug, 'DBG'],
         [LogLevel.Log, 'LOG']
     ]);
 

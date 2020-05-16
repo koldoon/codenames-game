@@ -27,10 +27,9 @@ export class PageNewGameComponent implements OnInit {
     }
 
     onDictionarySelect(index: number) {
-        this.gamesService.createNewGame(index).subscribe(
-            value => this.navigation.toJoinGame(value.gameId),
-            error => this.snackBar.open('Что-то пошло не так...', 'Тваю ж мать!', { duration: 5000 })
-        );
+        this.gamesService.createNewGame(index)
+            .then(value => this.navigation.toJoinGame(value.gameId))
+            .catch(reason => this.snackBar.open('Что-то пошло не так...', 'Тваю ж мать!', { duration: 5000 }));
     }
 
     onBackClick() {
