@@ -7,9 +7,9 @@ import * as path from 'path';
 import { ExpressRequestContext } from '../core/express/context/express_request_context';
 import { RequestContextData } from '../core/express/context/request_context_data';
 import { request_id_middleware } from '../core/express/context/request_id_middleware';
-import { initModules } from '../core/init_modules';
 import { Logecom } from '../core/logecom/logecom';
 import { expressLogMiddleware } from '../core/logecom/translators/http_formatter';
+import { OnApplicationInit } from '../core/on_application_init';
 import { appRoot } from '../root';
 import { DictionariesController } from './controller/dictionaries_controller';
 import { ErrorsController } from './controller/errors_controller';
@@ -55,7 +55,7 @@ export class Application {
             .use(expressRequestIdMiddleware(context))
             .use(expressLogMiddleware(req => context.get(req).uid));
 
-        await initModules(
+        await this.initModules(
             gamesService,
             gamesController,
             dictionariesController,
@@ -66,5 +66,12 @@ export class Application {
         );
 
         await app.listen(Number(this.port), '0.0.0.0');
+    }
+
+    private async initModules(...args: OnApplicationInit[]) {
+        for (const module of args) {
+            this.logger.debug('Starting module:', module.constructor.name);
+            await module.init();
+        }
     }
 }
