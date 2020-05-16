@@ -4,6 +4,7 @@ import * as express_ws from 'express-ws';
 import * as fs from 'fs';
 import * as helmet from 'helmet';
 import * as path from 'path';
+import { config } from '../config';
 import { ExpressRequestContext } from '../core/express/context/express_request_context';
 import { RequestContextData } from '../core/express/context/request_context_data';
 import { request_id_middleware } from '../core/express/context/request_id_middleware';
@@ -25,7 +26,7 @@ export class Application {
 
     constructor(private port: number | string) {
         this.bootstrap().then(() => {
-            this.logger.info('Application started' + (process.env.NODE_ENV === 'production' ? ' in PRODUCTION mode' : ''));
+            this.logger.info('Application started' + (config.nodeEnv == 'production' ? ' in PRODUCTION mode' : ''));
             this.logger.info(`Listening on port: ${port}`);
         });
     }
