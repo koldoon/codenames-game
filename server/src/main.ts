@@ -8,7 +8,7 @@ import { config } from './config';
 
 // Configure basic logging middleware
 Logecom
-    .getInstance()
+    .configure()
     .use(new ErrorFormatter(config))
     .use(new HttpFormatter(config))
     .use(new ObjectFormatter(config))

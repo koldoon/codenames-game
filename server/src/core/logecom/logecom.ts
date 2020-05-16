@@ -35,7 +35,8 @@ import { Logger } from './logger';
  * upto another if needed ;)
  */
 export class Logecom implements LogTranslator {
-    private static instance = new Logecom();
+    // "readonly" is important! see "createLogger" method.
+    private static readonly instance = new Logecom();
 
     /**
      * Create Logger instance for specified category.
@@ -43,6 +44,7 @@ export class Logecom implements LogTranslator {
      * <code>
      *     private readonly logger = Logecom.createLogger(this.constructor.name);
      * </code>
+     *
      * @param {string} category
      * @returns {Logger}
      */
@@ -51,15 +53,21 @@ export class Logecom implements LogTranslator {
     }
 
     /**
-     * Default Logecom instance.
+     * Configure default Logecom instance.
      * For the global logging system it's ok to use Singleton pattern ;)
+     *
+     * To prevent possible duplicates during re-configuration by mistake,
+     * this method always configure Logecom "from scratch", removing all
+     * existing middleware.
+     *
      * @type {Logecom}
      */
-    static getInstance() {
+    static configure() {
+        this.instance.pipe = [];
         return this.instance;
     }
 
-    private readonly pipe: LogTranslator[] = [];
+    private pipe: LogTranslator[] = [];
 
     use(translator: LogTranslator) {
         this.pipe.push(translator);
