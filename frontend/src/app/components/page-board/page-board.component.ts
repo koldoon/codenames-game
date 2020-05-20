@@ -9,7 +9,7 @@ import { GameStatus } from '../../../../../server/src/api/game_status';
 import { PlayerType } from '../../../../../server/src/api/player_type';
 import { bindClass } from '../../../../../server/src/core/bind_class';
 import { Agent } from '../../../../../server/src/model/agent';
-import { AppRoutingNavigation } from '../../app.routing.navigation';
+import { AppRoutingNavigationService } from '../../app-routing-navigation.service';
 import { GameService } from '../../services/game.service';
 import { HttpLoadingStatusService } from '../../services/http-loading-status.service';
 import { NewGameConfirmPopupComponent } from '../new-game-confirm-popup/new-game-confirm-popup.component';
@@ -24,7 +24,7 @@ export class PageBoardComponent implements OnInit, OnDestroy, AfterViewInit {
     constructor(
         public httpLoadingStatusService: HttpLoadingStatusService,
         public gameService: GameService,
-        private navigation: AppRoutingNavigation,
+        private navigation: AppRoutingNavigationService,
         private activatedRoute: ActivatedRoute,
         private cd: ChangeDetectorRef,
         private snackBar: MatSnackBar,

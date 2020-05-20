@@ -21,8 +21,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppComponent } from './app.component';
-import { AppRouting } from './app.routing';
-import { AppRoutingNavigation } from './app.routing.navigation';
+import { AppRoutingModule } from './app-routing.module';
+import { AppRoutingNavigationService } from './app-routing-navigation.service';
 import { AgentCardComponent } from './components/agent-card/agent-card.component';
 import { PageBoardComponent } from './components/page-board/page-board.component';
 import { NewGameConfirmPopupComponent } from './components/new-game-confirm-popup/new-game-confirm-popup.component';
@@ -59,7 +59,7 @@ import { SpymasterHintInput } from './components/spymaster-form-field/spymaster-
     imports: [
         BrowserModule,
         HttpClientModule,
-        AppRouting,
+        AppRoutingModule,
         BrowserAnimationsModule,
         ClipboardModule,
         MatButtonModule,
@@ -85,7 +85,7 @@ import { SpymasterHintInput } from './components/spymaster-form-field/spymaster-
         DictionariesService,
         GameService,
         HttpLoadingStatusService,
-        AppRoutingNavigation
+        AppRoutingNavigationService
     ],
     bootstrap: [AppComponent]
 })
