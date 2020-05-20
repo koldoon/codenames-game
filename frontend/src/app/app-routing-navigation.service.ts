@@ -7,34 +7,35 @@ import { PlayerType } from '../../../server/src/api/player_type';
  * navigation routes, all the routes formatting in one place.
  */
 @Injectable()
-export class AppRoutingNavigation {
+export class AppRoutingNavigationService {
     constructor(private router: Router) {}
 
     toStart() {
-        return this.router.navigate(['start']);
+        this.router.navigate(['start']);
     }
 
     toNewGame() {
-        return this.router.navigate(['game/new']);
+        this.router.navigate(['game/new']);
     }
 
     toRules() {
-        return this.router.navigate(['rules']);
+        this.router.navigate(['rules']);
     }
 
     toJoinGame(gameId: string) {
-        return this.router.navigate(['game', gameId, 'join']);
+        this.router.navigate(['game', gameId, 'join']);
     }
 
     toGameBoard(gameId: string, playerType: PlayerType) {
-        return this.router.navigate(['game', gameId, 'player', playerType, 'board']);
-    }
-
-    getJoinLink(gameId: string) {
-        return `${window.location.origin}/game/${gameId}/join`;
+        this.router.navigate(['game', gameId, 'player', playerType, 'board']);
     }
 
     toError(code: number) {
-        return this.router.navigate(['error', code]);
+        this.router.navigate(['error', code]);
+    }
+
+
+    getJoinLink(gameId: string) {
+        return `${window.location.origin}/game/${gameId}/join`;
     }
 }

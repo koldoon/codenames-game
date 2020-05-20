@@ -12,11 +12,11 @@ import { Logecom } from '../core/logecom/logecom';
 import { expressLogMiddleware } from '../core/logecom/translators/http_formatter';
 import { OnApplicationInit } from '../core/on_application_init';
 import { appRoot } from '../root';
-import { NotFoundController } from './controller/not_found_controller';
 import { DictionariesController } from './controller/dictionaries_controller';
 import { ErrorsController } from './controller/errors_controller';
 import { FrontendController } from './controller/frontend_controller';
 import { GamesController } from './controller/games_controller';
+import { NotFoundController } from './controller/not_found_controller';
 import { StatController } from './controller/stat_controller';
 import { GamesGateway } from './service/games_gateway';
 import { GamesService } from './service/games_service';
@@ -26,6 +26,9 @@ export class Application {
     private readonly logger = Logecom.createLogger(this.constructor.name);
 
     constructor(private port: number | string) {
+        process.on('unhandledRejection', reason => this.logger.error('Unhandled Rejection', reason));
+        process.on('uncaughtException', error => this.logger.error('Uncaught Exception', error));
+
         this.bootstrap().then(() => {
             this.logger.info('Application started' + (config.nodeEnv == 'production' ? ' in PRODUCTION mode' : ''));
             this.logger.info(`Listening on port: ${port}`);

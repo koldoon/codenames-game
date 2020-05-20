@@ -13,14 +13,14 @@ import { PlayerType } from '../../../../server/src/api/player_type';
 import { JoinGameMessage, Message, MessageKind } from '../../../../server/src/api/ws/game_messages';
 import { Side } from '../../../../server/src/model/agent_side';
 import { GameEventKind } from '../../../../server/src/model/game_log_item';
-import { AppRoutingNavigation } from '../app.routing.navigation';
+import { AppRoutingNavigationService } from '../app-routing-navigation.service';
 import { cleanHttpParams } from '../utils/clean-http-params';
 import { getWebSocketUrl } from '../utils/get-web-socket-url';
 
 @Injectable()
 export class GameService {
     constructor(
-        private navigation: AppRoutingNavigation,
+        private navigation: AppRoutingNavigationService,
         private snackBar: MatSnackBar,
         private httpClient: HttpClient) {
 

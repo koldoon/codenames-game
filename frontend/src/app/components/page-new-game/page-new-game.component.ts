@@ -2,7 +2,7 @@ import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DictionaryDescription } from '../../../../../server/src/api/dictionary_description';
-import { AppRoutingNavigation } from '../../app.routing.navigation';
+import { AppRoutingNavigationService } from '../../app-routing-navigation.service';
 import { DictionariesService } from '../../services/dictionaries.service';
 import { GameService } from '../../services/game.service';
 
@@ -15,7 +15,7 @@ export class PageNewGameComponent implements OnInit {
     constructor(
         private dictionariesService: DictionariesService,
         private snackBar: MatSnackBar,
-        private navigation: AppRoutingNavigation,
+        private navigation: AppRoutingNavigationService,
         private location: Location,
         private gamesService: GameService) {
     }

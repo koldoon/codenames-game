@@ -29,7 +29,7 @@ export class ErrorsController implements OnApplicationInit {
             res.status(err.statusCode).json(serializeError(err));
         }
         else {
-            res.status(500).send({ message: 'Service error. See logs for details.' });
+            res.status(500).send({ message: 'Unknown service error. See logs for details.' });
         }
     }
 }

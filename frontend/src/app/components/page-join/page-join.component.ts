@@ -4,7 +4,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import { PlayerType } from '../../../../../server/src/api/player_type';
-import { AppRoutingNavigation } from '../../app.routing.navigation';
+import { AppRoutingNavigationService } from '../../app-routing-navigation.service';
 
 @Component({
     selector: 'app-page-join',
@@ -13,7 +13,7 @@ import { AppRoutingNavigation } from '../../app.routing.navigation';
 })
 export class PageJoinComponent implements OnInit {
     constructor(
-        private navigation: AppRoutingNavigation,
+        private navigation: AppRoutingNavigationService,
         private activatedRoute: ActivatedRoute,
         private snackBar: MatSnackBar,
         private location: Location,

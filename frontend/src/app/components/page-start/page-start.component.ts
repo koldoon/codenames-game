@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { AppRoutingNavigation } from '../../app.routing.navigation';
+import { AppRoutingNavigationService } from '../../app-routing-navigation.service';
 
 @Component({
     selector: 'app-start',
@@ -9,7 +9,7 @@ import { AppRoutingNavigation } from '../../app.routing.navigation';
 })
 export class PageStartComponent {
     constructor(
-        private navigation: AppRoutingNavigation) { }
+        private navigation: AppRoutingNavigationService) { }
 
     onCreateGameClick() {
         this.navigation.toNewGame();
