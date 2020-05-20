@@ -1,6 +1,7 @@
 export interface OnApplicationInit {
-
     /**
+     * Contract for modules to be inited during application bootstrap.
+     *
      * We don't pass express Application instance to this method,
      * it must be injected via constructor params instead,
      * but the routes must be initialized here anyway.
