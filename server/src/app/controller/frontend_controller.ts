@@ -1,7 +1,7 @@
 import * as express from 'express';
-import { Application } from 'express';
-import * as httpError from 'http-errors';
+import { Application, NextFunction, Request, Response } from 'express';
 import * as path from 'path';
+import { bindClass } from '../../core/bind_class';
 import { OnApplicationInit } from '../../core/on_application_init';
 import { appRoot } from '../../root';
 
@@ -11,16 +11,20 @@ import { appRoot } from '../../root';
  * errors handling, since it binds to any ('/*') route.
  */
 export class FrontendController implements OnApplicationInit {
-    constructor(private app: Application) {}
+    constructor(
+        private app: Application) {
+        bindClass(this);
+    }
+
+    private readonly frontendRoot = path.join(appRoot, '../frontend');
 
     init() {
         this.app
-            .use('/api/*', (req, res, next) => next(new httpError.NotFound()))
-            .use(express.static(path.join(appRoot, '../frontend')))
-            .use('/*', (req, res, next) => {
-                res.sendFile('index.html', {
-                    root: path.join(appRoot, '../frontend')
-                });
-            });
+            .use(express.static(this.frontendRoot))
+            .use('/*', this.frontendMiddleware);
+    }
+
+    frontendMiddleware(req: Request, res: Response, next: NextFunction) {
+        res.sendFile('index.html', { root: this.frontendRoot });
     }
 }

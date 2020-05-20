@@ -12,6 +12,7 @@ import { Logecom } from '../core/logecom/logecom';
 import { expressLogMiddleware } from '../core/logecom/translators/http_formatter';
 import { OnApplicationInit } from '../core/on_application_init';
 import { appRoot } from '../root';
+import { NotFoundController } from './controller/not_found_controller';
 import { DictionariesController } from './controller/dictionaries_controller';
 import { ErrorsController } from './controller/errors_controller';
 import { FrontendController } from './controller/frontend_controller';
@@ -39,22 +40,23 @@ export class Application {
         const app = express();
         const ws = express_ws(app);
 
-        const context = new ExpressRequestContext<RequestContextData>();
+        const requestContext = new ExpressRequestContext<RequestContextData>();
         const gamesService = new GamesService();
         const gamesGateway = new GamesGateway(ws.app, gamesService);
         const gamesController = new GamesController(app, gamesService);
         const dictionariesController = new DictionariesController(app, gamesService);
         const statController = new StatController(app, gamesGateway, gamesService);
         const frontendController = new FrontendController(app);
+        const notFoundController = new NotFoundController(app);
         const errorsController = new ErrorsController(app);
 
         // Init services and middleware
         app
             .use(helmet())
             .use(compression())
-            .use(context.expressMiddleware())
-            .use(expressRequestIdMiddleware(context))
-            .use(expressLogMiddleware(req => context.get(req).uid));
+            .use(requestContext.expressMiddleware())
+            .use(expressRequestIdMiddleware(requestContext))
+            .use(expressLogMiddleware(req => requestContext.get(req).uid));
 
         await this.initModules(
             gamesService,
@@ -62,6 +64,7 @@ export class Application {
             dictionariesController,
             gamesGateway,
             statController,
+            notFoundController,
             frontendController,
             errorsController
         );
