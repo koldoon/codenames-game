@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -14,7 +14,7 @@ export class PageErrorComponent implements OnInit {
 
     code = 0;
     codeToMessage = {
-        404: 'Игра не найдена, проверьте ссылку или создайте новую',
+        404: 'Похоже, ссылка на эту игру уже устарела. Но всегда можно начать новую!',
         500: 'Что-то пошло не так...'
     };
 
