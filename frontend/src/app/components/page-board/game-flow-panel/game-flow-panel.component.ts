@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { GameStatus } from '../../../../../server/src/api/game_status';
-import { PlayerType } from '../../../../../server/src/api/player_type';
-import { Side } from '../../../../../server/src/model/agent_side';
-import { GameEventKind } from '../../../../../server/src/model/game_log_item';
-import { PlayerSide } from '../../../../../server/src/model/player_side';
-import { GameService } from '../../services/game.service';
+import { GameStatus } from '../../../../../../server/src/api/game_status';
+import { PlayerType } from '../../../../../../server/src/api/player_type';
+import { Side } from '../../../../../../server/src/model/agent_side';
+import { GameEventKind } from '../../../../../../server/src/model/game_log_item';
+import { PlayerSide } from '../../../../../../server/src/model/player_side';
+import { GameService } from '../../../services/game.service';
 
 export interface LogItem {
     text: string;

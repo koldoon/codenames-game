@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { Side } from '../../../../../server/src/model/agent_side';
-import { PlayerSide } from '../../../../../server/src/model/player_side';
+import { Side } from '../../../../../../../server/src/model/agent_side';
+import { PlayerSide } from '../../../../../../../server/src/model/player_side';
 
 @Component({
     selector: 'app-spymaster-hint-input',

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { Side } from '../../../../../server/src/model/agent_side';
-import { LogItem } from '../game-flow-panel/game-flow-panel.component';
+import { Side } from '../../../../../../../server/src/model/agent_side';
+import { LogItem } from '../game-flow-panel.component';
 
 @Component({
     selector: 'app-log-item',

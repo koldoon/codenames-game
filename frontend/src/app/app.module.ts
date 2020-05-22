@@ -23,14 +23,14 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { AppRoutingNavigationService } from './app-routing-navigation.service';
-import { AgentCardComponent } from './components/agent-card/agent-card.component';
+import { AgentCardComponent } from './components/page-board/agent-card/agent-card.component';
 import { PageBoardComponent } from './components/page-board/page-board.component';
-import { NewGameConfirmPopupComponent } from './components/new-game-confirm-popup/new-game-confirm-popup.component';
+import { NewGameConfirmPopupComponent } from './components/page-board/new-game-confirm-popup/new-game-confirm-popup.component';
 import { PageErrorComponent } from './components/page-error/page-error.component';
-import { GameFlowPanelComponent } from './components/game-flow-panel/game-flow-panel.component';
+import { GameFlowPanelComponent } from './components/page-board/game-flow-panel/game-flow-panel.component';
 import { PageJoinComponent } from './components/page-join/page-join.component';
 import { PageStartComponent } from './components/page-start/page-start.component';
-import { LogItemComponent } from './components/log-item/log-item.component';
+import { LogItemComponent } from './components/page-board/game-flow-panel/log-item/log-item.component';
 import { PageNewGameComponent } from './components/page-new-game/page-new-game.component';
 import { PageRulesComponent } from './components/page-rules/page-rules.component';
 import { DictionariesResolve } from './services/dictionaries.resolve';
@@ -38,7 +38,7 @@ import { DictionariesService } from './services/dictionaries.service';
 import { GameService } from './services/game.service';
 import { HttpLoadingStatusInterceptor } from './services/http-loading-status.interceptor';
 import { HttpLoadingStatusService } from './services/http-loading-status.service';
-import { SpymasterHintInput } from './components/spymaster-form-field/spymaster-hint-input.component';
+import { SpymasterHintInput } from './components/page-board/game-flow-panel/spymaster-form-field/spymaster-hint-input.component';
 
 @NgModule({
     declarations: [

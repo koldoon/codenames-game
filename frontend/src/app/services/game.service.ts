@@ -14,8 +14,8 @@ import { JoinGameMessage, Message, MessageKind } from '../../../../server/src/ap
 import { Side } from '../../../../server/src/model/agent_side';
 import { GameEventKind } from '../../../../server/src/model/game_log_item';
 import { AppRoutingNavigationService } from '../app-routing-navigation.service';
-import { cleanHttpParams } from '../utils/clean-http-params';
-import { getWebSocketUrl } from '../utils/get-web-socket-url';
+import { cleanHttpParams } from '../core/clean-http-params';
+import { getWebSocketUrl } from '../core/get-web-socket-url';
 
 @Injectable()
 export class GameService {
