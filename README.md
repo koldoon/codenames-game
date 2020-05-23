@@ -37,3 +37,6 @@ Result image will be tagged as `codenames-game:latest`.
 
 ## How to play
 See [Wikipedia](https://en.wikipedia.org/wiki/Codenames_(board_game)) for the rules and details.
+
+## Play now
+Currently deployed and available to play at [https://codenames.koldoon.ru](https://codenames.koldoon.ru)
