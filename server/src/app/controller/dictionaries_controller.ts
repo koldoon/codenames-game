@@ -1,7 +1,7 @@
 import { Application, Router } from 'express';
 import { DictionariesIndexResponse } from '../../api/http/dictionaries_index_response';
 import { bindClass } from '../../core/bind_class';
-import { async } from '../../core/express/async';
+import { asyncJson } from '../../core/express/async_json';
 import { OnApplicationInit } from '../../core/on_application_init';
 import { GamesService } from '../service/games_service';
 
@@ -14,7 +14,7 @@ export class DictionariesController implements OnApplicationInit {
 
     init() {
         this.app.use('/api/dictionaries', Router()
-            .get('/index', async(this.getDictionariesIndex))
+            .get('/index', asyncJson(this.getDictionariesIndex))
         );
     }
 

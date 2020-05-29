@@ -5,7 +5,7 @@ import { GameStatusResponse } from '../../api/http/game_status_response';
 import { NewGameResponse } from '../../api/http/new_game_response';
 import { UncoverAgentResponse } from '../../api/http/uncover_agent_response';
 import { bindClass } from '../../core/bind_class';
-import { async } from '../../core/express/async';
+import { asyncJson } from '../../core/express/async_json';
 import { OnApplicationInit } from '../../core/on_application_init';
 import { GamesService } from '../service/games_service';
 
@@ -22,10 +22,10 @@ export class GamesController implements OnApplicationInit {
 
     init() {
         this.app.use('/api/games', Router()
-            .get('/create', async(this.createGame))
-            .get('/:gameId/status', async(this.getGameStatus))
-            .get('/:gameId/agents/:agentId/uncover', async(this.uncoverAgent))
-            .post('/:gameId/commit-code', json(), async(this.commitCode))
+            .get('/create', asyncJson(this.createGame))
+            .get('/:gameId/status', asyncJson(this.getGameStatus))
+            .get('/:gameId/agents/:agentId/uncover', asyncJson(this.uncoverAgent))
+            .post('/:gameId/commit-code', json(), asyncJson(this.commitCode))
         );
     }
 

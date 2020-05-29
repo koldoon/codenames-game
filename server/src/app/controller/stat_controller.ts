@@ -1,6 +1,6 @@
 import { Application, Router } from 'express';
 import { bindClass } from '../../core/bind_class';
-import { async } from '../../core/express/async';
+import { asyncJson } from '../../core/express/async_json';
 import { OnApplicationInit } from '../../core/on_application_init';
 import { GamesGateway } from '../service/games_gateway';
 import { GamesService } from '../service/games_service';
@@ -19,7 +19,7 @@ export class StatController implements OnApplicationInit {
 
     init() {
         this.app.use('/api/stat', Router()
-            .get('/info', async(this.getServerStatistics))
+            .get('/info', asyncJson(this.getServerStatistics))
         );
     }
 
