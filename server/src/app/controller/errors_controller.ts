@@ -3,6 +3,7 @@ import * as httpErrors from 'http-errors';
 import { config } from '../../config';
 import { bindClass } from '../../core/bind_class';
 import { Logecom } from '../../core/logecom/logecom';
+import { NO_LOG_ERROR } from '../../core/no_log_error';
 import { OnApplicationInit } from '../../core/on_application_init';
 import { serializeError } from '../../core/serialize_error';
 
@@ -20,7 +21,8 @@ export class ErrorsController implements OnApplicationInit {
 
 
     onHttpError(err: Error, req: Request, res: Response, next: NextFunction) {
-        this.logger.error(err);
+        if (err.message !== NO_LOG_ERROR)
+            this.logger.error(err);
 
         if (config.nodeEnv == 'production')
             delete err.stack;

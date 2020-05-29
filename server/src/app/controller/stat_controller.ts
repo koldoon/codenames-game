@@ -10,7 +10,8 @@ export class StatController implements OnApplicationInit {
     constructor(
         private app: Application,
         private gamesGateway: GamesGateway,
-        private gamesService: GamesService) {
+        private gamesService: GamesService,
+        private version: string) {
         bindClass(this);
     }
 
@@ -27,7 +28,8 @@ export class StatController implements OnApplicationInit {
         return {
             clientsConnected: this.gamesGateway.clientsCount,
             totalGamesPlayed: this.gamesService.totalGamesPlayed,
-            upTime: ms(Date.now() - this.startedAt)
+            upTime: ms(Date.now() - this.startedAt),
+            version: this.version
         }
     }
 }

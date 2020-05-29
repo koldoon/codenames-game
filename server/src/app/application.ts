@@ -24,6 +24,7 @@ import expressRequestIdMiddleware = request_id_middleware.expressRequestIdMiddle
 
 export class Application {
     private readonly logger = Logecom.createLogger(this.constructor.name);
+    private readonly version = fs.readFileSync(path.join(appRoot, 'version')).toString().trim();
 
     constructor(private port: number | string) {
         process.on('unhandledRejection', reason => this.logger.error('Unhandled Rejection', reason));
@@ -37,7 +38,7 @@ export class Application {
 
     private async bootstrap() {
         this.logger.warn('Starting codenames-game server');
-        this.logger.info('Git commit [' + fs.readFileSync(path.join(appRoot, 'version')).toString().trim() + ']');
+        this.logger.info(`Git commit [${this.version}]`);
 
         // Build application context respecting dependencies
         const app = express();
@@ -48,7 +49,7 @@ export class Application {
         const gamesGateway = new GamesGateway(ws.app, gamesService);
         const gamesController = new GamesController(app, gamesService);
         const dictionariesController = new DictionariesController(app, gamesService);
-        const statController = new StatController(app, gamesGateway, gamesService);
+        const statController = new StatController(app, gamesGateway, gamesService, this.version);
         const frontendController = new FrontendController(app);
         const notFoundController = new NotFoundController(app);
         const errorsController = new ErrorsController(app);
