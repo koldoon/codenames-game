@@ -1,8 +1,8 @@
 import { Side } from './agent_side';
 
 export interface Agent {
-    readonly index: number;
-    readonly name: string;
+    i: number;
+    name: string;
     side: Side;
     uncovered: boolean;
 }

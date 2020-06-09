@@ -90,7 +90,7 @@ test('Uncover the agent', async () => {
 
     expect(res).toMatchObject(<UncoverAgentResponse> {
         agent: {
-            index: index,
+            i: index,
             name: game.board[index].name,
             side: game.board[index].side,
             uncovered: true

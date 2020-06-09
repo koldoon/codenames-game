@@ -27,13 +27,15 @@
     "express-ws": "^4.0.0",
     "helmet": "^3.22.0",
     "http-errors": "^1.7.3",
-    "js-yaml": "^3.13.1",
+    "js-yaml": "^3.14.0",
+    "mongodb": "^3.5.8",
     "on-finished": "^2.3.0",
     "pretty-ms": "^7.0.0",
     "rimraf": "^3.0.2",
     "rxjs": "^6.5.5",
     "shuffle-array": "^1.0.1",
-    "ws": "^7.3.0"
+    "ws": "^7.3.0",
+    "node-fetch": "^2.6.0"
   },
   "devDependencies": {
     "@types/bent": "^7.0.2",
@@ -46,7 +48,9 @@
     "@types/http-errors": "^1.6.3",
     "@types/jest": "^25.2.3",
     "@types/js-yaml": "^3.12.4",
+    "@types/mongodb": "^3.5.20",
     "@types/node": "^12.12.6",
+    "@types/node-fetch": "^2.5.7",
     "@types/on-finished": "^2.3.1",
     "@types/shuffle-array": "0.0.28",
     "@types/ws": "^7.2.4",
@@ -55,7 +59,7 @@
     "acorn": "^7.2.0",
     "bent": "^7.3.1",
     "copy-node-modules": "^1.1.1",
-    "eslint": "^7.0.0",
+    "eslint": "^7.1.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-import": "^2.20.2",
     "jest": "^25.5.4",
@@ -63,6 +67,6 @@
     "prettier": "^2.0.5",
     "ts-jest": "^25.5.1",
     "tsconfig-paths": "^3.9.0",
-    "typescript": "^3.9.3"
+    "typescript": "^3.9.5"
   }
 }

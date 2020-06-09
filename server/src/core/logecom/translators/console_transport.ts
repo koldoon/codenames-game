@@ -47,7 +47,7 @@ export class ConsoleTransport implements LogTranslator {
 
 
     private readonly dummyPainter: StringMapper = str => str;
-    private readonly gp: StringMapper;
+    private readonly gp: StringMapper; // gray painter
     private categoryMaxLength = 0;
 
     translate(entry: LogEntry, next: NextFunction) {

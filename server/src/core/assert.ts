@@ -43,12 +43,12 @@ export namespace assert {
         param: string | number | any[],
         message?: string): asserts value {
 
-        if (value)
+        if (value || value === 0)
             return;
 
         if (Array.isArray(param))
             [param, message] = param;
-        
+
         const error = new clazz(String(message ?? param));
         if (message)
             error.code = param;

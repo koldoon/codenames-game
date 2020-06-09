@@ -5,7 +5,6 @@ import { performance } from 'perf_hooks';
 import * as ms from 'pretty-ms';
 import { Subject } from 'rxjs';
 import { ErrorCode } from '../../api/api_error';
-import { DictionaryDescription } from '../../api/dictionary_description';
 import { GameStatus } from '../../api/game_status';
 import { PlayerType } from '../../api/player_type';
 import { assert } from '../../core/assert';
@@ -17,12 +16,11 @@ import { OnApplicationInit } from '../../core/on_application_init';
 import { serialization } from '../../core/serialization';
 import { Agent } from '../../model/agent';
 import { Side } from '../../model/agent_side';
-import { Dictionary } from '../../model/dictionary';
 import { GameEvent } from '../../model/game_log_item';
 import { GameModel } from '../../model/game_model';
 import { GameMove } from '../../model/game_move';
-import { LocalDictionaryImpl } from '../../model/local_dictionary_impl';
 import { appRoot } from '../../root';
+import { DictionariesService } from './dictionaries_service';
 import extract = serialization.extract;
 
 type JSONStringifyReplacer = (this: any, key: string, value: any) => any;
@@ -43,11 +41,11 @@ export class GamesService implements OnApplicationInit {
 
     private readonly dataDir = path.join(appRoot, '../data');
     private readonly lastGamesFile = path.join(this.dataDir, 'games.json');
-    private readonly logger = Logecom.createLogger(GamesService.name);
-    private readonly dictionaries: Dictionary[] = [];
+    private readonly logger = Logecom.createLogger(this.constructor.name);
+
     private games = new Map<GameId, GameModel>();
 
-    constructor() {
+    constructor(private dictionariesService: DictionariesService) {
         bindClass(this);
     }
 
@@ -55,22 +53,12 @@ export class GamesService implements OnApplicationInit {
         process.on('SIGINT', this.storeGames);
         process.on('SIGTERM', this.storeGames);
 
-        this.loadDictionaries();
         this.loadGames();
         this.beginOldGamesRemovingCycle(t_1hour);
     }
 
-    getDictionaries() {
-        return this.dictionaries.map(dic => <DictionaryDescription> {
-            name: dic.name,
-            description: dic.description,
-            warning: dic.warning,
-            words_example: dic.getRandomWords(5)
-        });
-    }
-
     async createNewGame(dictionaryId: number = 0, prevGameId?: string): Promise<GameId> {
-        const dictionary = this.dictionaries[dictionaryId];
+        const dictionary = this.dictionariesService.dictionaries[dictionaryId];
         assert.found(dictionary, createGameError(ErrorCode.DictionaryNotFound));
 
         // look if new game has been already created by somebody
@@ -192,22 +180,8 @@ export class GamesService implements OnApplicationInit {
         this.beginOldGamesRemovingCycle(intervalMs);
     }
 
-    private loadDictionaries() {
-        const files = fs.readdirSync(this.dataDir).filter(value => value.split('.').pop() == 'yaml').sort();
-        this.logger.info('Loading dictionaries from ' + this.dataDir);
-
-        if (files.length == 0)
-            this.logger.error('No dictionaries found in ' + this.dataDir);
-
-        for (const fileName of files) {
-            const dict = new LocalDictionaryImpl(path.join(this.dataDir, fileName));
-            this.dictionaries.push(dict);
-            this.logger.info(`  - ${fileName}: ${dict.name} (${dict.dictionary.length})`);
-        }
-    }
-
     private storeGames() {
-        this.logger.warn('Storing games state:', this.games.size, 'games ->', this.lastGamesFile);
+        this.logger.warn(`Storing games state: ${this.games.size} games -> ${this.lastGamesFile}`);
         try {
             const gamesList = [...this.games.values()];
             const replacer = (key: keyof GameModel, value: GameModel) =>
@@ -222,7 +196,7 @@ export class GamesService implements OnApplicationInit {
     }
 
     private loadGames() {
-        this.logger.warn('Looking for games to restore in', this.lastGamesFile);
+        this.logger.warn(`Looking for games to restore in ${this.lastGamesFile}`);
         if (!fs.existsSync(this.lastGamesFile))
             return;
 
@@ -245,10 +219,10 @@ export class GamesService implements OnApplicationInit {
                     gameModel.lastGame = lastGame;
             }
 
-            this.logger.warn('  - games.json: Restored', this.games.size, 'game(s)');
+            this.logger.warn(`Restored ${this.games.size} game(s)`);
         }
         catch (e) {
-            this.logger.warn('Unable to restore games data.', e);
+            this.logger.warn('Unable to restore games data', e);
         }
     }
 }

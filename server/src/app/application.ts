@@ -17,9 +17,13 @@ import { ErrorsController } from './controller/errors_controller';
 import { FrontendController } from './controller/frontend_controller';
 import { GamesController } from './controller/games_controller';
 import { NotFoundController } from './controller/not_found_controller';
+import { RoomsController } from './controller/rooms_controller';
 import { StatController } from './controller/stat_controller';
+import { DictionariesService } from './service/dictionaries_service';
 import { GamesGateway } from './service/games_gateway';
 import { GamesService } from './service/games_service';
+import { RoomsService } from './service/rooms_service';
+import { StorageService } from './service/storage_service';
 import expressRequestIdMiddleware = request_id_middleware.expressRequestIdMiddleware;
 
 export class Application {
@@ -44,15 +48,19 @@ export class Application {
         const app = express();
         const ws = express_ws(app);
 
-        const requestContext = new ExpressRequestContext<RequestContextData>();
-        const gamesService = new GamesService();
+        const storageService = new StorageService();
+        const requestContext = new ExpressRequestContext(RequestContextData);
+        const dictionariesService = new DictionariesService();
+        const gamesService = new GamesService(dictionariesService);
+        const roomsService = new RoomsService(storageService, dictionariesService);
         const gamesGateway = new GamesGateway(ws.app, gamesService);
         const gamesController = new GamesController(app, gamesService);
-        const dictionariesController = new DictionariesController(app, gamesService);
+        const dictionariesController = new DictionariesController(app, dictionariesService);
         const statController = new StatController(app, gamesGateway, gamesService, this.version);
+        const roomsController = new RoomsController(app, roomsService);
         const frontendController = new FrontendController(app);
         const notFoundController = new NotFoundController(app);
-        const errorsController = new ErrorsController(app);
+        const errorsController = new ErrorsController(app, requestContext);
 
         // Init services and middleware
         app
@@ -63,9 +71,13 @@ export class Application {
             .use(expressLogMiddleware(req => requestContext.get(req).uid));
 
         await this.initModules(
+            storageService,
             gamesService,
+            roomsService,
+            dictionariesService,
             gamesController,
             dictionariesController,
+            roomsController,
             gamesGateway,
             statController,
             notFoundController,
@@ -78,7 +90,7 @@ export class Application {
 
     private async initModules(...args: OnApplicationInit[]) {
         for (const module of args) {
-            this.logger.debug('Starting module:', module.constructor.name);
+            this.logger.debug(`Starting module: ${module.constructor.name}`);
             await module.init();
         }
     }

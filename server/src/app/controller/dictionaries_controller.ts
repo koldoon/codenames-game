@@ -3,12 +3,12 @@ import { DictionariesIndexResponse } from '../../api/http/dictionaries_index_res
 import { bindClass } from '../../core/bind_class';
 import { asyncJson } from '../../core/express/async_json';
 import { OnApplicationInit } from '../../core/on_application_init';
-import { GamesService } from '../service/games_service';
+import { DictionariesService } from '../service/dictionaries_service';
 
 export class DictionariesController implements OnApplicationInit {
     constructor(
         private app: Application,
-        private gamesService: GamesService) {
+        private dictionariesService: DictionariesService) {
         bindClass(this);
     }
 
@@ -19,6 +19,6 @@ export class DictionariesController implements OnApplicationInit {
     }
 
     private async getDictionariesIndex(): Promise<DictionariesIndexResponse> {
-        return { dictionaries: this.gamesService.getDictionaries() };
+        return { dictionaries: this.dictionariesService.getDictionaries() };
     }
 }

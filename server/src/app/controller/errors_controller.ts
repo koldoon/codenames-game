@@ -2,6 +2,7 @@ import { Application, NextFunction, Request, Response } from 'express';
 import * as httpErrors from 'http-errors';
 import { config } from '../../config';
 import { bindClass } from '../../core/bind_class';
+import { Context } from '../../core/express/context/request_context_data';
 import { Logecom } from '../../core/logecom/logecom';
 import { NO_LOG_ERROR } from '../../core/no_log_error';
 import { OnApplicationInit } from '../../core/on_application_init';
@@ -11,7 +12,8 @@ export class ErrorsController implements OnApplicationInit {
     private readonly logger = Logecom.createLogger(this.constructor.name);
 
     constructor(
-        private app: Application) {
+        private app: Application,
+        private ctx: Context) {
         bindClass(this);
     }
 
@@ -22,7 +24,7 @@ export class ErrorsController implements OnApplicationInit {
 
     onHttpError(err: Error, req: Request, res: Response, next: NextFunction) {
         if (err.message !== NO_LOG_ERROR)
-            this.logger.error(err);
+            this.logger.error(err, this.ctx.get(req));
 
         if (config.nodeEnv == 'production')
             delete err.stack;

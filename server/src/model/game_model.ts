@@ -78,7 +78,7 @@ export class GameModel {
         this.board = [];
         for (let i = 0; i < this.boardSize; i++) {
             this.board.push({
-                index: i,
+                i: i,
                 name: names.pop()!,
                 side: boardConfig.sides.pop()!,
                 uncovered: false

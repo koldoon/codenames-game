@@ -73,9 +73,11 @@ export class GamesGateway implements OnApplicationInit {
     private onClientConnected(ws: WebSocket, req: Request) {
         this.clientsCount++;
 
-        req.headers['x-forwarded-for'] && typeof req.headers['x-forwarded-for'] === 'string'
-            ? this.logger.log('Client connected from', req.headers['x-forwarded-for'].split(/\s*,\s*/)[0], '| total', this.clientsCount)
-            : this.logger.log('Client connected from', req.connection.remoteAddress, '| total', this.clientsCount);
+        const ipAddr = req.headers['x-forwarded-for'] && typeof req.headers['x-forwarded-for'] === 'string'
+            ? req.headers['x-forwarded-for'].split(/\s*,\s*/)[0]
+            : req.connection.remoteAddress;
+
+        this.logger.log(`Client connected [${ipAddr}] [clients: ${this.clientsCount}]`);
 
         ws.on('close', (code, reason) => {
             this.onClientDisconnected(ws);
@@ -100,7 +102,7 @@ export class GamesGateway implements OnApplicationInit {
     private onClientDisconnected(ws: WebSocket) {
         this.clientsCount--;
         this.movePlayerToGame(ws, null);
-        this.logger.log('Client disconnected | total', this.playerGame.size);
+        this.logger.log('Client disconnected', { playersOnline: this.playerGame.size });
     }
 
     /**

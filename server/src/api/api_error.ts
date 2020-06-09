@@ -4,7 +4,8 @@ export enum ErrorCode {
     WrongSpymasterHint,
     GameNotFound,
     AgentNotFound,
-    DictionaryNotFound
+    DictionaryNotFound,
+    RoomNotFound
 }
 
 /**
@@ -18,5 +19,6 @@ export const ErrorMessage = {
     [ErrorCode.GameIsFinished]: 'Game is finished',
     [ErrorCode.GameNotFound]: 'Game not found',
     [ErrorCode.AgentNotFound]: 'Agent not found',
-    [ErrorCode.DictionaryNotFound]: 'Dictionary not found'
+    [ErrorCode.DictionaryNotFound]: 'Dictionary not found',
+    [ErrorCode.RoomNotFound]: 'Room not found'
 };
