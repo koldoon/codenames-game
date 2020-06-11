@@ -28,9 +28,10 @@ Result image will be tagged as `codenames-game:latest`.
 
 ## Build Docker image only (using staged build)
  - Install [Docker](https://www.docker.com/)
- - `$ curl https://raw.githubusercontent.com/koldoon/codenames-game/master/dockerfile.master -o Dockerfile`
- - `$ docker build -t codenames-game .`
-
+ - `$ git clone https://github.com/koldoon/codenames-game.git` - clone this repo
+ - `$ cd codenames-game`
+ - `$ docker build . -f dockerfile.staged -t codenames-game`
+ 
 ## ENV Options
  - Default http port (8095) can be changed via `CODENAMES_HTTP_PORT`
  - `NO_CONSOLE_COLORS=1` to disable colorful console output 

@@ -3,11 +3,8 @@
   "version": "0.0.1",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --proxy-config ./proxy.conf.json",
-    "build": "ng build --prod",
-    "test": "ng test",
-    "lint": "ng lint",
-    "e2e": "ng e2e"
+    "start": "npx ng serve --proxy-config ./proxy.conf.json",
+    "build": "npx ng build --prod"
   },
   "private": true,
   "dependencies": {

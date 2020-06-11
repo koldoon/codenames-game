@@ -6,8 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "link-nm": "ln -sf ../../server/node_modules ../dist/server/node_modules",
-    "prebuild": "rimraf ../dist/server && rimraf ../dist/data",
+    "prebuild": "npx rimraf ../dist/server && npx rimraf ../dist/data",
     "build": "npx tsc && npx copy-node-modules ./ ../dist/server",
     "postbuild": "cd .. && cp -R ./data ./dist/ && git rev-parse --short HEAD > ./dist/server/version",
     "start": "node ../dist/server/main.js",
@@ -32,7 +31,6 @@
     "node-fetch": "^2.6.0",
     "on-finished": "^2.3.0",
     "pretty-ms": "^7.0.0",
-    "rimraf": "^3.0.2",
     "rxjs": "^6.5.5",
     "shuffle-array": "^1.0.1",
     "ws": "^7.3.0"
@@ -58,6 +56,7 @@
     "@typescript-eslint/parser": "^2.34.0",
     "acorn": "^7.2.0",
     "bent": "^7.3.1",
+    "rimraf": "^3.0.2",
     "copy-node-modules": "^1.1.1",
     "eslint": "^7.1.0",
     "eslint-config-prettier": "^6.11.0",
