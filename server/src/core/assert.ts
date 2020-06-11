@@ -20,11 +20,13 @@ export namespace assert {
         return constructValueError(httpErrors.NotFound, value, param, message);
     };
 
-
     export const value: ValueAssertFunction = function (value: any, param: string | number | any[], message?: string): asserts value {
         return constructValueError(httpErrors.BadRequest, value, param, message);
     };
 
+    export const success: ValueAssertFunction = function (value: any, param: string | number | any[], message?: string): asserts value {
+        return constructValueError(httpErrors.InternalServerError, value, param, message);
+    };
 
     export function range(value: any, range: [number, number], message: string): asserts value is number {
         if (typeof value !== 'number' || isNaN(value) || value < range[0] || value > range[1])

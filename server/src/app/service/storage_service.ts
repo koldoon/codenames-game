@@ -4,9 +4,8 @@ import { assert } from '../../core/assert';
 import { OnApplicationInit } from '../../core/on_application_init';
 
 export class StorageService implements OnApplicationInit {
-    db: Db;
-
-    private client: MongoClient;
+    db!: Db;
+    private client!: MongoClient;
 
     async init() {
         try {
@@ -20,11 +19,17 @@ export class StorageService implements OnApplicationInit {
         }
     }
 
-    async transaction(fn: (session: ClientSession) => Promise<any>) {
-        assert.value(this.client, 'Database connection is lost');
+    async transaction<T>(fn: (session: ClientSession) => Promise<T>) {
+        assert.value(this.client, 'Database connection lost');
         const session = this.client.startSession();
+        let result: T;
         await session
-            .withTransaction(async () => await fn(session))
-            .finally(() => session.endSession());
+            .withTransaction(async () => {
+                result = await fn(session)
+            })
+            .finally(() => {
+                session.endSession()
+            });
+        return result!;
     }
 }

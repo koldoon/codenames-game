@@ -9,21 +9,26 @@ import { Room } from './storage/room';
 import shuffle = require('shuffle-array');
 import generateId = generate_id.generateId;
 
-export class RoomModel implements Room {
+export class RoomModel {
     static readonly DEFAULT_BOARD_SIZE = 25;
 
-    id = generateId(8);
-    gamesPlayed = 0;
-    lastActivity = new Date();
-    game?: Game;
+    constructor(
+        public readonly room: Room) {
+    }
 
-    newGame(words: string[]) {
-        if (this.game)
-            this.gamesPlayed += 1;
+    static createRoom(words: string[]): Room {
+        return {
+            id: generateId(8),
+            lastActivity: new Date(),
+            gamesPlayed: 0,
+            game: this.createGame(words)
+        }
+    }
 
+    static createGame(words: string[]): Game {
         const boardSize = RoomModel.DEFAULT_BOARD_SIZE;
-        const teamSize = (boardSize - 1) / 3;
         const boardConfig = RoomModel.createRandomizedAgentsSidesList(boardSize);
+        const teamSize = (boardSize - 1) / 3;
         const board: Agent[] = [];
 
         for (let i = 0; i < boardSize; i++) {
@@ -58,15 +63,20 @@ export class RoomModel implements Room {
             ? game.blueLeft += 1
             : game.redLeft += 1;
 
-        this.game = game;
-        this.lastActivity = new Date();
+        return game;
+    }
+
+    newGame(words: string[]) {
+        this.room.game = RoomModel.createGame(words);
+        this.room.lastActivity = new Date();
+        this.room.gamesPlayed += 1;
     }
 
     uncoverAgent(index: number) {
-        if (!this.game)
+        if (!this.room.game)
             return null;
 
-        const game = this.game;
+        const game = this.room.game;
         const agent = game.board[index];
         const moveAllowed = game.move.isInited && !game.move.isFinished;
 
@@ -75,7 +85,7 @@ export class RoomModel implements Room {
 
         agent.uncovered = true;
         game.move.count -= 1;
-        this.lastActivity = new Date();
+        this.room.lastActivity = new Date();
 
         game.events.push({
             kind: GameEventKind.AgentUncovered,
@@ -111,29 +121,30 @@ export class RoomModel implements Room {
     }
 
     commitHint(hint: string, matchCount: number) {
-        if (!this.game || this.game.isFinished)
+        const game = this.room.game;
+        if (!game || game.isFinished)
             return false;
 
-        const side = this.game.move.isInited
-            ? this.game.move.side == Side.BLUE ? Side.RED : Side.BLUE
-            : this.game.move.side;
+        const side = game.move.isInited
+            ? game.move.side == Side.BLUE ? Side.RED : Side.BLUE
+            : game.move.side;
 
-        this.game.move = {
+        game.move = {
             hint,
             side,
-            count: matchCount == 0 ? this.game.boardSize : (matchCount + 1),
+            count: matchCount == 0 ? game.boardSize : (matchCount + 1),
             isInited: true,
             isFinished: false
         };
 
-        this.game.events.push({
+        game.events.push({
             kind: GameEventKind.SpymasterHint,
             hint,
             side,
             count: matchCount
         });
 
-        return this.game.move;
+        return game.move;
     }
 
     private static createRandomizedAgentsSidesList(boardSize: number) {

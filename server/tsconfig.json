@@ -11,6 +11,7 @@
     "experimentalDecorators": true,
     "downlevelIteration": true,
     "target": "es2017",
+    "strict": true,
     "alwaysStrict": true,
     "sourceMap": true,
     "incremental": true,
