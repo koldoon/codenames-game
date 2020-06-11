@@ -6,9 +6,8 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "link-nm": "ln -sf ../../server/node_modules ../dist/server/node_modules",
-    "prebuild": "rimraf ../dist/server && rimraf ../dist/data",
-    "build": "tsc && npx copy-node-modules ./ ../dist/server",
+    "prebuild": "npx rimraf ../dist/server && npx rimraf ../dist/data",
+    "build": "npx tsc && npx copy-node-modules ./ ../dist/server",
     "postbuild": "cd .. && cp -R ./data ./dist/ && git rev-parse --short HEAD > ./dist/server/version",
     "start": "node ../dist/server/main.js",
     "start-dev": "env NODE_ENV=development node ../dist/server/main.js",
