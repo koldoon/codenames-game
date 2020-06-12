@@ -6,10 +6,12 @@
   "private": true,
   "license": "GPL 3.0",
   "scripts": {
-    "install": "cd ./server && npm install && cd ../frontend && npm install && cd ..",
-    "build": "cd ./server && npm run build && cd ../frontend && npm run build && cd ..",
-    "docker": "docker build -t codenames-game dist",
-    "build-docker": "npm run build && npm run docker",
-    "start": "env NODE_ENV=production node ./dist/server/main.js"
+    "install:server": "cd ./server && npm install",
+    "install:frontend": "cd ./frontend && npm install",
+    "install": "npm run install:server && npm run install:frontend",
+    "build:server": "cd ./server && npm run build",
+    "build:frontend": "cd ./frontend && npm run build",
+    "build": "npm run build:server && npm run build:frontend",
+    "start": "cd ./server && npm start"
   }
 }
