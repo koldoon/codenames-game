@@ -1,4 +1,4 @@
-import * as bent from 'bent';
+import * as axios from 'axios';
 import { GameStatus } from '../src/api/game_status';
 import { CommitCodeRequest } from '../src/api/http/commit_code_request';
 import { CommitCodeResponse } from '../src/api/http/commit_code_response';
@@ -9,26 +9,26 @@ import { PlayerType } from '../src/api/player_type';
 import { Side } from '../src/model/agent_side';
 
 const serverUrl = process.env.TEST_URL || 'http://localhost:3000';
-const getJson = bent('json', serverUrl);
-const postJson = bent('POST', 'json', serverUrl);
+const request = axios.default.create({
+    baseURL: serverUrl
+});
 
 let gameId = '';
 let game: GameStatus;
 
 test('Stat ' + serverUrl, async () => {
-    console.info(await getJson('/api/stat/info'));
+    const res = await request('/api/stat/info');
+    console.info(res.data);
 });
 
 async function updateCaptainsBoard() {
-    const res = <GameStatusResponse> await getJson(
-        `/api/games/${gameId}/status?player=${PlayerType.Spymaster}`
-    );
-    game = res.game;
+    const res = await request(`/api/games/${gameId}/status?player=${PlayerType.Spymaster}`);
+    game = (res.data as GameStatusResponse).game;
 }
 
 test('New game', async () => {
-    const res = <NewGameResponse> await getJson(`/api/games/create`);
-    gameId = res.gameId;
+    const res = await request(`/api/games/create`);
+    gameId = (res.data as NewGameResponse).gameId;
     expect(gameId).toBeDefined();
     expect(typeof gameId).toBe('string');
 });
@@ -62,14 +62,16 @@ test('Board configuration', () => {
 });
 
 test('Commit code in general', async () => {
-    const res = <CommitCodeResponse> await postJson(
-        `/api/games/${gameId}/commit-code`,
-        <CommitCodeRequest> {
+    const res = await request({
+        url: `/api/games/${gameId}/commit-code`,
+        method: 'post',
+        data: <CommitCodeRequest> {
             message: 'Allegra 8'
         }
-    );
+    });
+    const data = res.data as CommitCodeResponse;
 
-    expect(res).toMatchObject(<CommitCodeResponse> {
+    expect(data).toMatchObject(<CommitCodeResponse> {
         move: {
             hint: 'Allegra',
             count: 9,
@@ -78,17 +80,16 @@ test('Commit code in general', async () => {
         }
     });
 
-    expect(res.move.side >= Side.UNKNOWN).toBeTruthy();
-    expect(res.move.side <= Side.NEUTRAL).toBeTruthy();
+    expect(data.move.side >= Side.UNKNOWN).toBeTruthy();
+    expect(data.move.side <= Side.NEUTRAL).toBeTruthy();
 });
 
 test('Uncover the agent', async () => {
     const index = Number((Math.random() * 24).toFixed(0));
-    const res = <UncoverAgentResponse> await getJson(
-        `/api/games/${gameId}/agents/${index}/uncover`
-    );
+    const res = await request(`/api/games/${gameId}/agents/${index}/uncover`);
+    const data = res.data as UncoverAgentResponse;
 
-    expect(res).toMatchObject(<UncoverAgentResponse> {
+    expect(data).toMatchObject(<UncoverAgentResponse> {
         agent: {
             i: index,
             name: game.board[index].name,
@@ -99,14 +100,16 @@ test('Uncover the agent', async () => {
 });
 
 test('Commit code zero', async () => {
-    const res = <CommitCodeResponse> await postJson(
-        `/api/games/${gameId}/commit-code`,
-        <CommitCodeRequest> {
+    const res = await request({
+        url: `/api/games/${gameId}/commit-code`,
+        method: 'post',
+        data: <CommitCodeRequest> {
             message: 'Joy 0'
         }
-    );
+    });
+    const data = res.data as CommitCodeResponse;
 
-    expect(res).toMatchObject(<CommitCodeResponse> {
+    expect(data).toMatchObject(<CommitCodeResponse> {
         move: {
             hint: 'Joy',
             count: 25,
