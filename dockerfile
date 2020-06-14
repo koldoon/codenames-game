@@ -7,10 +7,12 @@
 FROM mhart/alpine-node:slim-12
 WORKDIR /svc/codenames
 ADD . /svc/codenames/
+
 VOLUME /svc/codenames/data
 ENV NODE_ENV production
 ENV NO_CONSOLE_COLORS 0
 ENV CODENAMES_HTTP_PORT 8095
 ENV MONGO_CONNECTION_STRING mongodb://localhost/codenames
+
 ENTRYPOINT node ./server/main.js
 EXPOSE 8095

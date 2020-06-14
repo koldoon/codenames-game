@@ -1,25 +1,28 @@
 FROM node:12 AS builder
-RUN npm install -g npm@6.14.5
+RUN npm i -g npm@6.14.5
 
 ## Create reusable builder with dependencies
+## -----------------------------------------
 WORKDIR /codenames-game
-ADD ./frontend/package* ./frontend/
-ADD ./server/package* ./server/
+COPY ./frontend/package*.json ./frontend/
+COPY ./server/package*.json ./server/
+COPY ./package*.json ./
+RUN npm i --unsafe-perm
 
-WORKDIR /codenames-game/frontend
-RUN npm install
-
-WORKDIR /codenames-game/server
-RUN npm install
-
-WORKDIR /codenames-game
-ADD ./ ./
+COPY ./ ./
 RUN npm run build
 
 ## Create runnable configuration based on smaller image
+## ----------------------------------------------------
 FROM mhart/alpine-node:slim-12
 WORKDIR /svc/codenames
 COPY --from=builder /codenames-game/dist ./
+
 VOLUME /svc/codenames/data
+ENV NODE_ENV production
+ENV NO_CONSOLE_COLORS 0
+ENV CODENAMES_HTTP_PORT 8095
+ENV MONGO_CONNECTION_STRING mongodb://localhost/codenames
+
 ENTRYPOINT node ./server/main.js
 EXPOSE 8095

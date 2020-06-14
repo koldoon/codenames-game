@@ -9,6 +9,10 @@ import { Room } from './storage/room';
 import shuffle = require('shuffle-array');
 import generateId = generate_id.generateId;
 
+/**
+ * RoomModel keeps Room (storage) structure consistent,
+ * offering methods for formal data manipulation.
+ */
 export class RoomModel {
     static readonly DEFAULT_BOARD_SIZE = 25;
 

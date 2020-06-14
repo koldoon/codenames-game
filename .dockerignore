@@ -1,3 +1,15 @@
-node_modules
-server/node_modules
-frontend/node_modules
+*
+
+# minimal .git to execute 'git rev-parse --short HEAD'
+!.git/refs
+!.git/HEAD
+!.git/objects
+.git/objects/*
+
+# sources
+!frontend
+!server
+!data
+!package*.json
+
+**/node_modules

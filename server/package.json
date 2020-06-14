@@ -6,11 +6,11 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "build:compile": "npx tsc",
     "build:data": "cp -R ../data ../dist/",
     "build:version": "git rev-parse --short HEAD > ../dist/server/version",
-    "build:modules": "npx copy-node-modules ./ ../dist/server",
-    "build:deps": "npm run build:modules && npm run build:data && npm run build:version",
-    "build": "npx tsc && npm run build:deps",
+    "build:modules": "cp ./package*.json ../dist/server && cd ../dist/server && npm i --only=prod --no-optional --no-fund && rm ./package*.json",
+    "build": "npx run-s build:*",
     "start": "env NODE_ENV=production node ../dist/server/main.js",
     "start:dev": "env NODE_ENV=development node ../dist/server/main.js",
     "format": "npx prettier --write \"src/**/*.ts\"",
@@ -58,7 +58,6 @@
     "acorn": "^7.3.1",
     "axios": "^0.19.2",
     "rimraf": "^3.0.2",
-    "copy-node-modules": "^1.1.1",
     "eslint": "^7.1.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-import": "^2.20.2",
@@ -67,6 +66,7 @@
     "prettier": "^2.0.5",
     "ts-jest": "^25.5.1",
     "tsconfig-paths": "^3.9.0",
-    "typescript": "^3.9.5"
+    "typescript": "^3.9.5",
+    "npm-run-all": "^4.1.5"
   }
 }
