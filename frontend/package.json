@@ -2,8 +2,8 @@
   "name": "codenames-game-frontend",
   "version": "0.0.1",
   "scripts": {
-    "start": "npx ng serve --proxy-config ./proxy.conf.json",
-    "build": "npx ng build --prod"
+    "start": "yarn ng serve --proxy-config ./proxy.conf.json",
+    "build": "yarn ng build --prod"
   },
   "private": true,
   "dependencies": {

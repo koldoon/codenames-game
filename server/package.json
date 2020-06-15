@@ -6,15 +6,15 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build:compile": "npx tsc",
+    "build:compile": "yarn tsc",
     "build:data": "cp -R ../data ../dist/",
     "build:version": "git rev-parse --short HEAD > ../dist/server/version",
-    "build:modules": "cp ./package*.json ../dist/server && cd ../dist/server && npm i --only=prod --no-optional --no-fund && rm ./package*.json",
-    "build": "npx run-s build:*",
+    "build:modules": "cp ./package.json ../dist/server && cd ../dist/server && yarn install --prod",
+    "build": "yarn run-s build:*",
     "start": "env NODE_ENV=production node ../dist/server/main.js",
     "start:dev": "env NODE_ENV=development node ../dist/server/main.js",
-    "format": "npx prettier --write \"src/**/*.ts\"",
-    "lint": "npx eslint \"{src,appns,libs,test}/**/*.ts\" --fix"
+    "format": "yarn prettier --write \"src/**/*.ts\"",
+    "lint": "yarn eslint \"{src,appns,libs,test}/**/*.ts\" --fix"
   },
   "jest": {
     "verbose": true

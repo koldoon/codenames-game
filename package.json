@@ -6,13 +6,13 @@
   "private": true,
   "license": "GPL 3.0",
   "scripts": {
-    "install:server": "cd ./server && npm i --no-fund",
-    "install:frontend": "cd ./frontend && npm i --no-fund",
-    "install": "npx run-s install:*",
-    "build:server": "cd ./server && npm run build",
-    "build:frontend": "cd ./frontend && npm run build",
-    "build": "npx run-s build:*",
-    "start": "cd ./server && npm start"
+    "install:server": "cd ./server && yarn install",
+    "install:frontend": "cd ./frontend && yarn install",
+    "install": "yarn run-s install:*",
+    "build:server": "cd ./server && yarn build",
+    "build:frontend": "cd ./frontend && yarn build",
+    "build": "yarn run-s build:*",
+    "start": "cd ./server && yarn start"
   },
   "devDependencies": {
     "npm-run-all": "^4.1.5"
