@@ -1,5 +1,6 @@
-FROM node:12 AS builder
+FROM node:12-alpine AS builder
 RUN npm i -g npm@6.14.5
+RUN apk add git
 
 ## Create reusable builder with dependencies
 ## -----------------------------------------
