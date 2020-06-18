@@ -6,7 +6,9 @@ import { PlayerType } from '../../../server/src/api/player_type';
  * To simplify refactoring and reusing different application
  * navigation routes, all the routes formatting in one place.
  */
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class AppRoutingNavigationService {
     constructor(private router: Router) {}
 

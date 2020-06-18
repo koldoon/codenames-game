@@ -36,15 +36,15 @@ export class PageJoinComponent implements OnInit {
         });
     }
 
-    async onJoinAsCaptainClick() {
-        await this.navigation.toGameBoard(this.gameId, PlayerType.Spymaster);
+    onJoinAsCaptainClick() {
+        this.navigation.toGameBoard(this.gameId, PlayerType.Spymaster);
     }
 
-    async onJoinAsTeammateClick() {
-        await this.navigation.toGameBoard(this.gameId, PlayerType.Regular);
+    onJoinAsTeammateClick() {
+        this.navigation.toGameBoard(this.gameId, PlayerType.Regular);
     }
 
-    async onBackClick() {
+    onBackClick() {
         this.location.back();
     }
 }

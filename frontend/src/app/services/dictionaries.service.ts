@@ -4,7 +4,10 @@ import { map, tap } from 'rxjs/operators';
 import { DictionaryDescription } from '../../../../server/src/api/dictionary_description';
 import { DictionariesIndexResponse } from '../../../../server/src/api/http/dictionaries_index_response';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
+
 export class DictionariesService {
     constructor(private httpClient: HttpClient) {}
 

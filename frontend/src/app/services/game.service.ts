@@ -17,7 +17,9 @@ import { AppRoutingNavigationService } from '../app-routing-navigation.service';
 import { cleanHttpParams } from '../core/clean-http-params';
 import { getWebSocketUrl } from '../core/get-web-socket-url';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class GameService {
     constructor(
         private navigation: AppRoutingNavigationService,

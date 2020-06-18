@@ -9,7 +9,9 @@ import { DictionariesService } from './dictionaries.service';
 /**
  * Used to pre-fetch dictionaries before navigate to some route
  */
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class DictionariesResolve implements Resolve<DictionaryDescription[]> {
     constructor(
         private dictionariesService: DictionariesService,

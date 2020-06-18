@@ -6,12 +6,12 @@
         'side-assassin': logItem.side == ASSASSIN,
         'side-neutral': logItem.side == NEUTRAL }">
 
-    <ng-container *ngIf="isHint">
+    <ng-template [ngIf]="isHint">
         <div>{{logItem.text}}</div>
         <div class="match-count">{{logItem.count}}</div>
-    </ng-container>
+    </ng-template>
 
-    <ng-container *ngIf="!isHint">
+    <ng-template [ngIf]="!isHint">
         {{logItem.text}}
-    </ng-container>
+    </ng-template>
 </div>

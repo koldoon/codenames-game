@@ -12,7 +12,7 @@ import { Agent } from '../../../../../server/src/model/agent';
 import { AppRoutingNavigationService } from '../../app-routing-navigation.service';
 import { GameService } from '../../services/game.service';
 import { HttpLoadingStatusService } from '../../services/http-loading-status.service';
-import { NewGameConfirmPopupComponent } from './new-game-confirm-popup/new-game-confirm-popup.component';
+import { NewGameConfirmPopupComponent } from '../board/new-game-confirm-popup/new-game-confirm-popup.component';
 
 @Component({
     selector: 'app-page-board',
