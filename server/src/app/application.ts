@@ -34,6 +34,9 @@ export class Application {
         process.on('unhandledRejection', reason => this.logger.error('Unhandled Rejection', reason));
         process.on('uncaughtException', error => this.logger.error('Uncaught Exception', error));
 
+        this.logger.warn('Starting codenames-game server');
+        this.logger.info(`Git commit [${this.version}]`);
+
         this.bootstrap().then(() => {
             this.logger.info('Application started' + (config.nodeEnv == 'production' ? ' in PRODUCTION mode' : ''));
             this.logger.info(`Listening on port: ${port}`);
@@ -41,9 +44,6 @@ export class Application {
     }
 
     private async bootstrap() {
-        this.logger.warn('Starting codenames-game server');
-        this.logger.info(`Git commit [${this.version}]`);
-
         // Build application context respecting dependencies
         const app = express();
         const ws = express_ws(app);

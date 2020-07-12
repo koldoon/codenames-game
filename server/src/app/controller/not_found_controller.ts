@@ -2,12 +2,13 @@ import { Application, NextFunction, Request, Response } from 'express';
 import * as httpErrors from 'http-errors';
 import { bindClass } from '../../core/bind_class';
 import { NO_LOG_ERROR } from '../../core/no_log_error';
+import { OnApplicationInit } from '../../core/on_application_init';
 
 /**
  * This controller must be inited after all "api" controllers.
  * It terminates (sends "404 Not Found") for all requests, going to "/api/*"
  */
-export class NotFoundController {
+export class NotFoundController implements OnApplicationInit {
     constructor(private app: Application) {
         bindClass(this);
     }
