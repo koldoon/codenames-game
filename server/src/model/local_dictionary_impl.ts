@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 import * as shuffle from 'shuffle-array';
 import { Dictionary } from './dictionary';
+import { DictionaryConfig } from './dictionary_config';
 
 export class LocalDictionaryImpl implements Dictionary {
     /**
@@ -31,7 +32,7 @@ export class LocalDictionaryImpl implements Dictionary {
     }
 
     private loadFromFile(fileName: string) {
-        const doc = yaml.safeLoad(fs.readFileSync(fileName, 'utf8'));
+        const doc = yaml.safeLoad(fs.readFileSync(fileName, 'utf8')) as DictionaryConfig;
         // Filter out possible input mistakes (just in case)
         const words = String(doc.words)
             .split(/[\s;,]+/)
