@@ -11,9 +11,9 @@ put extra yaml files in `dist/data` directory respecting the same structure as i
  - Install [Node.js](https://nodejs.org/en/)
  - `$ git clone https://github.com/koldoon/codenames-game.git` - clone this repo
  - `$ cd codenames-game`
- - `$ npm i` - install dependencies
- - `$ npm run build` - build sources into `./dist`
- - `$ npm run start` - start game server serving API and frontend
+ - `$ yarn install` - install dependencies
+ - `$ yarn build` - build sources into `./dist`
+ - `$ yarn start` - start game server serving API and frontend
  - Open `http://localhost:8095/` and have a fun
 
 ## Build Docker image from local sources build
@@ -21,16 +21,15 @@ put extra yaml files in `dist/data` directory respecting the same structure as i
  - Install [Docker](https://www.docker.com/)
  - `$ git clone https://github.com/koldoon/codenames-game.git` - clone this repo
  - `$ cd codenames-game`
- - `$ npm i` - install dependencies
- - `$ npm run build-docker`
- 
-Result image will be tagged as `codenames-game:latest`.
+ - `$ yarn install` - install dependencies
+ - `$ docker build . -f ./dockerfile -t codenames-game`
+
 
 ## Build Docker image only (using staged build)
  - Install [Docker](https://www.docker.com/)
  - `$ git clone https://github.com/koldoon/codenames-game.git` - clone this repo
  - `$ cd codenames-game`
- - `$ docker build . -f dockerfile.staged -t codenames-game`
+ - `$ docker build . -f ./dockerfile.staged -t codenames-game`
  
 ## ENV Options
  - Default http port (8095) can be changed via `CODENAMES_HTTP_PORT`
