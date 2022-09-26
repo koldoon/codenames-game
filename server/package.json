@@ -58,7 +58,7 @@
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-import": "^2.20.2",
     "jest": "^25.5.4",
-    "pm2": "^4.4.0",
+    "pm2": "^5.2.0",
     "prettier": "^2.0.5",
     "ts-jest": "^25.5.1",
     "tsconfig-paths": "^3.9.0",
